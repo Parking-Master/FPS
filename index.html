@@ -13,11 +13,32 @@
       * {
         cursor: url(./cursor.png), auto !important;
       }
+      .scoreboard {
+        position: absolute;
+        background: #fff;
+        width: 75px;
+        height: 30px;
+        padding: 5px;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        z-index: 9999;
+        left: 100%;
+        margin-left: -80px;
+        top: 85vh;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: #333;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 600;
+      }
       .ui #rounds {
         position: absolute;
         left: 50px;
         bottom: 50px;
         color: #fff;
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: -2px;
+        font-weight: 600;
       }
       .ui img {
         position: absolute;
@@ -83,6 +104,11 @@
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
     </script>
     <div class="ui">
+      <div class="scoreboard">
+        <span class="player1">A: <span class="score">0</span></span>
+        <hr style="margin: 0;">
+        <span class="player2">B: <span class="score">0</span></span>
+      </div>
       <div class="health-wrapper">
         <div class="health"></div>
       </div>
@@ -133,7 +159,7 @@
       document.body.appendChild(renderer.domElement);
       const geometry = new THREE.BoxGeometry(1, 3, 1);
       const groundGeometry = new THREE.BoxGeometry(10000, 1, 10000);
-      const groundMaterial = new THREE.MeshBasicMaterial({ color: "#7ed957" });
+      const groundMaterial = new THREE.MeshBasicMaterial({ color: "#7ed957", map: new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png") });
       const ground = new THREE.Mesh(groundGeometry, groundMaterial);
       const gunGeometry = new THREE.BoxGeometry(.5, .55, 3);
       const gunHandleGeometry = new THREE.BoxGeometry(.5, .55, 1);
@@ -160,12 +186,12 @@
       cube1.sname = "head";
       cube2.sname = "arm";
       cube3.sname = "arm1";
-      cube1.position.x = 0;
-      cube1.position.y = 1.5;
-      cube2.position.x = .6;
-      cube2.position.y = .5;
-      cube3.position.x = -.6;
-      cube3.position.y = 0;
+      // cube1.position.x = 0;
+      // cube1.position.y = 1.5;
+      // cube2.position.x = .6;
+      // cube2.position.y = .5;
+      // cube3.position.x = -.6;
+      // cube3.position.y = 0;
       gun.sname = "gun";
       gunHandle.sname = "gunHandle";
       scene.add(cube1);
@@ -264,7 +290,7 @@
           }
         });
       });
-      light=new THREE.SpotLight(16755036,4),light.position.set(-50,50,50),light.castShadow=!0,scene.add(light);
+      light=new THREE.SpotLight(16755036,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
       function animate() {
         requestAnimationFrame(animate);
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
@@ -283,37 +309,37 @@
       function moveUp() {
         hwalkup = setInterval(() => {
           movY += -.05;
-          gun.position.z += -.01;
-          gunHandle.position.z += -.01;
-          pointer.position.z += -.01;
-          camera.position.z += -.01;
+          gun.position.z += -.04;
+          gunHandle.position.z += -.04;
+          pointer.position.z += -.04;
+          camera.position.z += -.04;
         });
       }
       function moveDown() {
         hwalkdown = setInterval(() => {
           movY += .05;
-          gun.position.z += .01;
-          gunHandle.position.z += .01;
-          pointer.position.z += .01;
-          camera.position.z += .01;
+          gun.position.z += .04;
+          gunHandle.position.z += .04;
+          pointer.position.z += .04;
+          camera.position.z += .04;
         });
       }
       function moveLeft() {
         hwalkleft = setInterval(() => {
           movX += -.05;
-          gun.position.x += -.01;
-          gunHandle.position.x += -.01;
-          pointer.position.x += -.01;
-          camera.position.x += -.01;
+          gun.position.x += -.04;
+          gunHandle.position.x += -.04;
+          pointer.position.x += -.04;
+          camera.position.x += -.04;
         });
       }
       function moveRight() {
         hwalkright = setInterval(() => {
           movX += .05;
-          gun.position.x += .01;
-          gunHandle.position.x += .01;
-          pointer.position.x += .01;
-          camera.position.x += .01;
+          gun.position.x += .04;
+          gunHandle.position.x += .04;
+          pointer.position.x += .04;
+          camera.position.x += .04;
         });
       }
       let isJumping = false;
@@ -422,7 +448,7 @@
         gunHandle.position.z += 0.25;
         setTimeout(() => (gun.rotation.x += -0.5, gunHandle.rotation.x += -0.5, gun.position.z += -0.25, gunHandle.position.z += -0.25), 100);
         setTimeout(() => {
-          if (rounds == 0 && !reloading) {
+          if (rounds <= 0 && !reloading) {
             reload();
           }
         }, 250);
@@ -466,7 +492,7 @@
       }
       // var Tree=function(e){e=e||{},this.sections=e.sections||5,this.conesPerSection=e.conesPerSection||7,this.coneMaterial=e.coneMaterial||new THREE.MeshBasicMaterial({color:65280}),this.coneMaxRadius=e.coneMaxRadius||.7,this.coneRadiusReduction=e.coneRadiusReduction||.3,this.coneMaxLength=e.coneRadiusReduction||5,this.coneLengthReduction=e.coneLengthReduction||4.5,this.forConeValues=e.forConeValues||function(){},this.forConeMesh=e.forConeMesh||function(){},this.forSection=e.forSection||function(){},this.onDone=e.onDone||function(){},this.group=new THREE.Group;for(var t={i:0};t.i<this.sections;){var i=new THREE.Group,n={i:0};for(t.stdRadius=this.coneMaxRadius-this.coneRadiusReduction*(t.i/this.sections),t.stdLength=this.coneMaxLength-this.coneLengthReduction*(t.i/this.sections),t.radius=t.stdLength-t.stdLength/2,t.y=2*t.stdRadius*t.i,t.radOffset=t.i%2*Math.PI,this.forSection.call(this,t);n.i<this.conesPerSection;){Tree.defaultConeObj(this,n,t),this.forConeValues.call(this,n,t);var o=new THREE.ConeGeometry(n.radius,n.length,n.segRad,n.segLength,n.open,n.thetaStart,n.thetaLength),s=new THREE.Mesh(o,n.material||this.coneMaterial);s.position.set(n.x,n.y,n.z),s.rotation.set(n.r.x,n.r.y,n.r.z),this.forConeMesh.call(this,s,n,t),i.rotation.set(0,t.radOffset,0),i.add(s),n.i+=1}i.position.y=t.y,this.group.add(i),t.i+=1}this.onDone.call(this)};Tree.defaultConeObj=function(e,t,i){t.per=t.i/e.conesPerSection,t.radian=2*Math.PI*t.per,Tree.setConePos(t,i),t.r={x:Math.PI/2,y:0,z:2*Math.PI/e.conesPerSection*t.i-Math.PI/2},t.radius=i.stdRadius,t.length=i.stdLength,t.segRad=32,t.seglength=1,t.open=!1,t.thetaStart=0,t.thetaLength=2*Math.PI},Tree.setConePos=function(e,t){var i=e.radian;e.x=Math.cos(i)*t.radius,e.y=0,e.z=Math.sin(i)*t.radius};
       // var tree=new Tree({coneMaterial:new THREE.MeshStandardMaterial({color:44800}),sections:5,forConeValues:function(e,a){e.length=1,e.radius=.8-a.i/this.sections*.4;var n=e.length-.8*e.length*(a.i/this.sections);e.x=Math.cos(e.radian)*n,e.z=Math.sin(e.radian)*n}});scene.add(tree.group);
-      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<150;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(20*Math.random())-10,0,Math.floor(20*Math.random())),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),scene.add(e)}}();
+      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<1000;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(150*Math.random())-40,0,Math.floor(150*Math.random())-40),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),scene.add(e)}}();
       animate();
       const zoomInFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,t)=>o>=20&&"zoomIn"===t?o-5:o<=75&&"zoomOut"===t?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);
       document.addEventListener("keyup", (e) => {
@@ -574,7 +600,15 @@
           location.reload();
         });
       });
+      ascore = 0;
+      bscore = 0;
+      ref = false;
       gametime.on("eleminate", function(player) {
+        if (!ref) {
+          ref = true;
+          player == 1 ? ascore += 1 : bscore += 1;
+          document.querySelector(".player" + player).querySelector(".score").textContent = player == 1 ? ascore : bscore;
+        }
         setTimeout(() => {
           let body = otherPlayer[0];
           let head = otherPlayer[1];
@@ -611,6 +645,7 @@
             text: "You will respawn in 5 seconds"
           });
           setTimeout(() => {
+            ref = false;
             let body = otherPlayer[0];
             let head = otherPlayer[1];
             let arm = otherPlayer[2];
