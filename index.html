@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-      body {
+      html, body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
-        cursor: none;
+        cursor: url(./cursor.png), auto !important;
+      }
+      * {
+        cursor: url(./cursor.png), auto !important;
       }
       .ui #rounds {
         position: absolute;
@@ -32,9 +35,9 @@
         position: absolute;
         left: 50% !important;
         top: 50% !important;
-        width: 6%;
-        margin-left: -3% !important;
-        margin-top: -3% !important;
+        width: 25px;
+        margin-left: -12.5px !important;
+        margin-top: -12.5px !important;
         z-index: 9999;
         filter: invert(100%);
       }
@@ -98,10 +101,13 @@
       hwalkright = 13;
       zoomedInAuto = false;
       zoomedOutAuto = true;
+      allowedToStart = false;
+      rafex = () => {};
       function handler(e){if(eventsEnabled){return}e.stopPropagation(),e.preventDefault()}document.addEventListener("mousemove",handler,!0);
       const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
       let o = setInterval(() => {
         if (userIds.length >= 2) {
+          allowedToStart = true;
           return swal.close(), clearInterval(o), eventsEnabled = true;
         }
       });
@@ -139,7 +145,7 @@
       const gun = new THREE.Mesh(gunGeometry, gunMaterial);
       const gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
       const pointer = new THREE.Mesh(pointerge, pointerma);
-      const geometry1 = new THREE.BoxGeometry(1, 1, 1);
+      const geometry1 = new THREE.BoxGeometry(1, 1, 1.2);
       const material1 = new THREE.MeshBasicMaterial({ color: "#eee" });
       const cube1 = new THREE.Mesh(geometry1, material1);
       const geometry2 = new THREE.BoxGeometry(.2, .4, 1.5);
@@ -167,7 +173,7 @@
       scene.add(cube3);
       scene.add(ground);
       ground.position.x = 0;
-      ground.position.y = -20;
+      ground.position.y = -4;
       ground.position.z = 0;
       clix = 0;
       cliy = 0;
@@ -241,18 +247,20 @@
       objects = scene.children;
       pointed = null;
       mapElements = [ground];
+      bbox = null;
       setInterval(() => {
+        console.info = () => {};
         players > 2 && (players = 2);
-        objects.forEach(object => {
+        !!otherPlayer[0] && objects.forEach(object => {
           let pointingAt = false;
           (!object.maxshot && object.maxshot != 0) && (object.maxshot = 6);
-          if ((object.position.y - .8) <= (camera.rotation.x + otherPlayer[0].position.y) && (object.position.y + .8) >= (camera.rotation.x + otherPlayer[0].position.y) && (object.position.x - .8) <= (camera.rotation.y + otherPlayer[0].position.x) && (object.position.x + .8) >= (camera.rotation.y + otherPlayer[0].position.x)) {
+          let e=object.position.clone().project(camera);e.setZ(0),isCloseToCenter=e.length()<1;
+          if (isCloseToCenter) {
             pointingAt = true;
             pointed = object;
           } else {
-            setTimeout(() => {
-              pointed = null;
-            }, 200);
+            pointingAt = false;
+            pointed = null;
           }
         });
       });
@@ -309,7 +317,11 @@
         });
       }
       let isJumping = false;
-      function jump() {
+      function jump(player) {
+        if (!allowedToStart) {
+          return;
+        }
+        gametime.run("playerJump", [currentPlayer]);
         if (isJumping) {
           return;
         }
@@ -317,7 +329,7 @@
         let y = 0;
         let c = setInterval(() => {
           movZ += 0.005;
-          if (y >= 0.2) {
+          if (y >= 0.1) {
             k = 0;
             let a = setInterval(() => {
               if (k >= y) {
@@ -328,7 +340,6 @@
                 gunHandle.position.y += -k;
                 pointer.position.y += -k;
                 camera.position.y += -k;
-                setTimeout(() => (isJumping = false), 200);
               }
             });
             return clearInterval(c);
@@ -340,8 +351,12 @@
             camera.position.y += y;
           }
         });
+        setTimeout(() => (isJumping = false), 1250);
       }
       function fire(burst) {
+        if (!allowedToStart) {
+          return;
+        }
         if (magcount == 0 && rounds <= 0) {
           return;
         } else {
@@ -420,26 +435,28 @@
             return clearInterval(h);
           }
           object.maxshot += -1;
-          gametime.run("hit", [(currentPlayer == 1 ? 2 : 1)]);
-          if (object.maxshot <= 0) {
-            if (object != pointer) {
-              if (otherPlayer.indexOf(object) > -1) {
-                for (let i = 0; i < otherPlayer.length; i++) {
-                  gametime.run("eleminate", [(currentPlayer == 1 ? 2 : 1)]);
-                  scene.remove(otherPlayer[i]);
+          if (otherPlayer.indexOf(object) > -1) {
+            gametime.run("hit", [(currentPlayer == 1 ? 2 : 1)]);
+            if (object.maxshot <= 0) {
+              if (object != pointer) {
+                if (otherPlayer.indexOf(object) > -1) {
+                  for (let i = 0; i < otherPlayer.length; i++) {
+                    gametime.run("eleminate", [(currentPlayer == 1 ? 2 : 1)]);
+                    scene.remove(otherPlayer[i]);
+                  }
+                } else {
+                  scene.remove(object);
                 }
-              } else {
-                scene.remove(object);
               }
-            }
-          } else {
-            for (let i = 0; i < otherPlayer.length; i++) {
-              function hexToRgb(n){if(/^#([a-f0-9]{3}){1,2}$/.test(n)){4==n.length&&(n="#"+[n[1],n[1],n[2],n[2],n[3],n[3]].join(""));var t="0x"+n.substring(1);return"rgb("+[t>>16&255,t>>8&255,255&t].join(",")+")"}}
-              let unparsedColor = otherPlayer[i].material.color.getHexString();
-              let currentColor = hexToRgb("#" + unparsedColor);
-              const color = currentColor.replace(/^rgb[()]/gi, "").split(")").join("").split(",");
-              otherPlayer[i].material.color.setRGB(255, 0, 0);
-              setTimeout(() => otherPlayer[i].material.color.setRGB(color[0], color[1], color[2]), 100);
+            } else {
+              for (let i = 0; i < otherPlayer.length; i++) {
+                function hexToRgb(n){if(/^#([a-f0-9]{3}){1,2}$/.test(n)){4==n.length&&(n="#"+[n[1],n[1],n[2],n[2],n[3],n[3]].join(""));var t="0x"+n.substring(1);return"rgb("+[t>>16&255,t>>8&255,255&t].join(",")+")"}}
+                let unparsedColor = otherPlayer[i].material.color.getHexString();
+                let currentColor = hexToRgb("#" + unparsedColor);
+                const color = currentColor.replace(/^rgb[()]/gi, "").split(")").join("").split(",");
+                otherPlayer[i].material.color.setRGB(255, 0, 0);
+                setTimeout(() => otherPlayer[i].material.color.setRGB(color[0], color[1], color[2]), 100);
+              }
             }
           }
         }, 75);
@@ -447,8 +464,9 @@
           clearInterval(h);
         }, (burst.toString() + "00") - 0);
       }
-      var Tree=function(e){e=e||{},this.sections=e.sections||5,this.conesPerSection=e.conesPerSection||7,this.coneMaterial=e.coneMaterial||new THREE.MeshBasicMaterial({color:65280}),this.coneMaxRadius=e.coneMaxRadius||.7,this.coneRadiusReduction=e.coneRadiusReduction||.3,this.coneMaxLength=e.coneRadiusReduction||5,this.coneLengthReduction=e.coneLengthReduction||4.5,this.forConeValues=e.forConeValues||function(){},this.forConeMesh=e.forConeMesh||function(){},this.forSection=e.forSection||function(){},this.onDone=e.onDone||function(){},this.group=new THREE.Group;for(var t={i:0};t.i<this.sections;){var i=new THREE.Group,n={i:0};for(t.stdRadius=this.coneMaxRadius-this.coneRadiusReduction*(t.i/this.sections),t.stdLength=this.coneMaxLength-this.coneLengthReduction*(t.i/this.sections),t.radius=t.stdLength-t.stdLength/2,t.y=2*t.stdRadius*t.i,t.radOffset=t.i%2*Math.PI,this.forSection.call(this,t);n.i<this.conesPerSection;){Tree.defaultConeObj(this,n,t),this.forConeValues.call(this,n,t);var o=new THREE.ConeGeometry(n.radius,n.length,n.segRad,n.segLength,n.open,n.thetaStart,n.thetaLength),s=new THREE.Mesh(o,n.material||this.coneMaterial);s.position.set(n.x,n.y,n.z),s.rotation.set(n.r.x,n.r.y,n.r.z),this.forConeMesh.call(this,s,n,t),i.rotation.set(0,t.radOffset,0),i.add(s),n.i+=1}i.position.y=t.y,this.group.add(i),t.i+=1}this.onDone.call(this)};Tree.defaultConeObj=function(e,t,i){t.per=t.i/e.conesPerSection,t.radian=2*Math.PI*t.per,Tree.setConePos(t,i),t.r={x:Math.PI/2,y:0,z:2*Math.PI/e.conesPerSection*t.i-Math.PI/2},t.radius=i.stdRadius,t.length=i.stdLength,t.segRad=32,t.seglength=1,t.open=!1,t.thetaStart=0,t.thetaLength=2*Math.PI},Tree.setConePos=function(e,t){var i=e.radian;e.x=Math.cos(i)*t.radius,e.y=0,e.z=Math.sin(i)*t.radius};
-      var tree=new Tree({coneMaterial:new THREE.MeshStandardMaterial({color:44800}),sections:5,forConeValues:function(e,a){e.length=1,e.radius=.8-a.i/this.sections*.4;var n=e.length-.8*e.length*(a.i/this.sections);e.x=Math.cos(e.radian)*n,e.z=Math.sin(e.radian)*n}});scene.add(tree.group);
+      // var Tree=function(e){e=e||{},this.sections=e.sections||5,this.conesPerSection=e.conesPerSection||7,this.coneMaterial=e.coneMaterial||new THREE.MeshBasicMaterial({color:65280}),this.coneMaxRadius=e.coneMaxRadius||.7,this.coneRadiusReduction=e.coneRadiusReduction||.3,this.coneMaxLength=e.coneRadiusReduction||5,this.coneLengthReduction=e.coneLengthReduction||4.5,this.forConeValues=e.forConeValues||function(){},this.forConeMesh=e.forConeMesh||function(){},this.forSection=e.forSection||function(){},this.onDone=e.onDone||function(){},this.group=new THREE.Group;for(var t={i:0};t.i<this.sections;){var i=new THREE.Group,n={i:0};for(t.stdRadius=this.coneMaxRadius-this.coneRadiusReduction*(t.i/this.sections),t.stdLength=this.coneMaxLength-this.coneLengthReduction*(t.i/this.sections),t.radius=t.stdLength-t.stdLength/2,t.y=2*t.stdRadius*t.i,t.radOffset=t.i%2*Math.PI,this.forSection.call(this,t);n.i<this.conesPerSection;){Tree.defaultConeObj(this,n,t),this.forConeValues.call(this,n,t);var o=new THREE.ConeGeometry(n.radius,n.length,n.segRad,n.segLength,n.open,n.thetaStart,n.thetaLength),s=new THREE.Mesh(o,n.material||this.coneMaterial);s.position.set(n.x,n.y,n.z),s.rotation.set(n.r.x,n.r.y,n.r.z),this.forConeMesh.call(this,s,n,t),i.rotation.set(0,t.radOffset,0),i.add(s),n.i+=1}i.position.y=t.y,this.group.add(i),t.i+=1}this.onDone.call(this)};Tree.defaultConeObj=function(e,t,i){t.per=t.i/e.conesPerSection,t.radian=2*Math.PI*t.per,Tree.setConePos(t,i),t.r={x:Math.PI/2,y:0,z:2*Math.PI/e.conesPerSection*t.i-Math.PI/2},t.radius=i.stdRadius,t.length=i.stdLength,t.segRad=32,t.seglength=1,t.open=!1,t.thetaStart=0,t.thetaLength=2*Math.PI},Tree.setConePos=function(e,t){var i=e.radian;e.x=Math.cos(i)*t.radius,e.y=0,e.z=Math.sin(i)*t.radius};
+      // var tree=new Tree({coneMaterial:new THREE.MeshStandardMaterial({color:44800}),sections:5,forConeValues:function(e,a){e.length=1,e.radius=.8-a.i/this.sections*.4;var n=e.length-.8*e.length*(a.i/this.sections);e.x=Math.cos(e.radian)*n,e.z=Math.sin(e.radian)*n}});scene.add(tree.group);
+      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<150;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(20*Math.random())-10,0,Math.floor(20*Math.random())),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),scene.add(e)}}();
       animate();
       const zoomInFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,t)=>o>=20&&"zoomIn"===t?o-5:o<=75&&"zoomOut"===t?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);
       document.addEventListener("keyup", (e) => {
@@ -463,6 +481,9 @@
         }
       });
       document.addEventListener("keydown", (e) => {
+        if (!allowedToStart) {
+          return;
+        }
         gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         if (e.key == "f" && !reloading && !e.repeat) {
           fire(2);
@@ -525,12 +546,14 @@
       gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
       gametime.set("channel", "all");
       gametime.make("playerMove");
+      gametime.make("playerJump");
       gametime.make("playerRotate");
       gametime.make("didConnect");
       gametime.make("renderScene");
       gametime.make("isGuest");
       gametime.make("collectId");
       gametime.make("eleminate");
+      gametime.make("leftGame");
       gametime.make("hit");
       let health = 100;
       statusText = document.querySelector(".statustext");
@@ -539,6 +562,17 @@
           health += -16.6666666666;
           document.querySelector(".health").style.width = health + "%";
         }
+      });
+      gametime.on("leftGame", function() {
+        swal({
+          icon: "info",
+          title: "Warning",
+          text: "One or more players have left the match. You will return to the main menu.",
+          closeOnEsc: false,
+          closeOnClickOutside: false
+        }).then(() => {
+          location.reload();
+        });
       });
       gametime.on("eleminate", function(player) {
         setTimeout(() => {
@@ -630,7 +664,9 @@
         }
         for (let i = 0; i < otherPlayer.length; i++) {
           if (otherPlayer[i].sname == "head") {
+            otherPlayer[i].rotation.x = dir.split(",")[0] - 1;
             otherPlayer[i].rotation.y = dir.split(",")[1] - 1;
+            otherPlayer[i].rotation.z = dir.split(",")[2] - 1;
           }
         }
       });
@@ -652,6 +688,34 @@
             otherPlayer[i].position.set(dir.split(",")[0] - 0 + .6, dir.split(",")[1] - 0 + .8 - 2, dir.split(",")[2] - 0);
           }
         }
+      });
+      gametime.on("playerJump", function(player) {
+        if (player == currentPlayer) {
+          return;
+        }
+        let y = 0;
+        let c = setInterval(() => {
+          movZ += 0.005;
+          if (y >= 0.1) {
+            k = 0;
+            let a = setInterval(() => {
+              if (k >= y) {
+                return clearInterval(a);
+              } else {
+                k += 0.005;
+                for (let i = 0; i < otherPlayer.length; i++) {
+                  otherPlayer[i].position.y += -k;
+                }
+              }
+            });
+            return clearInterval(c);
+          } else {
+            y += 0.005;
+            for (let i = 0; i < otherPlayer.length; i++) {
+              otherPlayer[i].position.y += y;
+            }
+          }
+        });
       });
       willBeAutoHost = false;
       currentPlayer = 0;
@@ -700,7 +764,10 @@
           for(var i=0;i<1;i++){let mesh=new THREE.Mesh(clone.geometry,clone.material);mesh.sname=clone.sname;otherPlayer.push(mesh);otherPlayer=[... new Set(otherPlayer)];mesh.position.set(clone.position.x,clone.position.y,clone.position.z),scene.add(mesh)}
         }
       });
+      focused = document.hasFocus();
       gametime.onconnect = () => gametime.run("didConnect");
+      window.onfocus = () => (focused = true);
+      window.onblur = () => (focused = false);
       (() => {
         let ul = false;
         let al = false;
@@ -708,32 +775,39 @@
         let kl = false;
         let hl = false;
         let dl = false;
-        function gameLoop(){(()=>{let o=navigator.getGamepads()[0];(1==o.axes[0]&&!right)?(right=true,moveRight()):(clearInterval(hwalkright),right=false),(-1==o.axes[0]&&!left)?(left=true,moveLeft()):(clearInterval(hwalkleft),left=false)})();var e=navigator.getGamepads()[0];if(e&&e.connected){e.axes;var a=e.buttons;for(var o in a){1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[16]&&!ul)&&(()=>{fire(2),ul=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),ul=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[0]&&!al)&&(()=>{jump(),al=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),al=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[7]&&!tl)&&(()=>{reload(),tl=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),tl=false}})})())}}}var game_loop;window.addEventListener("gamepadconnected",(function(e){game_loop=setInterval(gameLoop,50)}));
+        function gameLoop(){if(!document.hasFocus()){return}(()=>{let o=navigator.getGamepads()[0];(1==o.axes[0]&&!right)?(right=true,moveRight(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+currentPlayer])):(clearInterval(hwalkright),right=false),(-1==o.axes[0]&&!left)?(left=true,moveLeft(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+currentPlayer])):(clearInterval(hwalkleft),left=false)})();var e=navigator.getGamepads()[0];if(e&&e.connected){e.axes;var a=e.buttons;for(var o in a){1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[16]&&!ul)&&(()=>{fire(2),ul=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),ul=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[0]&&!al)&&(()=>{jump(),al=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),al=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[7]&&!tl)&&(()=>{reload(),tl=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),tl=false}})})())}}}var game_loop;window.addEventListener("gamepadconnected",(function(e){game_loop=setInterval(gameLoop,50)}));
         Gamepad.JoyStick.RightMoved = () => {
+          if(!document.hasFocus()){return}
           if (!kl) {
             kl = true;
+            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
             moveDown();
           }
         };
         Gamepad.JoyStick.RightCanceled = () => {
+          if(!document.hasFocus()){return}
           if (kl) {
             kl = false;
             clearInterval(hwalkdown);
           }
         };
         Gamepad.JoyStick.LeftMoved = () => {
+          if(!document.hasFocus()){return}
           if (!hl) {
             hl = true;
+            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
             moveUp();
           }
         };
         Gamepad.JoyStick.LeftCanceled = () => {
+          if(!document.hasFocus()){return}
           if (hl) {
             hl = false;
             clearInterval(hwalkup);
           }
         };
         Gamepad.D.LeftButtonPressed = function() {
+          if(!document.hasFocus()){return}
           bulletPositionX = 0;
           if (!zoomedInAuto && !dl) {
             for (let i = 0; i < 11; i++) {
@@ -756,6 +830,9 @@
             }
           }
         };
+        window.onbeforeunload = function(e) {
+          gametime.run("leftGame");
+        }
       })();
     </script>
   </body>
