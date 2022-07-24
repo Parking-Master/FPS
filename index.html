@@ -116,7 +116,7 @@
       <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sights.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;" id="sights" />
       <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/handheld.png" width="15%" />
       <img class="crosshair" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/crosshair.png" width="10%" />
-      <span id="rounds"><span id="counter">10</span> &minus; <span id="magcount">4</span></span>
+      <span id="rounds"><span id="counter">10</span> &minus; <span id="magcount">10</span></span>
     </div>
     <script>
       userIds = [];
@@ -128,6 +128,23 @@
       zoomedInAuto = false;
       zoomedOutAuto = true;
       allowedToStart = false;
+      function GameOver() {
+        if ((bscore >= 3 && currentPlayer == 1) || ascore >= 3 && currentPlayer == 2) {
+          swal({
+            title: "Game over",
+            icon: "success",
+            text: "You win!"
+          });
+          document.querySelector(".swal-button").style.background = "#6cc22e";
+        } else {
+          swal({
+            title: "Game over",
+            icon: "error",
+            text: "You lose...",
+            dangerMode: true
+          })
+        }
+      }
       rafex = () => {};
       function handler(e){if(eventsEnabled){return}e.stopPropagation(),e.preventDefault()}document.addEventListener("mousemove",handler,!0);
       const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
@@ -205,7 +222,7 @@
       cliy = 0;
       reloading = false;
       isZoomed = false;
-      magcount = 4;
+      magcount = 10;
       player1 = [cube, cube1, cube2, cube3];
       function reload() {
         if (magcount == 0) {
@@ -461,12 +478,15 @@
             return clearInterval(h);
           }
           object.maxshot += -1;
-          if (otherPlayer.indexOf(object) > -1) {
+          if (scene.children.indexOf(object) > -1) {
             gametime.run("hit", [(currentPlayer == 1 ? 2 : 1)]);
             if (object.maxshot <= 0) {
               if (object != pointer) {
-                if (otherPlayer.indexOf(object) > -1) {
-                  for (let i = 0; i < otherPlayer.length; i++) {
+                if (scene.children.indexOf(object) > -1) {
+                  for (let i = 0; i < scene.children.length; i++) {
+                    if (!/body|head|arm|arm1/gi.test(scene.children[i].sname)) {
+                      return;
+                    }
                     gametime.run("eleminate", [(currentPlayer == 1 ? 2 : 1)]);
                     scene.remove(otherPlayer[i]);
                   }
@@ -587,6 +607,9 @@
         if (player == currentPlayer) {
           health += -16.6666666666;
           document.querySelector(".health").style.width = health + "%";
+          if (health <= 1) {
+            gametime.run("eleminate", [currentPlayer]);
+          }
         }
       });
       gametime.on("leftGame", function() {
@@ -604,10 +627,16 @@
       bscore = 0;
       ref = false;
       gametime.on("eleminate", function(player) {
+        if (bscore >= 3 || ascore >= 3) {
+          return GameOver();
+        }
         if (!ref) {
           ref = true;
           player == 1 ? ascore += 1 : bscore += 1;
           document.querySelector(".player" + player).querySelector(".score").textContent = player == 1 ? ascore : bscore;
+          setTimeout(() => {
+            ref = false;
+          }, 500);
         }
         setTimeout(() => {
           let body = otherPlayer[0];
@@ -646,10 +675,10 @@
           });
           setTimeout(() => {
             ref = false;
-            let body = otherPlayer[0];
-            let head = otherPlayer[1];
-            let arm = otherPlayer[2];
-            let arm1 = otherPlayer[3];
+            let body = otherPlayer[0].clone();
+            let head = otherPlayer[1].clone();
+            let arm = otherPlayer[2].clone();
+            let arm1 = otherPlayer[3].clone();
             scene.add(body);
             scene.add(head);
             scene.add(arm);
@@ -658,7 +687,7 @@
             head.material.color.setRGB(238, 238, 238);
             arm.material.color.setRGB(238, 238, 238);
             arm1.material.color.setRGB(238, 238, 238);
-            camera.position.set(0, 0, 0);
+            camera.position.set(0, 0, 5);
             body.position.x = 5
             body.position.y = 0 - 2;
             body.position.z = 5 + 1;
@@ -679,6 +708,9 @@
           }, 5000);
         } else {
           statusText.textContent = "+1 kill";
+          for (let i = 0; i < scene.children.length; i++) {
+            /body|head|arm|arm1/gi.test(scene.children[i].sname) && scene.remove(scene.children[i]);
+          }
         }
         setTimeout(() => {
           let body = otherPlayer[0];
