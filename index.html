@@ -134,7 +134,7 @@
             title: "Game over",
             icon: "success",
             text: "You win!"
-          });
+          }).then(() => location.replace("/"));
           document.querySelector(".swal-button").style.background = "#6cc22e";
         } else {
           swal({
@@ -142,7 +142,7 @@
             icon: "error",
             text: "You lose...",
             dangerMode: true
-          })
+          }).then(() => location.replace("/"));
         }
       }
       rafex = () => {};
