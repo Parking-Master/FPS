@@ -627,7 +627,7 @@
       bscore = 0;
       ref = false;
       gametime.on("eleminate", function(player) {
-        if (bscore >= 3 || ascore >= 3) {
+        if (bscore >= 2 || ascore >= 2) {
           return GameOver();
         }
         if (!ref) {
