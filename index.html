@@ -175,7 +175,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
       const geometry = new THREE.BoxGeometry(1, 3, 1);
-      const groundGeometry = new THREE.BoxGeometry(10000, 1, 10000);
+      const groundGeometry = new THREE.BoxGeometry(200, 1, 200);
       const groundMaterial = new THREE.MeshBasicMaterial({ color: "#7ed957", map: new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png") });
       const ground = new THREE.Mesh(groundGeometry, groundMaterial);
       const gunGeometry = new THREE.BoxGeometry(.5, .55, 3);
@@ -188,6 +188,7 @@
       const gun = new THREE.Mesh(gunGeometry, gunMaterial);
       const gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
       const pointer = new THREE.Mesh(pointerge, pointerma);
+      const follower = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: "white" }));
       const geometry1 = new THREE.BoxGeometry(1, 1, 1.2);
       const material1 = new THREE.MeshBasicMaterial({ color: "#eee" });
       const cube1 = new THREE.Mesh(geometry1, material1);
@@ -197,24 +198,33 @@
       const geometry3 = new THREE.BoxGeometry(.2, 1.5, .4);
       const material3 = new THREE.MeshBasicMaterial({ color: "#eee" });
       const cube3 = new THREE.Mesh(geometry3, material3);
+      const MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
+      MapBorder.rotation.x = 1.6;
+      MapBorder.position.y = -2;
       var loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);var d=new THREE.Mesh(a,o);scene.add(d),d.position.set(0,0,0)}));
       renderer.setClearColor("#a6ffff");
       cube.sname = "body";
       cube1.sname = "head";
       cube2.sname = "arm";
       cube3.sname = "arm1";
-      // cube1.position.x = 0;
-      // cube1.position.y = 1.5;
-      // cube2.position.x = .6;
-      // cube2.position.y = .5;
-      // cube3.position.x = -.6;
-      // cube3.position.y = 0;
+      cube1.position.x = 0;
+      cube1.position.y = 1.5;
+      cube2.position.x = .6;
+      cube2.position.y = .5;
+      cube3.position.x = -.6;
+      cube3.position.y = 0;
       gun.sname = "gun";
       gunHandle.sname = "gunHandle";
       scene.add(cube1);
+      scene.add(follower);
       scene.add(cube2);
       scene.add(cube3);
       scene.add(ground);
+      scene.add(MapBorder);
+      // MapBorder.position.x = 0;
+      // MapBorder.position.y = -1;
+      // MapBorder.position.z = 0;
+      // MapBorder.rotation.x = 1;
       ground.position.x = 0;
       ground.position.y = -4;
       ground.position.z = 0;
@@ -310,6 +320,7 @@
       light=new THREE.SpotLight(16755036,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
       function animate() {
         requestAnimationFrame(animate);
+        follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
         // cube.rotation.y += 0.01;
         if (!d) {
@@ -325,38 +336,42 @@
       }
       function moveUp() {
         hwalkup = setInterval(() => {
+          for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkup)}
           movY += -.05;
-          gun.position.z += -.04;
-          gunHandle.position.z += -.04;
-          pointer.position.z += -.04;
-          camera.position.z += -.04;
+          gun.position.z += -.1;
+          gunHandle.position.z += -.1;
+          pointer.position.z += -.1;
+          camera.position.z += -.1;
         });
       }
       function moveDown() {
         hwalkdown = setInterval(() => {
+          for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkdown)}
           movY += .05;
-          gun.position.z += .04;
-          gunHandle.position.z += .04;
-          pointer.position.z += .04;
-          camera.position.z += .04;
+          gun.position.z += .1;
+          gunHandle.position.z += .1;
+          pointer.position.z += .1;
+          camera.position.z += .1;
         });
       }
       function moveLeft() {
         hwalkleft = setInterval(() => {
+          for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkleft)}
           movX += -.05;
-          gun.position.x += -.04;
-          gunHandle.position.x += -.04;
-          pointer.position.x += -.04;
-          camera.position.x += -.04;
+          gun.position.x += -.1;
+          gunHandle.position.x += -.1;
+          pointer.position.x += -.1;
+          camera.position.x += -.1;
         });
       }
       function moveRight() {
         hwalkright = setInterval(() => {
+          for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkright)}
           movX += .05;
-          gun.position.x += .04;
-          gunHandle.position.x += .04;
-          pointer.position.x += .04;
-          camera.position.x += .04;
+          gun.position.x += .1;
+          gunHandle.position.x += .1;
+          pointer.position.x += .1;
+          camera.position.x += .1;
         });
       }
       let isJumping = false;
@@ -512,7 +527,7 @@
       }
       // var Tree=function(e){e=e||{},this.sections=e.sections||5,this.conesPerSection=e.conesPerSection||7,this.coneMaterial=e.coneMaterial||new THREE.MeshBasicMaterial({color:65280}),this.coneMaxRadius=e.coneMaxRadius||.7,this.coneRadiusReduction=e.coneRadiusReduction||.3,this.coneMaxLength=e.coneRadiusReduction||5,this.coneLengthReduction=e.coneLengthReduction||4.5,this.forConeValues=e.forConeValues||function(){},this.forConeMesh=e.forConeMesh||function(){},this.forSection=e.forSection||function(){},this.onDone=e.onDone||function(){},this.group=new THREE.Group;for(var t={i:0};t.i<this.sections;){var i=new THREE.Group,n={i:0};for(t.stdRadius=this.coneMaxRadius-this.coneRadiusReduction*(t.i/this.sections),t.stdLength=this.coneMaxLength-this.coneLengthReduction*(t.i/this.sections),t.radius=t.stdLength-t.stdLength/2,t.y=2*t.stdRadius*t.i,t.radOffset=t.i%2*Math.PI,this.forSection.call(this,t);n.i<this.conesPerSection;){Tree.defaultConeObj(this,n,t),this.forConeValues.call(this,n,t);var o=new THREE.ConeGeometry(n.radius,n.length,n.segRad,n.segLength,n.open,n.thetaStart,n.thetaLength),s=new THREE.Mesh(o,n.material||this.coneMaterial);s.position.set(n.x,n.y,n.z),s.rotation.set(n.r.x,n.r.y,n.r.z),this.forConeMesh.call(this,s,n,t),i.rotation.set(0,t.radOffset,0),i.add(s),n.i+=1}i.position.y=t.y,this.group.add(i),t.i+=1}this.onDone.call(this)};Tree.defaultConeObj=function(e,t,i){t.per=t.i/e.conesPerSection,t.radian=2*Math.PI*t.per,Tree.setConePos(t,i),t.r={x:Math.PI/2,y:0,z:2*Math.PI/e.conesPerSection*t.i-Math.PI/2},t.radius=i.stdRadius,t.length=i.stdLength,t.segRad=32,t.seglength=1,t.open=!1,t.thetaStart=0,t.thetaLength=2*Math.PI},Tree.setConePos=function(e,t){var i=e.radian;e.x=Math.cos(i)*t.radius,e.y=0,e.z=Math.sin(i)*t.radius};
       // var tree=new Tree({coneMaterial:new THREE.MeshStandardMaterial({color:44800}),sections:5,forConeValues:function(e,a){e.length=1,e.radius=.8-a.i/this.sections*.4;var n=e.length-.8*e.length*(a.i/this.sections);e.x=Math.cos(e.radian)*n,e.z=Math.sin(e.radian)*n}});scene.add(tree.group);
-      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<1000;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(150*Math.random())-40,0,Math.floor(150*Math.random())-40),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),scene.add(e)}}();
+      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<1000;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(150*Math.random())-40,-2,Math.floor(150*Math.random())-40),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),scene.add(e)}}();
       animate();
       const zoomInFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,t)=>o>=20&&"zoomIn"===t?o-5:o<=75&&"zoomOut"===t?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);
       document.addEventListener("keyup", (e) => {
