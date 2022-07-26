@@ -9,6 +9,7 @@
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
         cursor: url(./cursor.png), auto !important;
+        overflow: hidden !important;
       }
       * {
         cursor: url(./cursor.png), auto !important;
@@ -91,14 +92,14 @@
         color: #fff;
       }
     </style>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/Gametime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/Gametime.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
   <body style="margin:0!important;">
     <audio id="ambience" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ambience.mp3" autoplay loop volume="1"></audio>
     <audio id="shot" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sound.mp3"></audio>
     <audio id="reload" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/reload.mp3"></audio>
-    <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
@@ -129,7 +130,8 @@
       zoomedOutAuto = true;
       allowedToStart = false;
       function GameOver() {
-        if ((bscore >= 3 && currentPlayer == 1) || ascore >= 3 && currentPlayer == 2) {
+        eventsEnabled = false;
+        if ((ascore >= 3 && currentPlayer == 1) || (bscore >= 3 && currentPlayer == 2)) {
           swal({
             title: "Game over",
             icon: "success",
@@ -161,9 +163,9 @@
         closeOnEsc: false,
         closeOnClickOutside: false
       });
-      shot = document.querySelector("#shot");
-      sights = document.querySelector("#sights");
-      reload1 = document.querySelector("#reload");
+      shot = document.getElementById("shot");
+      sights = document.getElementById("sights");
+      reload1 = document.getElementById("reload");
       players = 0;
       isHost = false;
       isGuest = false;
@@ -174,34 +176,34 @@
       });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
-      const geometry = new THREE.BoxGeometry(1, 3, 1);
-      const groundGeometry = new THREE.BoxGeometry(200, 1, 200);
-      const groundMaterial = new THREE.MeshBasicMaterial({ color: "#7ed957", map: new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png") });
-      const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-      const gunGeometry = new THREE.BoxGeometry(.5, .55, 3);
-      const gunHandleGeometry = new THREE.BoxGeometry(.5, .55, 1);
-      const pointerge = new THREE.CircleGeometry(0.025, 32);
-      const pointerma = new THREE.MeshBasicMaterial({ color: "white" });
-      const material = new THREE.MeshBasicMaterial({ color: "#fff" });
-      const gunMaterial = new THREE.MeshBasicMaterial({ color: "white" });
-      const cube = new THREE.Mesh(geometry, material);
-      const gun = new THREE.Mesh(gunGeometry, gunMaterial);
-      const gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
-      const pointer = new THREE.Mesh(pointerge, pointerma);
-      const follower = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: "white" }));
-      const geometry1 = new THREE.BoxGeometry(1, 1, 1.2);
-      const material1 = new THREE.MeshBasicMaterial({ color: "#eee" });
-      const cube1 = new THREE.Mesh(geometry1, material1);
-      const geometry2 = new THREE.BoxGeometry(.2, .4, 1.5);
-      const material2 = new THREE.MeshBasicMaterial({ color: "#eee" });
-      const cube2 = new THREE.Mesh(geometry2, material2);
-      const geometry3 = new THREE.BoxGeometry(.2, 1.5, .4);
-      const material3 = new THREE.MeshBasicMaterial({ color: "#eee" });
-      const cube3 = new THREE.Mesh(geometry3, material3);
-      const MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
+      geometry = new THREE.BoxGeometry(1, 3, 1);
+      groundGeometry = new THREE.BoxGeometry(200, 1, 200);
+      groundMaterial = new THREE.MeshBasicMaterial({ color: "#7ed957", map: new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png") });
+      ground = new THREE.Mesh(groundGeometry, groundMaterial);
+      gunGeometry = new THREE.BoxGeometry(.5, .55, 3);
+      gunHandleGeometry = new THREE.BoxGeometry(.5, .55, 1);
+      pointerge = new THREE.CircleGeometry(0.025, 32);
+      pointerma = new THREE.MeshBasicMaterial({ color: "white" });
+      material = new THREE.MeshBasicMaterial({ color: "#fff" });
+      gunMaterial = new THREE.MeshBasicMaterial({ color: "white" });
+      cube = new THREE.Mesh(geometry, material);
+      gun = new THREE.Mesh(gunGeometry, gunMaterial);
+      gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
+      pointer = new THREE.Mesh(pointerge, pointerma);
+      follower = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: "white" }));
+      geometry1 = new THREE.BoxGeometry(1, 1, 1.2);
+      material1 = new THREE.MeshBasicMaterial({ color: "#eee" });
+      cube1 = new THREE.Mesh(geometry1, material1);
+      geometry2 = new THREE.BoxGeometry(.2, .4, 1.5);
+      material2 = new THREE.MeshBasicMaterial({ color: "#eee" });
+      cube2 = new THREE.Mesh(geometry2, material2);
+      geometry3 = new THREE.BoxGeometry(.2, 1.5, .4);
+      material3 = new THREE.MeshBasicMaterial({ color: "#eee" });
+      cube3 = new THREE.Mesh(geometry3, material3);
+      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
-      var loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);var d=new THREE.Mesh(a,o);scene.add(d),d.position.set(0,0,0)}));
+      var loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;scene.add(d),d.position.set(0,0,0)}));
       renderer.setClearColor("#a6ffff");
       cube.sname = "body";
       cube1.sname = "head";
@@ -245,16 +247,16 @@
         reload1.play();
         reloading = true;
         magcount += -1;
-        document.querySelector("#magcount").textContent = magcount;
+        document.getElementById("magcount").textContent = magcount;
         let t = 0;
         let h = setInterval(() => {
           if (t >= 0.2) {
             const geometry = new THREE.BoxGeometry(.25, 1, .25);
             const material = new THREE.MeshBasicMaterial({ color: "white" });
             const mag = new THREE.Mesh(geometry, material);
-            mag.position.z = 1 + movY;
             mag.position.x = gunHandle.position.x;
-            mag.position.y = cliy - 3 + movZ;
+            mag.position.y = gunHandle.position.y - 3;
+            mag.position.z = gunHandle.position.z;
             mag.rotation.y = .05;
             mag.rotation.x = -.2;
             scene.add(mag);
@@ -262,7 +264,7 @@
               let r = 0;
               let s = setInterval(() => {
                 if (r >= .46) {
-                  return (scene.remove(mag), (rounds = 10), (document.querySelector("#rounds").querySelector("#counter").textContent = rounds), gun.position.y += -2.1, gunHandle.position.y += -2.1, (reloading = false), clearInterval(s));
+                  return (scene.remove(mag), (rounds = 10), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), gun.position.y += -2.1, gunHandle.position.y += -2.1, (reloading = false), clearInterval(s));
                 }
                 r += 0.05;
                 mag.position.y += r;
@@ -299,8 +301,6 @@
       movZ = 0;
       objects = scene.children;
       pointed = null;
-      mapElements = [ground];
-      bbox = null;
       setInterval(() => {
         console.info = () => {};
         players > 2 && (players = 2);
@@ -317,9 +317,11 @@
           }
         });
       });
+      ascore = 0;
+      bscore = 0;
+      ref1 = false;
       light=new THREE.SpotLight(16755036,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
       function animate() {
-        requestAnimationFrame(animate);
         follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
         // cube.rotation.y += 0.01;
@@ -333,6 +335,13 @@
           setTimeout(() => (d = false), 2000);
         }
         renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+        document.querySelector(".player1").querySelector(".score").textContent = ascore;
+        document.querySelector(".player2").querySelector(".score").textContent = bscore;
+        if (bscore >= 3 || ascore >= 3 && !ref1) {
+          ref1 = true;
+          return GameOver();
+        }
       }
       function moveUp() {
         hwalkup = setInterval(() => {
@@ -426,20 +435,20 @@
         shot.play();
         for (let i = 0; i < burst -1; i++) {
           (function(x) {
+            let c = document.createElement("audio");
+            c.src = shot.src;
+            c.currentTime = .1;
             setTimeout(() => {
-              let c = document.createElement("audio");
-              c.src = shot.src;
-              c.currentTime = .1;
               document.body.appendChild(c);
               c.play();
               setTimeout(() => {
                 c.remove();
               }, 1000);
-            }, 1000 + (70 * x));
+            }, 200 + (70 * x));
           })(i);
         }
         bulletPositionX = gunHandle.position.x;
-        (document.querySelector("#rounds").querySelector("#counter").textContent = rounds);
+        (document.getElementById("rounds").querySelector("#counter").textContent = rounds);
         let burstfire = 0;
         setInterval(() => {
         if (burstfire >= burst) {
@@ -516,18 +525,18 @@
                 let currentColor = hexToRgb("#" + unparsedColor);
                 const color = currentColor.replace(/^rgb[()]/gi, "").split(")").join("").split(",");
                 otherPlayer[i].material.color.setRGB(255, 0, 0);
-                setTimeout(() => otherPlayer[i].material.color.setRGB(color[0], color[1], color[2]), 100);
+                setTimeout(() => { /amr|arm1|head/gi.test(otherPlayer[i].sname) ? otherPlayer[i].material.color.setRGB(238, 238, 238) : otherPlayer[i].material.color.setRGB(255, 255, 255) }, 150);
               }
             }
           }
         }, 75);
         setTimeout(() => {
           clearInterval(h);
-        }, (burst.toString() + "00") - 0);
+        }, "100" - 0);
       }
       // var Tree=function(e){e=e||{},this.sections=e.sections||5,this.conesPerSection=e.conesPerSection||7,this.coneMaterial=e.coneMaterial||new THREE.MeshBasicMaterial({color:65280}),this.coneMaxRadius=e.coneMaxRadius||.7,this.coneRadiusReduction=e.coneRadiusReduction||.3,this.coneMaxLength=e.coneRadiusReduction||5,this.coneLengthReduction=e.coneLengthReduction||4.5,this.forConeValues=e.forConeValues||function(){},this.forConeMesh=e.forConeMesh||function(){},this.forSection=e.forSection||function(){},this.onDone=e.onDone||function(){},this.group=new THREE.Group;for(var t={i:0};t.i<this.sections;){var i=new THREE.Group,n={i:0};for(t.stdRadius=this.coneMaxRadius-this.coneRadiusReduction*(t.i/this.sections),t.stdLength=this.coneMaxLength-this.coneLengthReduction*(t.i/this.sections),t.radius=t.stdLength-t.stdLength/2,t.y=2*t.stdRadius*t.i,t.radOffset=t.i%2*Math.PI,this.forSection.call(this,t);n.i<this.conesPerSection;){Tree.defaultConeObj(this,n,t),this.forConeValues.call(this,n,t);var o=new THREE.ConeGeometry(n.radius,n.length,n.segRad,n.segLength,n.open,n.thetaStart,n.thetaLength),s=new THREE.Mesh(o,n.material||this.coneMaterial);s.position.set(n.x,n.y,n.z),s.rotation.set(n.r.x,n.r.y,n.r.z),this.forConeMesh.call(this,s,n,t),i.rotation.set(0,t.radOffset,0),i.add(s),n.i+=1}i.position.y=t.y,this.group.add(i),t.i+=1}this.onDone.call(this)};Tree.defaultConeObj=function(e,t,i){t.per=t.i/e.conesPerSection,t.radian=2*Math.PI*t.per,Tree.setConePos(t,i),t.r={x:Math.PI/2,y:0,z:2*Math.PI/e.conesPerSection*t.i-Math.PI/2},t.radius=i.stdRadius,t.length=i.stdLength,t.segRad=32,t.seglength=1,t.open=!1,t.thetaStart=0,t.thetaLength=2*Math.PI},Tree.setConePos=function(e,t){var i=e.radian;e.x=Math.cos(i)*t.radius,e.y=0,e.z=Math.sin(i)*t.radius};
       // var tree=new Tree({coneMaterial:new THREE.MeshStandardMaterial({color:44800}),sections:5,forConeValues:function(e,a){e.length=1,e.radius=.8-a.i/this.sections*.4;var n=e.length-.8*e.length*(a.i/this.sections);e.x=Math.cos(e.radian)*n,e.z=Math.sin(e.radian)*n}});scene.add(tree.group);
-      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<1000;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(150*Math.random())-40,-2,Math.floor(150*Math.random())-40),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),scene.add(e)}}();
+      !function(e){var t={sphere:new THREE.MeshStandardMaterial({color:65280,emissive:20224,side:THREE.DoubleSide}),trunk:new THREE.MeshStandardMaterial({color:16756480,emissive:4465152,side:THREE.DoubleSide})};e.create=function(e){(e=e||{}).trunkLength=void 0===e.trunkLength?Math.floor(Math.random() * 1.5):e.trunkLength,e.sphereSize=void 0===e.sphereSize?1:e.sphereSize,e.trunkSize=void 0===e.trunkSize?.25:e.trunkSize,e.widthSegments=void 0===e.widthSegments?15:e.widthSegments,e.heightSegments=void 0===e.heightSegments?15:e.heightSegments;var r=e.materials||t,n=new THREE.Group,i=function(e,t){var r=new THREE.Mesh(new THREE.SphereGeometry(e.sphereSize,e.widthSegments,e.heightSegments),t.sphere),n=e.trunkLength/2+.75*e.sphereSize;return r.position.set(0,0,-1*n),r}(e,r);n.add(i);var o=function(e,t){var r=new THREE.Mesh(new THREE.BoxGeometry(e.trunkSize,e.trunkLength,e.trunkSize),t.trunk);return r.position.set(0,0,0),r.rotation.set(1.57,0,0),r}(e,r);return n.add(o),n}}(this.TreeSphereMod={}),function(){for(let e=0;e<500;e++){let e=TreeSphereMod.create({sphereSize:Math.floor(1.5*Math.random())+1,trunkLength:4});e.position.set(Math.floor(150*Math.random())-40,-2,Math.floor(150*Math.random())-40),e.lookAt(Math.floor(5*Math.random()),-40,Math.floor(5*Math.random())),e.sname="tree",scene.add(e)}}();
       animate();
       const zoomInFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const t=getFov();camera.fov=clickZoom(t,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,t)=>o>=20&&"zoomIn"===t?o-5:o<=75&&"zoomOut"===t?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);
       document.addEventListener("keyup", (e) => {
@@ -642,16 +651,15 @@
       bscore = 0;
       ref = false;
       gametime.on("eleminate", function(player) {
-        if (bscore >= 2 || ascore >= 2) {
-          return GameOver();
-        }
         if (!ref) {
           ref = true;
-          player == 1 ? ascore += 1 : bscore += 1;
-          document.querySelector(".player" + player).querySelector(".score").textContent = player == 1 ? ascore : bscore;
+          player == 1 ? bscore += 1 : ascore += 1;
           setTimeout(() => {
             ref = false;
           }, 500);
+        }
+        if (!eventsEnabled) {
+          return;
         }
         setTimeout(() => {
           let body = otherPlayer[0];
@@ -720,11 +728,14 @@
             health = 100;
             document.querySelector(".health").style.width = health + "%";
             document.querySelector(".ui").style.display = "block";
+            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
           }, 5000);
         } else {
           statusText.textContent = "+1 kill";
-          for (let i = 0; i < scene.children.length; i++) {
-            /body|head|arm|arm1/gi.test(scene.children[i].sname) && scene.remove(scene.children[i]);
+          for (let u = 0; u < 2; u++) {
+            for (let i = 0; i < scene.children.length; i++) {
+              /body|head|arm|arm1/gi.test(scene.children[i].sname) && scene.remove(scene.children[i]);
+            }
           }
         }
         setTimeout(() => {
@@ -915,7 +926,22 @@
         window.onbeforeunload = function(e) {
           gametime.run("leftGame");
         }
+        setInterval(() => {
+          if (typeof nt == "undefined") {
+            nt = 1;
+          }
+          if (nt <= 0.1) { return; }
+          nt += -.0001;
+          sky.rotation.x = nt - 1;
+          sky.material.color.setRGB(nt, nt, nt);
+          ground.material.color.setRGB(nt, nt, nt);
+          for (let i = 0; i < scene.children.length; i++) {
+            scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
+          }
+        });
       })();
+      function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
+      for(let e=0;e<5;e++)(()=>{const e=new THREE.SphereGeometry(5,30,16),o=new THREE.MeshBasicMaterial({color:"#7ed957",map:(new THREE.TextureLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/lowres-ground2.png")}),r=new THREE.Mesh(e,o);scene.add(r),r.position.set(Math.floor(25*Math.random()),-6,Math.floor(25*Math.random())),r.material.color.setRGB(.9,.9,.9)})();
     </script>
   </body>
 </html>
