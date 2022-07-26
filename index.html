@@ -203,7 +203,7 @@
       MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
-      var loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;scene.add(d),d.position.set(0,0,0)}));
+      var loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
       renderer.setClearColor("#a6ffff");
       cube.sname = "body";
       cube1.sname = "head";
@@ -933,10 +933,10 @@
           if (nt <= 0.1) { return; }
           nt += -.0001;
           sky.rotation.x = nt - 1;
-          sky.material.color.setRGB(nt, nt, nt);
+          sky.material.color.setRGB(nt, .5, .5);
           ground.material.color.setRGB(nt, nt, nt);
           for (let i = 0; i < scene.children.length; i++) {
-            scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
+            scene.children[i].sname == "sky" ? void(0) : scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
           }
         });
       })();
