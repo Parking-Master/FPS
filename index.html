@@ -115,7 +115,7 @@
         <div class="health"></div>
       </div>
       <div class="statustext"></div>
-      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sights.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;" id="sights" />
+      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sights2.png" width="20%" style="display:none;position:absolute;left:50%;margin-left:-10%;bottom:0;" id="sights" />
       <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/handheld.png" width="15%" />
       <img class="crosshair" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/crosshair.png" width="10%" />
       <span id="rounds"><span id="counter">10</span> &minus; <span id="magcount">10</span></span>
@@ -132,7 +132,7 @@
       allowedToStart = false;
       const scene = new THREE.Scene();
       let gun = new THREE.Mesh();
-      (new THREE.OBJLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/models/pistol/pistol-1.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
+      (new THREE.OBJLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
         if ((ascore >= 3 && currentPlayer == 1) || (bscore >= 3 && currentPlayer == 2)) {
@@ -254,23 +254,22 @@
         document.getElementById("magcount").textContent = magcount;
         let t = 0;
         let h = setInterval(() => {
-          if (t >= 0.2) {
-            const geometry = new THREE.BoxGeometry(.25, 1, .25);
-            const material = new THREE.MeshBasicMaterial({ color: "white" });
+          if (t >= 0.1) {
+            const geometry = new THREE.BoxGeometry(.025, .5, .025);
+            const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
             const mag = new THREE.Mesh(geometry, material);
             mag.position.x = gun.position.x;
-            mag.position.y = gun.position.y - 3;
-            mag.position.z = gun.position.z;
-            mag.rotation.y = .05;
+            mag.position.y = gun.position.y - 2;
+            mag.position.z = gun.position.z + .2;
             mag.rotation.x = -.2;
             scene.add(mag);
             setTimeout(() => {
               let r = 0;
               let s = setInterval(() => {
-                if (r >= .46) {
-                  return (scene.remove(mag), (rounds = 10), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), gun.position.y += -2.1, gun.position.y += -2.1, (reloading = false), clearInterval(s));
+                if (r >= .3) {
+                  return (scene.remove(mag), (rounds = 10), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), (gun.position.y = camera.position.y - .4), (reloading = false), clearInterval(s));
                 }
-                r += 0.05;
+                r += 0.025;
                 mag.position.y += r;
               });
             }, 200);
@@ -438,7 +437,6 @@
             }, 200 + (70 * x));
           })(i);
         }
-        bulletPositionX = gun.position.x;
         (document.getElementById("rounds").querySelector("#counter").textContent = rounds);
         let burstfire = 0;
         setInterval(() => {
@@ -446,24 +444,26 @@
           return;
         }
         burstfire += 1;
-        const geometry = new THREE.BoxGeometry(.1, .1, .1);
-        const material = new THREE.MeshBasicMaterial({ color: "white" });
+        const geometry = new THREE.CylinderGeometry(.01, .02, .03, 8);
+        const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bullet = new THREE.Mesh(geometry, material);
-        const casegeometry = new THREE.BoxGeometry(.1, .1, .1);
-        const casematerial = new THREE.MeshBasicMaterial({ color: "white" });
+        const casegeometry = new THREE.CylinderGeometry(.025, .025, .06, 10);
+        const casematerial = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bcase = new THREE.Mesh(casegeometry, casematerial);
         scene.add(bullet);
         scene.add(bcase);
-        bullet.position.z = movY - 2;
-        bullet.position.x = bulletPositionX;
-        bullet.position.y = cliy - 2 + movZ;
+        bullet.position.x = gun.position.x;
+        bullet.position.y = gun.position.y;
+        bullet.position.z = gun.position.z;
         bullet.rotation.y = .05;
         bcase.position.z = movY - 1;
-        bcase.position.x = bulletPositionX;
-        bcase.position.y = gun.position.y
+        bcase.position.x = gun.position.x;
+        bcase.position.y = gun.position.y;
+        bcase.position.z = gun.position.z - .5;
         bcase.rotation.y = .05;
+        bullet.rotation.x = -Math.PI / 2;
         setInterval(() => {
-          bullet.position.z += -2;
+          bullet.position.z += -3;
           bcase.position.x += -.08;
           bcase.position.y += -.05;
         });
@@ -546,7 +546,7 @@
         }
         gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         if (e.key == "f" && !reloading && !e.repeat) {
-          fire(2);
+          fire(1);
         }
         if (e.key == "r" && !e.repeat && rounds < 10 && !reloading) {
           reload();
@@ -916,19 +916,19 @@
         window.onbeforeunload = function(e) {
           gametime.run("leftGame");
         }
-        setInterval(() => {
-          if (typeof nt == "undefined") {
-            nt = 1;
-          }
-          if (nt <= 0.1 || typeof sky == "undefined") { return; }
-          nt += -.0001;
-          sky.rotation.x = nt - 1;
-          sky.material.color.setRGB(nt, .5, .5);
-          ground.material.color.setRGB(nt, nt, nt);
-          for (let i = 0; i < scene.children.length; i++) {
-            scene.children[i].sname == "sky" ? void(0) : scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
-          }
-        });
+        // setInterval(() => {
+        //   if (typeof nt == "undefined") {
+        //     nt = 1;
+        //   }
+        //   if (nt <= 0.1 || typeof sky == "undefined") { return; }
+        //   nt += -.0001;
+        //   sky.rotation.x = nt - 1;
+        //   sky.material.color.setRGB(nt, .5, .5);
+        //   ground.material.color.setRGB(nt, nt, nt);
+        //   for (let i = 0; i < scene.children.length; i++) {
+        //     scene.children[i].sname == "sky" ? void(0) : scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
+        //   }
+        // });
       })();
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
       for(let e=0;e<5;e++)(()=>{const e=new THREE.SphereGeometry(10,50,16),o=new THREE.MeshBasicMaterial({color:"#7ed957",map:(new THREE.TextureLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png")}),r=new THREE.Mesh(e,o);scene.add(r),r.position.set(Math.floor(25*Math.random()),-10,Math.floor(25*Math.random())-5),r.material.color.setRGB(.9,.9,.9)})();
