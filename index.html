@@ -115,10 +115,10 @@
         <div class="health"></div>
       </div>
       <div class="statustext"></div>
-      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sights2.png" width="20%" style="display:none;position:absolute;left:50%;margin-left:-10%;bottom:0;" id="sights" />
+      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
       <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/handheld.png" width="15%" />
       <img class="crosshair" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/crosshair.png" width="10%" />
-      <span id="rounds"><span id="counter">10</span> &minus; <span id="magcount">10</span></span>
+      <span id="rounds"><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <script>
       userIds = [];
@@ -238,7 +238,7 @@
       cliy = 0;
       reloading = false;
       isZoomed = false;
-      magcount = 10;
+      magcount = 3;
       player1 = [cube, cube1, cube2, cube3];
       function reload() {
         if (magcount == 0) {
@@ -267,7 +267,7 @@
               let r = 0;
               let s = setInterval(() => {
                 if (r >= .3) {
-                  return (scene.remove(mag), (rounds = 10), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), (gun.position.y = camera.position.y - .4), (reloading = false), clearInterval(s));
+                  return (scene.remove(mag), (rounds = 36), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), (gun.position.y = camera.position.y -.75), (reloading = false), clearInterval(s));
                 }
                 r += 0.025;
                 mag.position.y += r;
@@ -293,7 +293,7 @@
       gun.position.y = -2;
       gun.rotation.y = .05;
       d = false;
-      rounds = 10;
+      rounds = 36;
       movY = 0;
       movX = 0;
       movZ = 0;
@@ -540,15 +540,15 @@
         }
       });
       document.addEventListener("keydown", (e) => {
-        gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.4, gun.rotation.y = 3.5;
+        gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
         if (!allowedToStart) {
           return;
         }
         gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         if (e.key == "f" && !reloading && !e.repeat) {
-          fire(1);
+          fire(3);
         }
-        if (e.key == "r" && !e.repeat && rounds < 10 && !reloading) {
+        if (e.key == "r" && !e.repeat && rounds < 36 && !reloading) {
           reload();
         }
         if (e.key == "i" && !e.repeat && !reloading) {
@@ -557,6 +557,7 @@
             isZoomed = true;
             pointer.position.y = 5;
             zoomInFunction();
+            scene.remove(gun);
             sights.style.display = "block";
           }
         }
@@ -566,6 +567,7 @@
             isZoomed = false;
             pointer.position.y = 0;
             zoomOutFunction();
+            scene.add(gun);
             sights.style.display = "none";
           }
         }
