@@ -130,6 +130,9 @@
       zoomedInAuto = false;
       zoomedOutAuto = true;
       allowedToStart = false;
+      const scene = new THREE.Scene();
+      let gun = new THREE.Mesh();
+      (new THREE.OBJLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/models/pistol/pistol-1.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
         if ((ascore >= 3 && currentPlayer == 1) || (bscore >= 3 && currentPlayer == 2)) {
@@ -170,8 +173,8 @@
       players = 0;
       isHost = false;
       isGuest = false;
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      // const scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       const renderer = new THREE.WebGLRenderer({
         antialias: true
       });
@@ -188,8 +191,8 @@
       material = new THREE.MeshBasicMaterial({ color: "#fff" });
       gunMaterial = new THREE.MeshBasicMaterial({ color: "white" });
       cube = new THREE.Mesh(geometry, material);
-      gun = new THREE.Mesh(gunGeometry, gunMaterial);
-      gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
+      // gun = new THREE.Mesh(gunGeometry, gunMaterial);
+      // gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
       pointer = new THREE.Mesh(pointerge, pointerma);
       follower = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: "white" }));
       geometry1 = new THREE.BoxGeometry(1, 1, 1.2);
@@ -217,7 +220,7 @@
       cube3.position.x = -.6;
       cube3.position.y = 0;
       gun.sname = "gun";
-      gunHandle.sname = "gunHandle";
+      // gunHandle.sname = "gunHandle";
       scene.add(cube1);
       scene.add(follower);
       scene.add(cube2);
@@ -255,9 +258,9 @@
             const geometry = new THREE.BoxGeometry(.25, 1, .25);
             const material = new THREE.MeshBasicMaterial({ color: "white" });
             const mag = new THREE.Mesh(geometry, material);
-            mag.position.x = gunHandle.position.x;
-            mag.position.y = gunHandle.position.y - 3;
-            mag.position.z = gunHandle.position.z;
+            mag.position.x = gun.position.x;
+            mag.position.y = gun.position.y - 3;
+            mag.position.z = gun.position.z;
             mag.rotation.y = .05;
             mag.rotation.x = -.2;
             scene.add(mag);
@@ -265,7 +268,7 @@
               let r = 0;
               let s = setInterval(() => {
                 if (r >= .46) {
-                  return (scene.remove(mag), (rounds = 10), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), gun.position.y += -2.1, gunHandle.position.y += -2.1, (reloading = false), clearInterval(s));
+                  return (scene.remove(mag), (rounds = 10), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), gun.position.y += -2.1, gun.position.y += -2.1, (reloading = false), clearInterval(s));
                 }
                 r += 0.05;
                 mag.position.y += r;
@@ -275,7 +278,6 @@
           }
           t += 0.01;
           gun.position.y += t;
-          gunHandle.position.y += t;
         });
       }
       function createBoxWithRoundedEdges(e,t,a,n,r){let s=new THREE.Shape,b=1e-5,c=n-b;s.absarc(b,b,b,-Math.PI/2,-Math.PI,!0),s.absarc(b,t-2*c,b,Math.PI,Math.PI/2,!0),s.absarc(e-2*c,t-2*c,b,Math.PI/2,0,!0),s.absarc(e-2*c,b,b,0,-Math.PI/2,!0);let h=new THREE.ExtrudeBufferGeometry(s,{depth:a-2*n,bevelEnabled:!0,bevelSegments:2*r,steps:1,bevelSize:c,bevelThickness:n,curveSegments:r});return h.center(),h}
@@ -283,7 +285,7 @@
       cube1.geometry = createBoxWithRoundedEdges(1.25, 1.25, 1, .25, 3);
       pointer.position.z = 1;
       scene.add(gun);
-      scene.add(gunHandle);
+      // scene.add(gunHandle);
       // scene.add(pointer);
       scene.add(cube);
       camera.position.z = 5;
@@ -291,10 +293,6 @@
       gun.position.x = 4;
       gun.position.y = -2;
       gun.rotation.y = .05;
-      gunHandle.position.z = 1;
-      gunHandle.position.x = 4;
-      gunHandle.position.y = -2.5;
-      gunHandle.rotation.x = 1;
       d = false;
       rounds = 10;
       movY = 0;
@@ -328,12 +326,10 @@
         // cube.rotation.y += 0.01;
         if (!d) {
           gun.position.y += 0.0025;
-          gunHandle.position.y += 0.0025;
-          setTimeout(() => (d = true), 2000);
+          setTimeout(() => (d = true), 1500);
         } else {
           gun.position.y += -0.0025;
-          gunHandle.position.y += -0.0025;
-          setTimeout(() => (d = false), 2000);
+          setTimeout(() => (d = false), 1500);
         }
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
@@ -349,7 +345,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkup)}
           movY += -.05;
           gun.position.z += -.1;
-          gunHandle.position.z += -.1;
           pointer.position.z += -.1;
           camera.position.z += -.1;
         });
@@ -359,7 +354,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkdown)}
           movY += .05;
           gun.position.z += .1;
-          gunHandle.position.z += .1;
           pointer.position.z += .1;
           camera.position.z += .1;
         });
@@ -369,7 +363,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkleft)}
           movX += -.05;
           gun.position.x += -.1;
-          gunHandle.position.x += -.1;
           pointer.position.x += -.1;
           camera.position.x += -.1;
         });
@@ -379,7 +372,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkright)}
           movX += .05;
           gun.position.x += .1;
-          gunHandle.position.x += .1;
           pointer.position.x += .1;
           camera.position.x += .1;
         });
@@ -405,7 +397,6 @@
               } else {
                 k += 0.005;
                 gun.position.y += -k;
-                gunHandle.position.y += -k;
                 pointer.position.y += -k;
                 camera.position.y += -k;
               }
@@ -414,7 +405,6 @@
           } else {
             y += 0.005;
             gun.position.y += y;
-            gunHandle.position.y += y;
             pointer.position.y += y;
             camera.position.y += y;
           }
@@ -448,7 +438,7 @@
             }, 200 + (70 * x));
           })(i);
         }
-        bulletPositionX = gunHandle.position.x;
+        bulletPositionX = gun.position.x;
         (document.getElementById("rounds").querySelector("#counter").textContent = rounds);
         let burstfire = 0;
         setInterval(() => {
@@ -485,10 +475,8 @@
         }, 200);
         }, 100);
         gun.rotation.x += 0.5;
-        gunHandle.rotation.x += 0.5;
         gun.position.z += 0.25;
-        gunHandle.position.z += 0.25;
-        setTimeout(() => (gun.rotation.x += -0.5, gunHandle.rotation.x += -0.5, gun.position.z += -0.25, gunHandle.position.z += -0.25), 100);
+        setTimeout(() => (gun.rotation.x += -0.5, gun.position.z += -0.25), 100);
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
             reload();
@@ -552,6 +540,7 @@
         }
       });
       document.addEventListener("keydown", (e) => {
+        gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.4, gun.rotation.y = 3.5;
         if (!allowedToStart) {
           return;
         }
@@ -931,7 +920,7 @@
           if (typeof nt == "undefined") {
             nt = 1;
           }
-          if (nt <= 0.1) { return; }
+          if (nt <= 0.1 || typeof sky == "undefined") { return; }
           nt += -.0001;
           sky.rotation.x = nt - 1;
           sky.material.color.setRGB(nt, .5, .5);
