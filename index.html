@@ -180,51 +180,18 @@
       });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
-      geometry = new THREE.BoxGeometry(1, 3, 1);
+      followerge = new THREE.BoxGeometry(1, 4, 1);
       groundGeometry = new THREE.BoxGeometry(55, .001, 55);
+      followerma = new THREE.MeshBasicMaterial({ color: "white" });
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
-      gunGeometry = new THREE.BoxGeometry(.5, .55, 3);
-      gunHandleGeometry = new THREE.BoxGeometry(.5, .55, 1);
-      pointerge = new THREE.CircleGeometry(0.025, 32);
-      pointerma = new THREE.MeshBasicMaterial({ color: "white" });
-      material = new THREE.MeshBasicMaterial({ color: "#fff" });
-      gunMaterial = new THREE.MeshBasicMaterial({ color: "white" });
-      cube = new THREE.Mesh(geometry, material);
-      // gun = new THREE.Mesh(gunGeometry, gunMaterial);
-      // gunHandle = new THREE.Mesh(gunHandleGeometry, gunMaterial);
-      pointer = new THREE.Mesh(pointerge, pointerma);
-      follower = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: "white" }));
-      geometry1 = new THREE.BoxGeometry(1, 1, 1.2);
-      material1 = new THREE.MeshBasicMaterial({ color: "#eee" });
-      cube1 = new THREE.Mesh(geometry1, material1);
-      geometry2 = new THREE.BoxGeometry(.2, .4, 1.5);
-      material2 = new THREE.MeshBasicMaterial({ color: "#eee" });
-      cube2 = new THREE.Mesh(geometry2, material2);
-      geometry3 = new THREE.BoxGeometry(.2, 1.5, .4);
-      material3 = new THREE.MeshBasicMaterial({ color: "#eee" });
-      cube3 = new THREE.Mesh(geometry3, material3);
+      follower = new THREE.Mesh(groundGeometry, groundMaterial);
       MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
-      var loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
+      let loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
       renderer.setClearColor("#a6ffff");
-      cube.sname = "body";
-      cube1.sname = "head";
-      cube2.sname = "arm";
-      cube3.sname = "arm1";
-      cube1.position.x = 0;
-      cube1.position.y = 1.5;
-      cube2.position.x = .6;
-      cube2.position.y = .5;
-      cube3.position.x = -.6;
-      cube3.position.y = 0;
       gun.sname = "gun";
-      // gunHandle.sname = "gunHandle";
-      scene.add(cube1);
-      scene.add(follower);
-      scene.add(cube2);
-      scene.add(cube3);
       scene.add(ground);
       scene.add(MapBorder);
       // MapBorder.position.x = 0;
@@ -239,8 +206,9 @@
       reloading = false;
       isZoomed = false;
       magcount = 3;
-      player1 = [cube, cube1, cube2, cube3];
-      function reload() {
+      player1 = [];
+      otherPlayer = [];
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character2.obj",(e=>{const s=e;(player1=s,otherPlayer=player1),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,scene.add(s)}));      function reload() {
         if (magcount == 0) {
           return;
         }
@@ -254,7 +222,7 @@
         document.getElementById("magcount").textContent = magcount;
         let t = 0;
         let h = setInterval(() => {
-          if (t >= 0.1) {
+          if (t >= 0.075) {
             const geometry = new THREE.BoxGeometry(.025, .5, .025);
             const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
             const mag = new THREE.Mesh(geometry, material);
@@ -279,19 +247,8 @@
           gun.position.y += t;
         });
       }
-      function createBoxWithRoundedEdges(e,t,a,n,r){let s=new THREE.Shape,b=1e-5,c=n-b;s.absarc(b,b,b,-Math.PI/2,-Math.PI,!0),s.absarc(b,t-2*c,b,Math.PI,Math.PI/2,!0),s.absarc(e-2*c,t-2*c,b,Math.PI/2,0,!0),s.absarc(e-2*c,b,b,0,-Math.PI/2,!0);let h=new THREE.ExtrudeBufferGeometry(s,{depth:a-2*n,bevelEnabled:!0,bevelSegments:2*r,steps:1,bevelSize:c,bevelThickness:n,curveSegments:r});return h.center(),h}
-      cube.geometry = createBoxWithRoundedEdges(1, 2.5, 1, .25, 3);
-      cube1.geometry = createBoxWithRoundedEdges(1.25, 1.25, 1, .25, 3);
-      pointer.position.z = 1;
       scene.add(gun);
-      // scene.add(gunHandle);
-      // scene.add(pointer);
-      scene.add(cube);
       camera.position.z = 5;
-      gun.position.z = 0.05;
-      gun.position.x = 4;
-      gun.position.y = -2;
-      gun.rotation.y = .05;
       d = false;
       rounds = 36;
       movY = 0;
@@ -302,7 +259,7 @@
       setInterval(() => {
         console.info = () => {};
         players > 2 && (players = 2);
-        !!otherPlayer[0] && objects.forEach(object => {
+        !!otherPlayer && objects.forEach(object => {
           let pointingAt = false;
           (!object.maxshot && object.maxshot != 0) && (object.maxshot = 6);
           let e=object.position.clone().project(camera);e.setZ(0),isCloseToCenter=e.length()<1;
@@ -322,7 +279,6 @@
       function animate() {
         follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
-        // cube.rotation.y += 0.01;
         if (!d) {
           gun.position.y += 0.0025;
           setTimeout(() => (d = true), 1500);
@@ -344,7 +300,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkup)}
           movY += -.05;
           gun.position.z += -.1;
-          pointer.position.z += -.1;
           camera.position.z += -.1;
         });
       }
@@ -353,7 +308,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkdown)}
           movY += .05;
           gun.position.z += .1;
-          pointer.position.z += .1;
           camera.position.z += .1;
         });
       }
@@ -362,7 +316,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkleft)}
           movX += -.05;
           gun.position.x += -.1;
-          pointer.position.x += -.1;
           camera.position.x += -.1;
         });
       }
@@ -371,7 +324,6 @@
           for(var vertexIndex=0;vertexIndex<follower.geometry.attributes.position.array.length;vertexIndex++){var localVertex=(new THREE.Vector3).fromBufferAttribute(follower.geometry.attributes.position,vertexIndex).clone(),globalVertex=localVertex.applyMatrix4(follower.matrix),directionVector=globalVertex.sub(follower.position),ray=new THREE.Raycaster(follower.position,directionVector.clone().normalize()),collisionResults=ray.intersectObjects([MapBorder].concat(otherPlayer));collisionResults.length>0&&collisionResults[0].distance<directionVector.length()&&clearInterval(hwalkright)}
           movX += .05;
           gun.position.x += .1;
-          pointer.position.x += .1;
           camera.position.x += .1;
         });
       }
@@ -396,7 +348,6 @@
               } else {
                 k += 0.005;
                 gun.position.y += -k;
-                pointer.position.y += -k;
                 camera.position.y += -k;
               }
             });
@@ -404,7 +355,6 @@
           } else {
             y += 0.005;
             gun.position.y += y;
-            pointer.position.y += y;
             camera.position.y += y;
           }
         });
@@ -494,28 +444,16 @@
           if (scene.children.indexOf(object) > -1) {
             gametime.run("hit", [(currentPlayer == 1 ? 2 : 1)]);
             if (object.maxshot <= 0) {
-              if (object != pointer) {
+              if (object) {
                 if (scene.children.indexOf(object) > -1) {
-                  for (let i = 0; i < scene.children.length; i++) {
-                    if (!/body|head|arm|arm1/gi.test(scene.children[i].sname)) {
-                      return;
-                    }
-                    gametime.run("eleminate", [(currentPlayer == 1 ? 2 : 1)]);
-                    scene.remove(otherPlayer[i]);
-                  }
+                  gametime.run("eleminate", [(currentPlayer == 1 ? 2 : 1)]);
+                  scene.remove(otherPlayer);
                 } else {
                   scene.remove(object);
                 }
               }
             } else {
-              for (let i = 0; i < otherPlayer.length; i++) {
-                function hexToRgb(n){if(/^#([a-f0-9]{3}){1,2}$/.test(n)){4==n.length&&(n="#"+[n[1],n[1],n[2],n[2],n[3],n[3]].join(""));var t="0x"+n.substring(1);return"rgb("+[t>>16&255,t>>8&255,255&t].join(",")+")"}}
-                let unparsedColor = otherPlayer[i].material.color.getHexString();
-                let currentColor = hexToRgb("#" + unparsedColor);
-                const color = currentColor.replace(/^rgb[()]/gi, "").split(")").join("").split(",");
-                otherPlayer[i].material.color.setRGB(255, 0, 0);
-                setTimeout(() => { /amr|arm1|head/gi.test(otherPlayer[i].sname) ? otherPlayer[i].material.color.setRGB(238, 238, 238) : otherPlayer[i].material.color.setRGB(255, 255, 255) }, 150);
-              }
+              (()=>{let e=new THREE.EdgesGeometry(otherPlayer.children[0].geometry),r=new THREE.LineBasicMaterial({color:"yellow",linewidth:10}),l=new THREE.LineSegments(e,r);l.renderOrder=1,otherPlayer.add(l),setTimeout(()=>{otherPlayer.remove(l)},5000)})();
             }
           }
         }, 75);
@@ -540,11 +478,9 @@
         }
       });
       document.addEventListener("keydown", (e) => {
-        gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
         if (!allowedToStart) {
           return;
         }
-        gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         if (e.key == "f" && !reloading && !e.repeat) {
           fire(3);
         }
@@ -555,7 +491,6 @@
           bulletPositionX = 0;
           for (let i = 0; i < 11; i++) {
             isZoomed = true;
-            pointer.position.y = 5;
             zoomInFunction();
             scene.remove(gun);
             sights.style.display = "block";
@@ -565,7 +500,6 @@
           bulletPositionX = gun.position.x;
           for (let i = 0; i < 11; i++) {
             isZoomed = false;
-            pointer.position.y = 0;
             zoomOutFunction();
             scene.add(gun);
             sights.style.display = "none";
@@ -573,32 +507,30 @@
         }
         if (e.key == "ArrowUp" && !e.repeat) {
           moveUp();
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         }
         if (e.key == "ArrowDown" && !e.repeat) {
           moveDown();
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         }
         if (e.key == "ArrowLeft" && !e.repeat) {
           moveLeft();
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         }
         if (e.key == "ArrowRight" && !e.repeat) {
           moveRight();
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         }
         if (e.code == "Space" && !isJumping) {
           jump();
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         }
       });
-      cube.position.x = camera.position.x;
-      cube.position.y = camera.position.y - 2;
-      cube.position.z = camera.position.z + 1;
-      cube1.position.x = camera.position.x;
-      cube1.position.y = camera.position.y + 1.5 - 2;
-      cube1.position.z = camera.position.z + 1;
-      cube2.position.x = camera.position.x + .6;
-      cube2.position.y = camera.position.y + .5 - 2;
-      cube2.position.z = camera.position.z + 1;
-      cube3.position.x = camera.position.x + -.6;
-      cube3.position.y = camera.position.y - 2;
-      cube3.position.z = camera.position.z + 1;
       document.addEventListener("mousemove", (e) => {
         gametime.run("playerRotate", [String(camera.rotation.x) + "," + String(camera.rotation.y) + "," + String(camera.rotation.z) + "," + currentPlayer]);
       });
@@ -654,30 +586,8 @@
           return;
         }
         setTimeout(() => {
-          let body = otherPlayer[0];
-          let head = otherPlayer[1];
-          let arm = otherPlayer[2];
-          let arm1 = otherPlayer[3];
-          scene.add(body);
-          scene.add(head);
-          scene.add(arm);
-          scene.add(arm1);
-          body.material.color.setRGB(255, 255, 255);
-          head.material.color.setRGB(238, 238, 238);
-          arm.material.color.setRGB(238, 238, 238);
-          arm1.material.color.setRGB(238, 238, 238);
-          body.position.x = 5;
-          body.position.y = 0 - 2;
-          body.position.z = 5 + 1;
-          head.position.x = 5;
-          head.position.y = 0 + 1.5 - 2;
-          head.position.z = 5 + 1;
-          arm.position.x = 5 + .6;
-          arm.position.y = 0 + .5 - 2;
-          arm.position.z = 5 + 1;
-          arm1.position.x = 5 + -.6;
-          arm1.position.y = 0 - 2;
-          arm1.position.z = 5 + 1;
+          scene.add(otherPlayer);
+          otherPlayer.position.set(0, 0, 0);
         }, 5000);
         if (player == currentPlayer) {
           scene.remove(currentPlayer == 2 ? player2 : player1);
@@ -690,31 +600,7 @@
           });
           setTimeout(() => {
             ref = false;
-            let body = otherPlayer[0].clone();
-            let head = otherPlayer[1].clone();
-            let arm = otherPlayer[2].clone();
-            let arm1 = otherPlayer[3].clone();
-            scene.add(body);
-            scene.add(head);
-            scene.add(arm);
-            scene.add(arm1);
-            body.material.color.setRGB(255, 255, 255);
-            head.material.color.setRGB(238, 238, 238);
-            arm.material.color.setRGB(238, 238, 238);
-            arm1.material.color.setRGB(238, 238, 238);
-            camera.position.set(0, 0, 5);
-            body.position.x = 5
-            body.position.y = 0 - 2;
-            body.position.z = 5 + 1;
-            head.position.x = 5;
-            head.position.y = 0 + 1.5 - 2;
-            head.position.z = 5 + 1;
-            arm.position.x = 5 + .6;
-            arm.position.y = 0 + .5 - 2;
-            arm.position.z = 5 + 1;
-            arm1.position.x = 5 + -.6;
-            arm1.position.y = 0 - 2;
-            arm1.position.z = 5 + 1;
+            scene.add(player1);
             camera.rotation.set(0, 0, 0);
             swal.close();
             health = 100;
@@ -725,21 +611,12 @@
         } else {
           statusText.textContent = "+1 kill";
           for (let u = 0; u < 2; u++) {
-            for (let i = 0; i < scene.children.length; i++) {
-              /body|head|arm|arm1/gi.test(scene.children[i].sname) && scene.remove(scene.children[i]);
-            }
+            scene.remove(otherPlayer);
           }
         }
         setTimeout(() => {
-          let body = otherPlayer[0];
-          let head = otherPlayer[1];
-          let arm = otherPlayer[2];
-          let arm1 = otherPlayer[3];
-          scene.add(body);
-          body.position.set(0, 0, 0);
-          head.position.set(0, 1.5, 0);
-          arm.position.set(.6, .5, 0);
-          arm1.position.set(-.6, .5, 0);
+          scene.add(otherPlayer);
+          otherPlayer.position.set(0, 0, 0);
           statusText.textContent = "";
         }, 5000);
       });
@@ -747,32 +624,20 @@
         if ((dir.split(",")[3] - 0) == currentPlayer) {
           return;
         }
-        for (let i = 0; i < otherPlayer.length; i++) {
-          if (otherPlayer[i].sname == "head") {
-            otherPlayer[i].rotation.x = dir.split(",")[0] - 1;
-            otherPlayer[i].rotation.y = dir.split(",")[1] - 1;
-            otherPlayer[i].rotation.z = dir.split(",")[2] - 1;
-          }
-        }
+        // for (let i = 0; i < otherPlayer.length; i++) {
+        //   if (otherPlayer[i].sname == "head") {
+        //     otherPlayer[i].rotation.x = dir.split(",")[0] - 1;
+        //     otherPlayer[i].rotation.y = dir.split(",")[1] - 1;
+        //     otherPlayer[i].rotation.z = dir.split(",")[2] - 1;
+        //   }
+        // }
       });
       gametime.on("playerMove", function(dir) {
         if ((dir.split(",")[3] - 0) == currentPlayer) {
           return;
         }
-        for (let i = 0; i < otherPlayer.length; i++) {
-          if (otherPlayer[i].sname == "body") {
-            otherPlayer[i].position.set(dir.split(",")[0] - 0, dir.split(",")[1] - 0 - 2, dir.split(",")[2] - 0);
-          } else if (otherPlayer[i].sname == "head") {
-            otherPlayer[i].position.set(dir.split(",")[0] - 0, dir.split(",")[1] - 0 + 1.5 - 2, dir.split(",")[2] - 0);
-          } else if (otherPlayer[i].sname == "arm") {
-            otherPlayer[i].position.set(dir.split(",")[0] - 0 + .6, dir.split(",")[1] - 0 + .5 - 2, dir.split(",")[2] - 0);
-          } else if (otherPlayer[i].sname == "arm1") {
-            otherPlayer[i].position.set(dir.split(",")[0] - 0 + -.6, dir.split(",")[1] - 0 + .5 - 2, dir.split(",")[2] - 0);
-          }
-          else if (otherPlayer[i].sname == "gun") {
-            otherPlayer[i].position.set(dir.split(",")[0] - 0 + .6, dir.split(",")[1] - 0 + .8 - 2, dir.split(",")[2] - 0);
-          }
-        }
+        otherPlayer.position.set(dir.split(",")[0] - 0, dir.split(",")[1] - 4.5, dir.split(",")[2] - 0);
+        otherPlayer.rotation.set(0, (Math.PI/2)*2, 0);
       });
       gametime.on("playerJump", function(player) {
         if (player == currentPlayer) {
@@ -808,7 +673,7 @@
       userIds = [];
       gametime.on("didConnect", function() {
         gametime.run("collectId", [gametime.user.id])
-        gametime.run("renderScene", [player1[0].position.x, player1[0].position.y, player1[0].position.z]);
+        gametime.run("renderScene");
         setInterval(() => {
           currentPlayer = (userIds[0] == gametime.user.id) ? 1 : 2;
         });
@@ -837,17 +702,14 @@
         userIds.push(id);
         userIds = [... new Set(userIds)];
       })
-      gametime.on("renderScene", function(x) {
+      gametime.on("renderScene", function() {
         players += 1;
         setTimeout(() => {
           if (players == 1) {
             willBeAutoHost = true;
           }
         }, 0);
-        for (let j = 0; j < player1.length; j++) {
-          let clone = player1[j];
-          for(var i=0;i<1;i++){let mesh=new THREE.Mesh(clone.geometry,clone.material);mesh.sname=clone.sname;otherPlayer.push(mesh);otherPlayer=[... new Set(otherPlayer)];mesh.position.set(clone.position.x,clone.position.y,clone.position.z),scene.add(mesh)}
-        }
+        otherPlayer = player1;
       });
       focused = document.hasFocus();
       gametime.onconnect = () => gametime.run("didConnect");
@@ -899,7 +761,6 @@
               dl = true;
               isZoomed = true;
               zoomedInAuto = true;
-              pointer.position.y = 5;
               zoomInFunction();
               sights.style.display = "block";
               setTimeout(() => (dl = false), 1000);
@@ -909,7 +770,6 @@
             for (let i = 0; i < 11; i++) {
               isZoomed = false;
               zoomedInAuto = false;
-              pointer.position.y = 0;
               zoomOutFunction();
               sights.style.display = "none";
             }
