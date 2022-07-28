@@ -240,7 +240,8 @@
       isZoomed = false;
       magcount = 3;
       player1 = [cube, cube1, cube2, cube3];
-      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character2.obj",(e=>{const s=e;(player1=s,otherPlayer=player1),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,scene.add(s)}));      function reload() {
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character2.obj",(e=>{const s=e;(player1=s,otherPlayer=player1),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,scene.add(s),otherPlayer.rotation.set(0,(Math.PI/2)*2,0)}));
+      function reload() {
         if (magcount == 0) {
           return;
         }
@@ -284,9 +285,6 @@
       cube1.geometry = createBoxWithRoundedEdges(1.25, 1.25, 1, .25, 3);
       pointer.position.z = 1;
       scene.add(gun);
-      // scene.add(gunHandle);
-      // scene.add(pointer);
-      // scene.add(cube);
       camera.position.z = 5;
       gun.position.z = 0.05;
       gun.position.x = 4;
@@ -322,7 +320,6 @@
       function animate() {
         follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
-        // cube.rotation.y += 0.01;
         if (!d) {
           gun.position.y += 0.0025;
           setTimeout(() => (d = true), 1500);
@@ -528,11 +525,11 @@
         }
       });
       document.addEventListener("keydown", (e) => {
+        gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
         if (!allowedToStart) {
           return;
         }
-        gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + currentPlayer]);
         if (e.key == "f" && !reloading && !e.repeat) {
           fire(3);
         }
@@ -613,6 +610,8 @@
           document.querySelector(".health").style.width = health + "%";
           if (health <= 1) {
             gametime.run("eleminate", [currentPlayer]);
+          } else {
+            setTimeout(()=>{health=100,document.querySelector(".health").style.width=health+"%"},5000);
           }
         }
       });
@@ -680,20 +679,14 @@
         if ((dir.split(",")[3] - 0) == currentPlayer) {
           return;
         }
-        // for (let i = 0; i < otherPlayer.length; i++) {
-        //   if (otherPlayer[i].sname == "head") {
-        //     otherPlayer[i].rotation.x = dir.split(",")[0] - 1;
-        //     otherPlayer[i].rotation.y = dir.split(",")[1] - 1;
-        //     otherPlayer[i].rotation.z = dir.split(",")[2] - 1;
-        //   }
-        // }
+        otherPlayer.rotation.y=(dir.split(",")[1]-0);
       });
       gametime.on("playerMove", function(dir) {
         if ((dir.split(",")[3] - 0) == currentPlayer) {
           return;
         }
         otherPlayer.position.set(dir.split(",")[0] - 0, dir.split(",")[1] - 4.5, dir.split(",")[2] - 0);
-        otherPlayer.rotation.set(0, (Math.PI/2)*2, 0);
+        // otherPlayer.rotation.set(0, (Math.PI/2)*2, 0);
       });
       gametime.on("playerJump", function(player) {
         if (player == currentPlayer) {
