@@ -702,17 +702,13 @@
                 return clearInterval(a);
               } else {
                 k += 0.005;
-                for (let i = 0; i < otherPlayer.length; i++) {
-                  otherPlayer[i].position.y += -k;
-                }
+                otherPlayer.position.y += -k;
               }
             });
             return clearInterval(c);
           } else {
             y += 0.005;
-            for (let i = 0; i < otherPlayer.length; i++) {
-              otherPlayer[i].position.y += y;
-            }
+            otherPlayer.position.y += y;
           }
         });
       });
