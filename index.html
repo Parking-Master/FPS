@@ -8,11 +8,12 @@
       html, body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
-        cursor: url(./cursor.png), auto !important;
+        cursor: url(./cursor2.png), auto !important;
         overflow: hidden !important;
+        user-select: none !important;
       }
       * {
-        cursor: url(./cursor.png), auto !important;
+        cursor: url(./cursor2.png), auto !important;
       }
       .scoreboard {
         position: absolute;
@@ -79,6 +80,7 @@
         margin-left: -100px;
         top: 20px;
         border: 2px solid #fff;
+        z-index: 9999;
       }
       .statustext {
         position: absolute;
@@ -92,7 +94,7 @@
         color: #fff;
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/Gametime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
   <body style="margin:0!important;">
@@ -123,6 +125,7 @@
     <script>
       userIds = [];
       eventsEnabled = false;
+      hwt = 13;
       hwalkup = 13;
       hwalkdown = 13;
       hwalkleft = 13;
@@ -181,7 +184,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
       geometry = new THREE.BoxGeometry(1, 3, 1);
-      groundGeometry = new THREE.BoxGeometry(55, .001, 55);
+      groundGeometry = new THREE.BoxGeometry(55, .0000000001, 55);
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
       gunGeometry = new THREE.BoxGeometry(.5, .55, 3);
@@ -240,7 +243,7 @@
       isZoomed = false;
       magcount = 3;
       player1 = [cube, cube1, cube2, cube3];
-      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character2.obj",(e=>{const s=e;(player1=s,otherPlayer=player1),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,scene.add(s),otherPlayer.rotation.set(0,(Math.PI/2)*2,0)}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character2.obj",(e=>{const s=e;(player1=s,otherPlayer=player1),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,scene.add(s),otherPlayer.rotation.set(0,(-Math.PI/2)*2,0)}));
       function reload() {
         if (magcount == 0) {
           return;
@@ -385,7 +388,7 @@
         let y = 0;
         let c = setInterval(() => {
           movZ += 0.005;
-          if (y >= 0.1) {
+          if (y >= 0.2) {
             k = 0;
             let a = setInterval(() => {
               if (k >= y) {
@@ -544,6 +547,7 @@
             zoomInFunction();
             scene.remove(gun);
             sights.style.display = "block";
+            document.querySelector(".crosshair").style.display = "none";
           }
         }
         if (e.key == "z" && !e.repeat && !reloading) {
@@ -554,6 +558,7 @@
             zoomOutFunction();
             scene.add(gun);
             sights.style.display = "none";
+            document.querySelector(".crosshair").style.display = "block";
           }
         }
         if (e.key == "ArrowUp" && !e.repeat) {
@@ -606,6 +611,7 @@
       statusText = document.querySelector(".statustext");
       gametime.on("hit", function(player) {
         if (player == currentPlayer) {
+          clearTimeout(hwt);
           health += -16.6666666666;
           document.querySelector(".health").style.width = health + "%";
           if (health <= 1) {
@@ -653,7 +659,7 @@
             title: "You died!",
             text: "You will respawn in 5 seconds"
           });
-          setTimeout(() => {
+          hwt = setTimeout(() => {
             ref = false;
             scene.add(player1);
             camera.rotation.set(0, 0, 0);
@@ -679,7 +685,7 @@
         if ((dir.split(",")[3] - 0) == currentPlayer) {
           return;
         }
-        otherPlayer.rotation.y=(dir.split(",")[1]-0);
+        otherPlayer.rotation.y=-((dir.split(",")[1]-0)*2);
       });
       gametime.on("playerMove", function(dir) {
         if ((dir.split(",")[3] - 0) == currentPlayer) {
@@ -695,7 +701,7 @@
         let y = 0;
         let c = setInterval(() => {
           movZ += 0.005;
-          if (y >= 0.1) {
+          if (y >= 0.2) {
             k = 0;
             let a = setInterval(() => {
               if (k >= y) {
@@ -717,26 +723,26 @@
       otherPlayer = [];
       userIds = [];
       gametime.on("didConnect", function() {
-        gametime.run("collectId", [gametime.user.id])
+        gametime.run("collectId", [gametime.user.id]);
         gametime.run("renderScene");
         setInterval(() => {
           currentPlayer = (userIds[0] == gametime.user.id) ? 1 : 2;
+          if (currentPlayer == 2 && !eventsEnabled) {
+            camera.position.z = -5;
+            camera.rotation.y = (Math.PI/2)*2;
+          } else if (!eventsEnabled) {
+            camera.position.z = 5;
+            camera.rotation.x = 0;
+            otherPlayer.position.set(0, -4, -10);
+          }
         });
         if (willBeAutoHost) {
           isHost = true;
           isGuest = false;
-          for (let i = 0; i < player1; i++) {
-            player1[i].material.color.setColorName("red");
-            scene.add(player1[i]);
-          }
         } else {
           isHost = false;
           isGuest = true;
           player2 = player1;
-          for (let i = 0; i < player2; i++) {
-            player2[i].material.color.setColorName("blue");
-            scene.add(player2[i]);
-          }
         }
         gametime.run("isGuest");
       });
@@ -746,7 +752,7 @@
       gametime.on("collectId", (id) => {
         userIds.push(id);
         userIds = [... new Set(userIds)];
-      })
+      });
       gametime.on("renderScene", function() {
         players += 1;
         setTimeout(() => {
@@ -825,19 +831,19 @@
         window.onbeforeunload = function(e) {
           gametime.run("leftGame");
         }
-        // setInterval(() => {
-        //   if (typeof nt == "undefined") {
-        //     nt = 1;
-        //   }
-        //   if (nt <= 0.1 || typeof sky == "undefined") { return; }
-        //   nt += -.0001;
-        //   sky.rotation.x = nt - 1;
-        //   sky.material.color.setRGB(nt, .5, .5);
-        //   ground.material.color.setRGB(nt, nt, nt);
-        //   for (let i = 0; i < scene.children.length; i++) {
-        //     scene.children[i].sname == "sky" ? void(0) : scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
-        //   }
-        // });
+        setInterval(() => {
+          if (typeof nt == "undefined") {
+            nt = 1;
+          }
+          if (nt <= 0.1 || typeof sky == "undefined") { return; }
+          nt += -.0001;
+          sky.rotation.x = nt - 1;
+          sky.material.color.setRGB(nt, 1, 1);
+          ground.material.color.setRGB(nt, nt, nt);
+          for (let i = 0; i < scene.children.length; i++) {
+            scene.children[i].sname == "sky" ? void(0) : scene.children[i].material && (scene.children[i].sname == "tree" ? (scene.children[i].children[0].material.color.setRGB(nt, nt, nt), scene.children[i].children[1].material.color.setRGB(nt, nt, nt)) : scene.children[i].material.color.setRGB(nt, nt, nt));
+          }
+        });
       })();
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
       for(let e=0;e<5;e++)(()=>{const e=new THREE.SphereGeometry(10,50,16),o=new THREE.MeshBasicMaterial({color:"#7ed957",map:(new THREE.TextureLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ground.png")}),r=new THREE.Mesh(e,o);scene.add(r),r.position.set(Math.floor(25*Math.random()),-10,Math.floor(25*Math.random())-5),r.material.color.setRGB(.9,.9,.9)})();
