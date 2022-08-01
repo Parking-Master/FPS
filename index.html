@@ -140,7 +140,7 @@
       const scene = new THREE.Scene();
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
       let gun = new THREE.Mesh();
-      (new THREE.OBJLoader).load("https://cdn.jsdelivr.net/gh/Parking-Master/FPS/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle2.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
         if ((ascore >= 3 && gametime.user.position == 1) || (bscore >= 3 && gametime.user.position == 2)) {
@@ -191,7 +191,7 @@
       MapBorder.position.y = -2;
       light=new THREE.SpotLight(16755036,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
       scene.add(MapBorder);
-      let d = false;
+      d = true;
       forwardI = 13;
       backwardI = 13;
       leftI = 13;
@@ -219,18 +219,30 @@
         } else {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/crosshair.png");
         }
-        if (!d) {
-          gun.position.y += 0.0025;
-          setTimeout(() => (d = true), 1500);
-        } else {
-          gun.position.y += -0.0025;
-          setTimeout(() => (d = false), 1500);
-        }
+        // if (!d) {
+        //   gun.position.y += 0.0025;
+        //   setTimeout(() => (d = true), 1500);
+        // } else {
+        //   gun.position.y += -0.0025;
+        //   setTimeout(() => (d = false), 1500);
+        // }
         myPlayer.position.set(camera.position.x,camera.position.y - 4,camera.position.z+.5);
-        gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+        if (d) {
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateZ(-.25),gun.translateX(.25),gun.translateY(-.75);
+        }
+        if (camera.rotation.y >= 1 || camera.rotation.y >= .99) {
+          camera.rotation.y = .98;
+          camera.rotation.z = camera.rotation.z;
+          controls.isLocked = false;
+        } else {
+          controls.isLocked = true;
+        }
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
+      scene.add(camera);
+      camera.add(gun);
       gametime.on("startMove", function(player) {
         if (player.split(",")[0] != gametime.user.position) {
           return;
@@ -388,7 +400,7 @@
           return;
         }
         burstfire += 1;
-        const geometry = new THREE.CylinderGeometry(.01, .02, .03, 8);
+        const geometry = new THREE.CylinderGeometry(.01, .02, 10, 8);
         const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bullet = new THREE.Mesh(geometry, material);
         const casegeometry = new THREE.CylinderGeometry(.025, .025, .06, 10);
@@ -396,31 +408,35 @@
         const bcase = new THREE.Mesh(casegeometry, casematerial);
         scene.add(bullet);
         scene.add(bcase);
-        bullet.position.x = gun.position.x;
-        bullet.position.y = gun.position.y;
-        bullet.position.z = gun.position.z;
-        bullet.rotation.y = .05;
+        bullet.position.copy(camera.position),bullet.rotation.copy(camera.rotation),bullet.updateMatrix(),bullet.translateZ(-1);
+        bullet.rotation.copy(camera.rotation);
+        bullet.rotation.set(gun.rotation.x+(-Math.PI/2),gun.rotation.y,gun.rotation.z);
         bcase.position.z = gun.position.y;
         bcase.position.x = gun.position.x;
         bcase.position.y = gun.position.y;
         bcase.position.z = gun.position.z - .5;
         bcase.rotation.y = .05;
-        bullet.rotation.x = -Math.PI / 2;
+        // bullet.rotation.x = -Math.PI / 2;
         setInterval(() => {
-          bullet.position.z += -3;
+          // bullet.position.z += -3;
           bcase.position.x += -.08;
           bcase.position.y += -.05;
         });
         setTimeout(() => {
           scene.remove(bullet);
+          gun.remove(bullet);
           delete bullet;
           scene.remove(bcase);
           delete bcase;
         }, 200);
         }, 100);
-        gun.rotation.x += 0.5;
-        gun.position.z += 0.25;
-        setTimeout(() => (gun.rotation.x += -0.5, gun.position.z += -0.25), 100);
+        let b = setInterval(() => {
+          d = false;
+          gun.rotation.x += 0.2;
+          gun.position.z += 0.01;
+          setTimeout(() => (gun.rotation.x += -0.2, gun.position.z += -0.01, d = true), 100);
+        }, 100);
+        setTimeout(() => clearInterval(b), (burst.toString() + "00" - 0));
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
             reload();
