@@ -8,12 +8,12 @@
       html, body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
-        cursor: url(./cursor2.png), auto !important;
+        cursor: url(./cursor4.png), auto !important;
         overflow: hidden !important;
         user-select: none !important;
       }
       * {
-        cursor: url(./cursor2.png), auto !important;
+        cursor: url(./cursor4.png), auto !important;
       }
       .scoreboard {
         position: absolute;
@@ -35,17 +35,22 @@
       }
       .ui #rounds {
         position: absolute;
+        background: #fff;
+        border-radius: 5px;
         left: 50px;
         bottom: 50px;
-        color: #fff;
+        color: #444;
+        padding: 3px;
         font-family: 'Courier New', Courier, monospace;
         letter-spacing: -2px;
         font-weight: 600;
       }
       .ui img {
         position: absolute;
-        left: -35px;
-        bottom: 50px;
+        left: 0;
+        top: -10px;
+        margin: 0;
+        padding: 0;
       }
       canvas {
         background: blue;
@@ -74,10 +79,10 @@
       }
       .health-wrapper {
         position: absolute;
-        width: 200px;
+        width: 300px;
         height: 35px;
         left: 50%;
-        margin-left: -100px;
+        margin-left: -150px;
         top: 20px;
         border: 2px solid #fff;
         z-index: 9999;
@@ -98,6 +103,8 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
   <body style="margin:0!important;">
+    <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
+    <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
     <audio id="ambience" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ambience.mp3" autoplay loop volume="1"></audio>
     <audio id="shot" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sound.mp3"></audio>
     <audio id="reload" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/reload.mp3"></audio>
@@ -118,9 +125,8 @@
       </div>
       <div class="statustext"></div>
       <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
-      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/handheld.png" width="15%" />
       <img class="crosshair" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/crosshair.png" width="10%" />
-      <span id="rounds"><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+      <span id="rounds"><img src="https://fps5.ml/handheld.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <script>
       userIds = [];
@@ -183,13 +189,13 @@
       controls.pointerSpeed = 2;
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
       let loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
-      groundGeometry = new THREE.BoxGeometry(55, .0000000001, 55);
+      groundGeometry = new THREE.CircleGeometry(30, 50);
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://fps5.ml/grass.png") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
       MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
-      light=new THREE.SpotLight(16755036,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
+      light=new THREE.SpotLight(0xffffff,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
       scene.add(MapBorder);
       d = true;
       forwardI = 13;
@@ -203,12 +209,13 @@
       ground.position.x = 0;
       ground.position.y = -4;
       ground.position.z = -1;
+      ground.rotation.x = -Math.PI / 2;
       scene.add(ground);
       myPlayer = new THREE.Mesh();
       otherPlayer = new THREE.Mesh();
       isZoomed = false;
       outOfView = false;
-      (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random()),-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),scene.add(e)}})),(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-10,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),scene.add(e)}})),(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
       function animate() {
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
@@ -231,13 +238,14 @@
           gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
           gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateZ(-.25),gun.translateX(.25),gun.translateY(-.75);
         }
-        if (camera.rotation.y >= 1 || camera.rotation.y >= .99) {
-          camera.rotation.y = .98;
-          camera.rotation.z = camera.rotation.z;
-          controls.isLocked = false;
-        } else {
-          controls.isLocked = true;
-        }
+        // if (camera.rotation.y >= 1 || camera.rotation.y >= .99) {
+        //   camera.rotation.y = .98;
+        //   camera.rotation.z = camera.rotation.z;
+        //   controls.isLocked = false;
+        // } else {
+        //   controls.isLocked = true;
+        // }
+        typeof otherPlayer.material != "undefined" && otherPlayer.material.color.setHex(0x333333);
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
@@ -262,7 +270,7 @@
         clearInterval(otherRightI);
         clearInterval(otherBackwardI);
       });
-      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,scene.add(s),s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
       document.addEventListener("keydown",(e)=>{(e.key=="f"&&!e.repeat)&&fire(3),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),forwardI=setInterval(()=>{camera.position.z+=-.1}));(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.1})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.1}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.1}))});
       document.addEventListener("keyup",()=>{gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       animate();
@@ -538,6 +546,14 @@
           statusText.textContent = "";
         }, 5000);
       });
+      let v = false;
+      let q = setInterval(() => {
+        if (gametime.connected && scene.children.indexOf(gun) && scene.children.indexOf(myPlayer) && !v) {
+          document.querySelector(".loader-cover").remove();
+          v = true;
+          clearInterval(q);
+        }
+      })
     </script>
   </body>
 </html>
