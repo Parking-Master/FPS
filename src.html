@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      html, body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        cursor: url(./cursor4.png), auto !important;
+        overflow: hidden !important;
+        user-select: none !important;
+      }
+      * {
+        cursor: url(./cursor4.png), auto !important;
+      }
+      .scoreboard {
+        position: absolute;
+        background: #fff;
+        width: 75px;
+        height: 30px;
+        padding: 5px;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        z-index: 9999;
+        left: 100%;
+        margin-left: -80px;
+        top: 85vh;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: #333;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 600;
+      }
+      .ui #rounds {
+        position: absolute;
+        background: #fff;
+        border-radius: 5px;
+        left: 50px;
+        bottom: 50px;
+        color: #444;
+        padding: 3px;
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: -2px;
+        font-weight: 600;
+      }
+      .ui img {
+        position: absolute;
+        left: 0;
+        top: -10px;
+        margin: 0;
+        padding: 0;
+      }
+      canvas {
+        background: blue;
+      }
+      .swal-overlay {
+        background: transparent !important;
+        pointer-events: none !important;
+      }
+      .crosshair {
+        position: absolute;
+        left: 50% !important;
+        top: 50% !important;
+        width: 25px;
+        margin-left: -12.5px !important;
+        margin-top: -12.5px !important;
+        z-index: 9999;
+        filter: invert(100%);
+      }
+      .health {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+      }
+      .health-wrapper {
+        position: absolute;
+        width: 300px;
+        height: 35px;
+        left: 50%;
+        margin-left: -150px;
+        top: 20px;
+        border: 2px solid #fff;
+        z-index: 9999;
+      }
+      .statustext {
+        position: absolute;
+        left: 50%;
+        width: 200px;
+        top: 40%;
+        margin: 0;
+        padding: 0;
+        margin-left: -100px;
+        font-size: 18px;
+        color: #fff;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  </head>
+  <body style="margin:0!important;">
+    <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
+    <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "Vertex"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
+    <audio id="ambience" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ambience.mp3" autoplay loop volume="1"></audio>
+    <audio id="shot" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sound.mp3"></audio>
+    <audio id="reload" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/reload.mp3"></audio>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
+    <script>
+      Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
+    </script>
+    <div class="ui">
+      <div class="scoreboard">
+        <span class="player1">A: <span class="score">0</span></span>
+        <hr style="margin: 0;">
+        <span class="player2">B: <span class="score">0</span></span>
+      </div>
+      <div class="health-wrapper">
+        <div class="health"></div>
+      </div>
+      <div class="statustext"></div>
+      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
+      <img class="crosshair" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/crosshair.png" width="10%" />
+      <span id="rounds"><img src="https://fps5.ml/handheld.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+    </div>
+    <script>
+      userIds = [];
+      gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
+      gametime.set("channel", decodeURIComponent(new URLSearchParams(location.search).get("lobby")));
+      gametime.make("startMove");
+      gametime.make("endMove");
+      eventsEnabled = false;
+      hwt = 13;
+      hwalkup = 13;
+      hwalkdown = 13;
+      hwalkleft = 13;
+      hwalkright = 13;
+      zoomedInAuto = false;
+      zoomedOutAuto = true;
+      allowedToStart = false;
+      const scene = new THREE.Scene();
+      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
+      let gun = new THREE.Mesh();
+      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle2.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
+      function GameOver() {
+        eventsEnabled = false;
+        if ((ascore >= 3 && gametime.user.position == 1) || (bscore >= 3 && gametime.user.position == 2)) {
+          swal({
+            title: "Game over",
+            icon: "success",
+            text: "You win!"
+          }).then(() => location.replace("/"));
+          document.querySelector(".swal-button").style.background = "#6cc22e";
+        } else {
+          swal({
+            title: "Game over",
+            icon: "error",
+            text: "You lose...",
+            dangerMode: true
+          }).then(() => location.replace("/"));
+        }
+      }
+      function handler(e){if(eventsEnabled){return}e.stopPropagation(),e.preventDefault()}document.addEventListener("mousemove",handler,!0);
+      const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
+      let o = setInterval(() => {
+        if (typeof gametime.idList != "undefined" && gametime.idList.length >= 2) {
+          allowedToStart = true;
+          gametime.run("postPlayerCType", [character + "," + gametime.user.position]);
+          return swal.close(), clearInterval(o), eventsEnabled = true;
+        }
+      });
+      gametime.make("postPlayerCType");
+      gametime.on("postPlayerCType", function(str) {
+        if (str.split(",")[1] == gametime.user.position) {
+          return;
+        }
+        scene.remove(otherPlayer);
+        let character = str.split(",")[0];
+        character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(1,1,1),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+      });
+      swal({
+        title: "Please wait...",
+        text: "Searching for players",
+        buttons: false,
+        closeOnEsc: false,
+        closeOnClickOutside: false
+      });
+      shot = document.getElementById("shot");
+      sights = document.getElementById("sights");
+      reload1 = document.getElementById("reload");
+      camera.position.z = 5;
+      const controls = new PointerLockControls(camera, renderer.domElement);
+      controls.isLocked = true;
+      controls.pointerSpeed = 2;
+      function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
+      let loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
+      groundGeometry = new THREE.CircleGeometry(30, 50);
+      groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://fps5.ml/grass.png") });
+      ground = new THREE.Mesh(groundGeometry, groundMaterial);
+      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
+      MapBorder.rotation.x = 1.6;
+      MapBorder.position.y = -2;
+      light=new THREE.SpotLight(0xffffff,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
+      scene.add(MapBorder);
+      d = true;
+      forwardI = 13;
+      backwardI = 13;
+      leftI = 13;
+      rightI = 13;
+      otherForwardI = 13;
+      otherBackwardI = 13;
+      otherLeftI = 13;
+      otherRightI = 13;
+      ground.position.x = 0;
+      ground.position.y = -4;
+      ground.position.z = -1;
+      ground.rotation.x = -Math.PI / 2;
+      scene.add(ground);
+      myPlayer = new THREE.Mesh();
+      otherPlayer = new THREE.Mesh();
+      isZoomed = false;
+      outOfView = false;
+      // (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-10,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),scene.add(e)}})),(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
+      function animate() {
+        light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
+        let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
+        let cp=otherPlayer.position.clone();cp.y+=4.5;let threshold=.65,positionScreenSpace=cp.project(camera);positionScreenSpace.setZ(0),isCloseToCenter=(positionScreenSpace.length()<threshold&&!outOfView),pointed=isCloseToCenter?otherPlayer:void(0);
+        if (isCloseToCenter) {
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/crosshair-aim.png");
+        } else {
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/crosshair.png");
+        }
+        // if (!d) {
+        //   gun.position.y += 0.0025;
+        //   setTimeout(() => (d = true), 1500);
+        // } else {
+        //   gun.position.y += -0.0025;
+        //   setTimeout(() => (d = false), 1500);
+        // }
+        myPlayer.position.set(camera.position.x,camera.position.y - 4,camera.position.z+.5);
+        if (d) {
+          gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
+          gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateZ(-.25),gun.translateX(.25),gun.translateY(-.75);
+        }
+        // if (camera.rotation.y >= 1 || camera.rotation.y >= .99) {
+        //   camera.rotation.y = .98;
+        //   camera.rotation.z = camera.rotation.z;
+        //   controls.isLocked = false;
+        // } else {
+        //   controls.isLocked = true;
+        // }
+        typeof otherPlayer.material != "undefined" && otherPlayer.material.color.setHex(0x333333);
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      scene.add(camera);
+      camera.add(gun);
+      gametime.on("startMove", function(player) {
+        if (player.split(",")[0] != gametime.user.position) {
+          return;
+        }
+        let type = player.split(",")[1];
+        type=="forward"&&(otherForwardI=setInterval(()=>{otherPlayer.position.z+=-.1}));
+        type=="left"&&(otherLeftI=setInterval(()=>{otherPlayer.position.x+=-.1}));
+        type=="backward"&&(otherBackwardI=setInterval(()=>{otherPlayer.position.z+=.1}));
+        type=="right"&&(otherRightI=setInterval(()=>{otherPlayer.position.x+=.1}));
+      });
+      gametime.on("endMove", function(player) {
+        if (player != gametime.user.position) {
+          return;
+        }
+        clearInterval(otherForwardI);
+        clearInterval(otherLeftI);
+        clearInterval(otherRightI);
+        clearInterval(otherBackwardI);
+      });
+      character = (new URLSearchParams(location.search).get("character") || "default");
+      character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(1,1,1),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+      document.addEventListener("keydown",(e)=>{(e.key=="f"&&!e.repeat)&&fire(3),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),forwardI=setInterval(()=>{camera.position.z+=-.1}));(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.1})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.1}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.1}))});
+      document.addEventListener("keyup",()=>{gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
+      animate();
+      let isJumping = false;
+      function jump(player) {
+        if (!allowedToStart) {
+          return;
+        }
+        gametime.run("playerJump", [gametime.user.position]);
+        if (isJumping) {
+          return;
+        }
+        isJumping = true;
+        let y = 0;
+        let c = setInterval(() => {
+          if (y >= 0.1) {
+            k = 0;
+            let a = setInterval(() => {
+              if (k >= y) {
+                return clearInterval(a);
+              } else {
+                k += 0.001;
+                gun.position.y += -k;
+                myPlayer.position.y += -k;
+                camera.position.y += -k;
+              }
+            });
+            return clearInterval(c);
+          } else {
+            y += 0.001;
+            gun.position.y += y;
+            myPlayer.position.y += y;
+            camera.position.y += y;
+          }
+        });
+        setTimeout(() => (isJumping = false), 1250);
+      }
+      gametime.make("playerJump");
+      gametime.on("playerJump", function(player) {
+        if (player == gametime.user.position) {
+          return;
+        }
+        let y = 0;
+        let c = setInterval(() => {
+          if (y >= 0.1) {
+            k = 0;
+            let a = setInterval(() => {
+              if (k >= y) {
+                return clearInterval(a);
+              } else {
+                k += 0.001;
+                otherPlayer.position.y += -k;
+              }
+            });
+            return clearInterval(c);
+          } else {
+            y += 0.001;
+            otherPlayer.position.y += y;
+          }
+        });
+      });
+      magcount = 3;
+      rounds = 36;
+      reloading = false;
+      function reload() {
+        if (magcount == 0) {
+          return;
+        }
+        if (isZoomed) {
+          document.dispatchEvent(new KeyboardEvent("keydown",{key:"z"}));
+        }
+        reload1.currentTime = 1.2;
+        reload1.play();
+        reloading = true;
+        magcount += -1;
+        document.getElementById("magcount").textContent = magcount;
+        let t = 0;
+        let h = setInterval(() => {
+          if (t >= 0.075) {
+            const geometry = new THREE.BoxGeometry(.025, .5, .025);
+            const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
+            const mag = new THREE.Mesh(geometry, material);
+            mag.position.x = gun.position.x;
+            mag.position.y = gun.position.y - 2;
+            mag.position.z = gun.position.z + .2;
+            mag.rotation.x = -.2;
+            scene.add(mag);
+            setTimeout(() => {
+              let r = 0;
+              let s = setInterval(() => {
+                if (r >= .3) {
+                  return (scene.remove(mag), (rounds = 36), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), (gun.position.y = camera.position.y -.75), (reloading = false), clearInterval(s));
+                }
+                r += 0.025;
+                mag.position.y += r;
+              });
+            }, 200);
+            return clearInterval(h);
+          }
+          t += 0.01;
+          gun.position.y += t;
+        });
+      }
+      function fire(burst) {
+        if (!allowedToStart) {
+          return;
+        }
+        if (magcount == 0 && rounds <= 0) {
+          return;
+        } else {
+          rounds += -burst;
+        }
+        if (reloading) {
+          return;
+        }
+        shot.play();
+        for (let i = 0; i < burst -1; i++) {
+          (function(x) {
+            let c = document.createElement("audio");
+            c.src = shot.src;
+            c.currentTime = .1;
+            setTimeout(() => {
+              document.body.appendChild(c);
+              c.play();
+              setTimeout(() => {
+                c.remove();
+              }, 1000);
+            }, 200 + (70 * x));
+          })(i);
+        }
+        (document.getElementById("rounds").querySelector("#counter").textContent = rounds);
+        let burstfire = 0;
+        setInterval(() => {
+        if (burstfire >= burst) {
+          return;
+        }
+        burstfire += 1;
+        const geometry = new THREE.CylinderGeometry(.01, .02, 10, 8);
+        const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
+        const bullet = new THREE.Mesh(geometry, material);
+        const casegeometry = new THREE.CylinderGeometry(.025, .025, .06, 10);
+        const casematerial = new THREE.MeshBasicMaterial({ color: "#f1e583" });
+        const bcase = new THREE.Mesh(casegeometry, casematerial);
+        scene.add(bullet);
+        scene.add(bcase);
+        bullet.position.copy(camera.position),bullet.rotation.copy(camera.rotation),bullet.updateMatrix(),bullet.translateZ(-1);
+        bullet.rotation.copy(camera.rotation);
+        bullet.rotation.set(gun.rotation.x+(-Math.PI/2),gun.rotation.y,gun.rotation.z);
+        bcase.position.z = gun.position.y;
+        bcase.position.x = gun.position.x;
+        bcase.position.y = gun.position.y;
+        bcase.position.z = gun.position.z - .5;
+        bcase.rotation.y = .05;
+        // bullet.rotation.x = -Math.PI / 2;
+        setInterval(() => {
+          // bullet.position.z += -3;
+          bcase.position.x += -.08;
+          bcase.position.y += -.05;
+        });
+        setTimeout(() => {
+          scene.remove(bullet);
+          gun.remove(bullet);
+          delete bullet;
+          scene.remove(bcase);
+          delete bcase;
+        }, 200);
+        }, 100);
+        let b = setInterval(() => {
+          d = false;
+          gun.rotation.x += 0.2;
+          gun.position.z += 0.01;
+          setTimeout(() => (gun.rotation.x += -0.2, gun.position.z += -0.01, d = true), 100);
+        }, 100);
+        setTimeout(() => clearInterval(b), (burst.toString() + "00" - 0));
+        setTimeout(() => {
+          if (rounds <= 0 && !reloading) {
+            reload();
+          }
+        }, 250);
+        let h = setInterval(() => {
+          if (!pointed) {
+            return;
+          }
+          let object = pointed;
+          if (object.maxshot <= 0) {
+            return clearInterval(h);
+          }
+          object.maxshot += -burst;
+          if (scene.children.indexOf(object) > -1) {
+            gametime.run("hit", [(gametime.user.position == 1 ? 2 : 1)]);
+            if (object.maxshot <= 0) {
+              if (scene.children.indexOf(object) > -1) {
+                gametime.run("eleminate", [(gametime.user.position == 1 ? 2 : 1)]);
+                scene.remove(otherPlayer);
+              } else {
+                scene.remove(object);
+              }
+            } else {
+              (()=>{let e=new THREE.EdgesGeometry(otherPlayer.children[0].geometry),r=new THREE.LineBasicMaterial({color:"yellow",linewidth:10}),l=new THREE.LineSegments(e,r);l.renderOrder=1,otherPlayer.add(l),setTimeout(()=>{otherPlayer.remove(l)},5000)})();
+            }
+          }
+        }, 75);
+        setTimeout(() => {
+          clearInterval(h);
+        }, 100);
+      }
+      gametime.make("hit");
+      let health = 100;
+      statusText = document.querySelector(".statustext");
+      gametime.on("hit", function(player) {
+        if (player == gametime.user.position) {
+          clearTimeout(hwt);
+          health += -25;
+          document.querySelector(".health").style.width = health + "%";
+          if (health <= 1) {
+            gametime.run("eleminate", [gametime.user.position]);
+          } else {
+            setTimeout(()=>{health=100,document.querySelector(".health").style.width=health+"%"},5000);
+          }
+        } else {
+          setTimeout(()=>{otherPlayer.maxshot=12},5000);
+        }
+      });
+      gametime.make("eleminate");
+      ascore = 0;
+      bscore = 0;
+      ref = false;
+      gametime.on("eleminate", function(player) {
+        if (!ref) {
+          ref = true;
+          player == 1 ? bscore += 1 : ascore += 1;
+          setTimeout(() => {
+            ref = false;
+          }, 500);
+        }
+        if (!eventsEnabled) {
+          return;
+        }
+        if (player != gametime.user.position) {
+          setTimeout(() => {
+            scene.add(otherPlayer);
+            otherPlayer.position.set(0, -4, 5);
+          }, 5000);
+        }
+        if (player == gametime.user.position) {
+          scene.remove(myPlayer);
+          document.querySelector(".ui").style.display = "none";
+          swal({
+            dangerMode: true,
+            icon: "error",
+            title: "You died!",
+            text: "You will respawn in 5 seconds"
+          });
+          hwt = setTimeout(() => {
+            ref = false;
+            scene.add(myPlayer);
+            camera.rotation.set(0, 0, 0);
+            swal.close();
+            health = 100;
+            document.querySelector(".health").style.width = health + "%";
+            document.querySelector(".ui").style.display = "block";
+            scene.add(myPlayer);
+          }, 5000);
+        } else {
+          statusText.textContent = "+1 kill";
+          for (let u = 0; u < 2; u++) {
+            scene.remove(otherPlayer);
+          }
+        }
+        setTimeout(() => {
+          scene.add(otherPlayer);
+          otherPlayer.position.set(0, 0, 0);
+          statusText.textContent = "";
+        }, 5000);
+      });
+      let v = false;
+      let q = setInterval(() => {
+        if (gametime.connected && scene.children.indexOf(gun) && scene.children.indexOf(myPlayer) && !v) {
+          document.querySelector(".loader-cover").remove();
+          v = true;
+          clearInterval(q);
+        }
+      })
+    </script>
+  </body>
+</html>
