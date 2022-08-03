@@ -16,6 +16,7 @@
       cursor: pointer;
       transition: transform 1s;
       background: #333;
+      width: 100%;
     }
     .character:hover {
       transform: scale(1.1);
@@ -28,9 +29,9 @@
       position: relative;
       display: inline-block;
       text-align: center;
-      left: 5%;
+      left: 0;
       margin: 10px;
-      margin-right: 25px;
+      margin-right: 2.5%;
       margin-left: -10px;
     }
     .center {
@@ -42,10 +43,17 @@
       font-size: 30px;
       font-weight: 600;
     }
+    .container {
+      position: relative;
+      left: 50%;
+      margin-left: -655px;
+    }
   </style>
   <body>
     <h1 style="text-align:center;color:#fff;font-size:45px;font-weight:200">Choose a character</h1>
-    <div class="holder" onclick="location.replace(location.href.replace('play','src')+'&character=default')"><img class="character default" src="models/character/default.png" /><div class="center">Default</div></div>
-    <div class="holder" onclick="location.replace(location.href.replace('play','src')+'&character=fotus')"><img class="character fotus" src="models/character/fotus.png" /><div class="center">Fotus</div></div>
+    <div class="container">
+      <div class="holder" onclick="location.replace(location.href.replace('play','src')+'&character=default')"><img class="character default" src="models/character/default.png" /><div class="center">Default</div></div>
+      <div class="holder" onclick="location.replace(location.href.replace('play','src')+'&character=fotus')"><img class="character fotus" src="models/character/fotus.png" /><div class="center">Fotus</div></div>
+    </div>
   </body>
 </html> 
