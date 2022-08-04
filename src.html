@@ -104,11 +104,12 @@
   </head>
   <body style="margin:0!important;">
     <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
-    <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "Vertex"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
+    <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
     <audio id="ambience" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ambience.mp3" autoplay loop volume="1"></audio>
     <audio id="shot" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sound.mp3"></audio>
     <audio id="reload" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/reload.mp3"></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kripken/ammo.js/builds/ammo.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <script>
@@ -130,6 +131,9 @@
     </div>
     <script>
       userIds = [];
+      wt = false;
+      map = new URLSearchParams(location.search).get("map") || "Vertex";
+      document.querySelector(".map").textContent = map;
       gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
       gametime.set("channel", decodeURIComponent(new URLSearchParams(location.search).get("lobby")));
       gametime.make("startMove");
@@ -144,6 +148,11 @@
       zoomedInAuto = false;
       zoomedOutAuto = true;
       allowedToStart = false;
+      br = 3;
+      function rotatePlayer(unit) {
+        camera.rotation.set(0, 0, 0);
+        camera.rotateY(unit);
+      }
       const scene = new THREE.Scene();
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
       let gun = new THREE.Mesh();
@@ -182,7 +191,7 @@
         }
         scene.remove(otherPlayer);
         let character = str.split(",")[0];
-        character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(1,1,1),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+        character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
       });
       swal({
         title: "Please wait...",
@@ -201,13 +210,13 @@
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
       let loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
       groundGeometry = new THREE.CircleGeometry(30, 50);
-      groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://fps5.ml/grass.png") });
+      groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://images.creativemarket.com/0.1.0/ps/6285824/1820/1214/m1/fpnw/wm1/pdoljwzfohfnaadofyq7kl82ttb8a548ydp0c8wdp12abli0sfollywetaojozln-.jpg?1555951636&s=81a26f9928e47104075b066a0d59be47") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
       MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
-      light=new THREE.SpotLight(0xffffff,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
-      scene.add(MapBorder);
+      light=new THREE.HemisphereLight(0xffffff,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
+      map == "Vertex" && scene.add(MapBorder);
       d = true;
       forwardI = 13;
       backwardI = 13;
@@ -221,16 +230,66 @@
       ground.position.y = -4;
       ground.position.z = -1;
       ground.rotation.x = -Math.PI / 2;
-      scene.add(ground);
+      map == "Vertex" && scene.add(ground);
       myPlayer = new THREE.Mesh();
       otherPlayer = new THREE.Mesh();
       isZoomed = false;
       outOfView = false;
       ascore = 0;
       bscore = 0;
-      // (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-10,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),scene.add(e)}})),(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      isFalling = false;
+      function type() {
+        return typeof arguments[0] == "undefined" || typeof arguments[0] == "undefined" || !arguments[0];
+      }
+      didFallToDeath = false;
+      let follower = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: "red" }));
+      map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),scene.children[19].e.children[0].material[0].color.setHex(0x492505),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.OBJLoader).load("https://fps5.ml/models/maps/model/Haven.obj",(e)=>{scene.add(e);wt=true;map=e,map.scale.set(.016,.016,.016),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=2}));
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
+      canShake = true;
       function animate() {
+        if (typeof(mapVertices) != "undefined" && !isJumping) {
+          if (mapVertices[0].eval()) {
+            camera.position.y = mapVertices[0].rd;
+          } else if (mapVertices[1].eval()) {
+            camera.position.y = mapVertices[1].rd;
+          } else {
+            !isFalling && (camera.position.y = 0);
+          }
+        }
+        if (isFalling) { eventsEnabled = false }
+        if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x<=-7&&camera.position.x>=-11) {
+          isFalling = true;
+          camera.position.y += -.25;
+          shake(1, 1, .01, true)
+        } else if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x>=7&&camera.position.x<=11) {
+          isFalling = true;
+          camera.position.y += -.25;
+          shake(1, 1, .01, true)
+        }
+        if (camera.position.y <= -20 && !didFallToDeath) {
+          didFallToDeath = true;
+          gametime.run("eleminate", [gametime.user.position + ",0"]);
+          swal({
+            dangerMode: true,
+            icon: "error",
+            title: "You died!",
+            text: "You will respawn in 5 seconds",
+            button: false
+          });
+          setTimeout(() => {
+            didFallToDeath = false;
+            canShake = false;
+            isFalling = false;
+            camera.position.set(0,0,8);
+            setTimeout(() => {
+              camera.rotation.set(0,Math.PI,0);
+              eventsEnabled = true;
+              canShake = true;
+              swal.close();
+            }, 500);
+          }, 5000);
+        }
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
         let cp=otherPlayer.position.clone();cp.y+=4.5;let threshold=.65,positionScreenSpace=cp.project(camera);positionScreenSpace.setZ(0),isCloseToCenter=(positionScreenSpace.length()<threshold&&!outOfView),pointed=isCloseToCenter?otherPlayer:void(0);
@@ -239,6 +298,7 @@
         } else {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/crosshair.png");
         }
+        follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         // if (!d) {
         //   gun.position.y += 0.0025;
         //   setTimeout(() => (d = true), 1500);
@@ -271,10 +331,10 @@
           return;
         }
         let type = player.split(",")[1];
-        type=="forward"&&(otherForwardI=setInterval(()=>{otherPlayer.position.z+=-.1}));
-        type=="left"&&(otherLeftI=setInterval(()=>{otherPlayer.position.x+=-.1}));
-        type=="backward"&&(otherBackwardI=setInterval(()=>{otherPlayer.position.z+=.1}));
-        type=="right"&&(otherRightI=setInterval(()=>{otherPlayer.position.x+=.1}));
+        type=="forward"&&(otherForwardI=setInterval(()=>{otherPlayer.position.z+=-.02}));
+        type=="left"&&(otherLeftI=setInterval(()=>{otherPlayer.position.x+=-.02}));
+        type=="backward"&&(otherBackwardI=setInterval(()=>{otherPlayer.position.z+=.02}));
+        type=="right"&&(otherRightI=setInterval(()=>{otherPlayer.position.x+=.02}));
       });
       gametime.on("endMove", function(player) {
         if (player != gametime.user.position) {
@@ -285,24 +345,63 @@
         clearInterval(otherRightI);
         clearInterval(otherBackwardI);
       });
+      plr = new THREE.Mesh();
+      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{plr=e}));
       function switchWeapon() {
         let newWeapon = currentWeapon == "rifle" ? "pistol" : "rifle";
         currentWeapon = newWeapon;
+        newWeapon == "pistol" ? (sights.src = "https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sights.png") : (sights.src = "https://cdn.jsdelivr.net/gh/Parking-Master/FPS/scope.png");
+        newWeapon == "rifle" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/handheld.png");
+        newWeapon == "pistol" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/pistol/pistol.png");
         scene.remove(gun);
         camera.remove(gun);
         gun = new THREE.Mesh();
-        newWeapon == "pistol" && (new THREE.OBJLoader).load("https://fps5.ml/models/pistol/pistol.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
-        newWeapon == "rifle" && (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
+        newWeapon == "pistol" && (new THREE.OBJLoader).load("https://fps5.ml/models/pistol/pistol.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s),gun.translateZ(-.5),gun.translateY(-.2),gun.translateX(.5)}));
+        newWeapon == "rifle" && ((gun=plr),gun.scale.set(.01,.01,.01),scene.add(gun));
+        newWeapon == "rifle" ? br = 3 : br = 1;
         setTimeout(() => {
-          scene.add(gun);
-          camera.add(gun);
+          newWeapon != "rifle" && scene.add(gun);
+          newWeapon != "rifle" && camera.add(gun);
         }, 250);
       }
+      function shake(seconds, intensity, rate, animate) {
+        if (!canShake) {
+          return clearInterval(o);
+        }
+        if (animate) {
+          let e = true;
+          let t = 0;
+          let o = setInterval(() => {
+            if (e) { let h = setInterval(() => { if (t >= rate) { e = false, clearInterval(h) } else { t += 0.005; camera.rotation.x += t; } }); } else { let h = setInterval(() => { if (t <= 0) { e = true, clearInterval(h) } else { t += -0.005; camera.rotation.x += -t; } }); }
+          }, 255 / intensity);
+          setTimeout(() => clearInterval(o), seconds * 1000);
+        } else {
+          let e = true;
+          let o = setInterval(() => {
+            if (e) { camera.rotation.x += rate; e = false } else { camera.rotation.x += -rate; e = true }
+          }, 255 / intensity);
+          setTimeout(() => clearInterval(o), seconds * 1000);
+        }
+      }
       character = (new URLSearchParams(location.search).get("character") || "default");
-      character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.075,.075,.075),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(1,1,1),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(3),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),forwardI=setInterval(()=>{camera.position.z+=-.1}));(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.1})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.1}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.1}))});
+      character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+      document.addEventListener("keydown",(e)=>{/*setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{let f=camera.position.y;backwardI=setInterval(()=>{if(!isJumping){camera.position.y=f}camera.translateZ(-.02)})})());(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.02})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.02}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.02}))});
       document.addEventListener("keyup",()=>{gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       animate();
+      mapVertices = [
+        {
+          eval: (() => {
+            return (camera.position.z>=9&&camera.position.z<=14&&camera.position.x<=-1.6&&camera.position.x>=-6.5&&camera.position.y>=0&&camera.position.y<=1) || (camera.position.x>=1.6&&camera.position.x<=6.5&&camera.position.z>=9&&camera.position.z<=14&&camera.position.y>-1&&camera.position.y<=1)
+          }),
+          rd: 1
+        },
+        {
+          eval: (() => {
+            return (camera.position.z>=18&&camera.position.z<=23&&camera.position.x<=-1.6&&camera.position.x>=-6.5&&camera.position.y>-1&&camera.position.y<=1) || (camera.position.x>=1.6&&camera.position.x<=6.5&&camera.position.z>=18&&camera.position.z<=23&&camera.position.y>-1&&camera.position.y<=1)
+          }),
+          rd: .5
+        }
+      ];
       let isJumping = false;
       function jump(player) {
         if (!allowedToStart) {
@@ -314,17 +413,25 @@
         }
         isJumping = true;
         let y = 0;
+        rd = 0;
         let c = setInterval(() => {
-          if (y >= 0.1) {
+          if (y >= 0.08) {
             k = 0;
             let a = setInterval(() => {
-              if (k >= y) {
+              if (camera.position.y <= rd) {
                 return clearInterval(a);
               } else {
-                k += 0.001;
+                k += 0.0005;
                 gun.position.y += -k;
                 myPlayer.position.y += -k;
                 camera.position.y += -k;
+                if (mapVertices[0].eval()) {
+                  rd = mapVertices[0].rd;
+                } else if (mapVertices[1].eval()) {
+                  rd = mapVertices[1].rd;
+                } else {
+                  rd = 0;
+                }
               }
             });
             return clearInterval(c);
@@ -335,7 +442,7 @@
             camera.position.y += y;
           }
         });
-        setTimeout(() => (isJumping = false), 1250);
+        setTimeout(() => (isJumping = false), 1200);
       }
       gametime.make("playerJump");
       gametime.on("playerJump", function(player) {
@@ -377,7 +484,6 @@
         magcount += -1;
         document.getElementById("magcount").textContent = magcount;
         let t = 0;
-        d = false;
         let h = setInterval(() => {
           if (t >= 0.075) {
             const geometry = new THREE.BoxGeometry(.025, .5, .025);
@@ -392,7 +498,7 @@
               let r = 0;
               let s = setInterval(() => {
                 if (r >= .3) {
-                  return (d = true, scene.remove(mag), (rounds = 36), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), (gun.position.y = camera.position.y -.75), (reloading = false), clearInterval(s));
+                  return (d = true, (currentWeapon == "pistol" && gun.translateY(.2)), scene.remove(mag), (rounds = 36), (document.getElementById("rounds").querySelector("#counter").textContent = rounds), (gun.position.y = camera.position.y -.75), (reloading = false), clearInterval(s));
                 }
                 r += 0.025;
                 mag.position.y += r;
@@ -491,6 +597,7 @@
           object.maxshot += -burst;
           if (scene.children.indexOf(object) > -1) {
             gametime.run("hit", [(gametime.user.position == 1 ? 2 : 1)]);
+            (()=>{var e=new THREE.CircleGeometry(.75*Math.random(),25),o=new THREE.MeshBasicMaterial({color:"red"}),r=new THREE.Mesh(e,o);scene.add(r),r.position.set(otherPlayer.position.x,otherPlayer.position.y+2,otherPlayer.position.z),r.traverse((function(e){e.material&&(e.material.side=THREE.DoubleSide)})),setTimeout((()=>{scene.remove(r),delete r}),500)})();
             if (object.maxshot <= 0) {
               if (scene.children.indexOf(object) > -1) {
                 gametime.run("eleminate", [(gametime.user.position == 1 ? 2 : 1)]);
@@ -516,7 +623,7 @@
           health += -25;
           document.querySelector(".health").style.width = health + "%";
           if (health <= 1) {
-            gametime.run("eleminate", [gametime.user.position]);
+            gametime.run("eleminate", [gametime.user.position + ",1"]);
           } else {
             setTimeout(()=>{health=100,document.querySelector(".health").style.width=health+"%"},5000);
           }
@@ -528,13 +635,16 @@
       ascore = 0;
       bscore = 0;
       ref = false;
-      gametime.on("eleminate", function(player) {
+      gametime.on("eleminate", function(s) {
+        let player = s.split(",")[0];
+        let scored = s.split(",")[1] == "1";
         if (!ref) {
           ref = true;
-          player == 1 ? bscore += 1 : ascore += 1;
+          scored && (player == 1 ? bscore += 1 : ascore += 1);
+          (ascore >= 3 || bscore >= 3) ? GameOver() : void(0);
           setTimeout(() => {
             ref = false;
-          }, 500);
+          }, 5000);
         }
         if (!eventsEnabled) {
           return;
@@ -552,8 +662,10 @@
             dangerMode: true,
             icon: "error",
             title: "You died!",
-            text: "You will respawn in 5 seconds"
+            text: "You will respawn in 5 seconds",
+            button: false
           });
+          eventsEnabled = false;
           hwt = setTimeout(() => {
             ref = false;
             scene.add(myPlayer);
@@ -565,6 +677,7 @@
             magcount = 3;
             rounds = 36;
             scene.add(myPlayer);
+            eventsEnabled = true;
           }, 5000);
         } else {
           statusText.textContent = "+1 kill";
@@ -580,7 +693,7 @@
       });
       let v = false;
       let q = setInterval(() => {
-        if (gametime.connected && scene.children.indexOf(gun) && scene.children.indexOf(myPlayer) && !v) {
+        if (gametime.connected && scene.children.indexOf(gun) && scene.children.indexOf(myPlayer) && !v && wt) {
           document.querySelector(".loader-cover").remove();
           v = true;
           clearInterval(q);
