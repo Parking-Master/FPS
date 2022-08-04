@@ -175,6 +175,7 @@
           }).then(() => location.replace("/"));
         }
       }
+      otherCharacter = null;
       function handler(e){if(eventsEnabled){return}e.stopPropagation(),e.preventDefault()}document.addEventListener("mousemove",handler,!0);
       const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
       let o = setInterval(() => {
@@ -191,6 +192,7 @@
         }
         scene.remove(otherPlayer);
         let character = str.split(",")[0];
+        otherCharacter = character;
         character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
       });
       swal({
@@ -257,6 +259,7 @@
             !isFalling && (camera.position.y = 0);
           }
         }
+        scene.children.indexOf(myPlayer) && scene.remove(myPlayer);
         if (isFalling) { eventsEnabled = false }
         if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x<=-7&&camera.position.x>=-11) {
           isFalling = true;
@@ -331,10 +334,10 @@
           return;
         }
         let type = player.split(",")[1];
-        type=="forward"&&(otherForwardI=setInterval(()=>{otherPlayer.position.z+=-.02}));
-        type=="left"&&(otherLeftI=setInterval(()=>{otherPlayer.position.x+=-.02}));
-        type=="backward"&&(otherBackwardI=setInterval(()=>{otherPlayer.position.z+=.02}));
-        type=="right"&&(otherRightI=setInterval(()=>{otherPlayer.position.x+=.02}));
+        // type=="forward"&&(otherForwardI=setInterval(()=>{otherPlayer.position.z+=-.02}));
+        // type=="left"&&(otherLeftI=setInterval(()=>{otherPlayer.position.x+=-.02}));
+        // type=="backward"&&(otherBackwardI=setInterval(()=>{otherPlayer.position.z+=.02}));
+        // type=="right"&&(otherRightI=setInterval(()=>{otherPlayer.position.x+=.02}));
       });
       gametime.on("endMove", function(player) {
         if (player != gametime.user.position) {
@@ -385,9 +388,23 @@
       }
       character = (new URLSearchParams(location.search).get("character") || "default");
       character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{/*setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{let f=camera.position.y;backwardI=setInterval(()=>{if(!isJumping){camera.position.y=f}camera.translateZ(-.02)})})());(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.02})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.02}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.02}))});
+      document.addEventListener("keydown",(e)=>{gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),/*setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{let f=camera.position.y;backwardI=setInterval(()=>{if(!isJumping){camera.position.y=f}camera.translateZ(-.02)})})());(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.02})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.02}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.02}))});
       document.addEventListener("keyup",()=>{gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       animate();
+      gametime.make("playerMove");
+      gametime.on("playerMove", function(pos) {
+        if (pos.split(",")[3] == gametime.user.position) {
+          return;
+        }
+        otherPlayer.position.set(pos.split(",")[0]-0,pos.split(",")[1]-.8,pos.split(",")[2]-0);
+      });
+      gametime.make("playerRotate");
+      gametime.on("playerRotate", function(pos) {
+        if (pos.split(",")[3] == gametime.user.position) {
+          return;
+        }
+        otherCharacter == "fotus" ? otherPlayer.rotation.z = pos.split(",")[1]-0 : otherPlayer.rotation.y = pos.split(",")[1]-0;
+      });
       mapVertices = [
         {
           eval: (() => {
@@ -444,6 +461,9 @@
         });
         setTimeout(() => (isJumping = false), 1200);
       }
+      document.addEventListener("mousemove", function() {
+        gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
+      })
       gametime.make("playerJump");
       gametime.on("playerJump", function(player) {
         if (player == gametime.user.position) {
@@ -665,7 +685,6 @@
             text: "You will respawn in 5 seconds",
             button: false
           });
-          eventsEnabled = false;
           hwt = setTimeout(() => {
             ref = false;
             scene.add(myPlayer);
@@ -678,6 +697,11 @@
             rounds = 36;
             scene.add(myPlayer);
             eventsEnabled = true;
+            magcount = 3;
+            rounds = 36;
+            switchWeapon();
+            document.querySelector("#magcount").textContent = magcount;
+            document.querySelector("#counter").textContent = rounds;
           }, 5000);
         } else {
           statusText.textContent = "+1 kill";
