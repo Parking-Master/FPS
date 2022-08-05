@@ -8,12 +8,12 @@
       html, body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
-        cursor: url(./cursor4.png), auto !important;
+        cursor: url(./cursors/cursor2.png), auto !important;
         overflow: hidden !important;
         user-select: none !important;
       }
       * {
-        cursor: url(./cursor4.png), auto !important;
+        cursor: url(./cursors/cursor2.png), auto !important;
       }
       .scoreboard {
         position: absolute;
@@ -105,11 +105,10 @@
   <body style="margin:0!important;">
     <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
     <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
-    <audio id="ambience" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/ambience.mp3" autoplay loop volume="1"></audio>
-    <audio id="shot" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sound.mp3"></audio>
-    <audio id="reload" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/reload.mp3"></audio>
+    <audio id="ambience" src="https://fps5.ml/sounds/ambience.mp3" autoplay loop volume="1"></audio>
+    <audio id="shot" src="https://fps5.ml/sounds/shot.mp3"></audio>
+    <audio id="reload" src="https://fps5.ml/sounds/reload.mp3"></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/kripken/ammo.js/builds/ammo.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <script>
@@ -125,9 +124,9 @@
         <div class="health"></div>
       </div>
       <div class="statustext"></div>
-      <img src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
-      <img class="crosshair" src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS/crosshair.png" width="10%" />
-      <span id="rounds"><img src="https://fps5.ml/handheld.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+      <img src="https://fps5.ml/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
+      <img class="crosshair" src="https://fps5.ml/images/crosshair.png" width="10%" />
+      <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <script>
       userIds = [];
@@ -210,11 +209,11 @@
       controls.isLocked = true;
       controls.pointerSpeed = 2;
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
-      let loader=new THREE.TextureLoader;loader.load("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/S-qZRAdPiqqgmzw2/videoblocks-a-time-lapse-of-flying-above-the-clouds_hhl8khudw_thumbnail-1080_10.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
+      let loader=new THREE.TextureLoader;loader.load("https://fps5.ml/images/clouds2.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
       groundGeometry = new THREE.CircleGeometry(30, 50);
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://images.creativemarket.com/0.1.0/ps/6285824/1820/1214/m1/fpnw/wm1/pdoljwzfohfnaadofyq7kl82ttb8a548ydp0c8wdp12abli0sfollywetaojozln-.jpg?1555951636&s=81a26f9928e47104075b066a0d59be47") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
-      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://raw.githubusercontent.com/Parking-Master/FPS/main/stone.png") }));
+      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://fps5.ml/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
       light=new THREE.HemisphereLight(0xffffff,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
@@ -297,9 +296,9 @@
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
         let cp=otherPlayer.position.clone();cp.y+=4.5;let threshold=.65,positionScreenSpace=cp.project(camera);positionScreenSpace.setZ(0),isCloseToCenter=(positionScreenSpace.length()<threshold&&!outOfView),pointed=isCloseToCenter?otherPlayer:void(0);
         if (isCloseToCenter) {
-          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/crosshair-aim.png");
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
         } else {
-          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/crosshair.png");
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
         }
         follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         // if (!d) {
@@ -353,8 +352,8 @@
       function switchWeapon() {
         let newWeapon = currentWeapon == "rifle" ? "pistol" : "rifle";
         currentWeapon = newWeapon;
-        newWeapon == "pistol" ? (sights.src = "https://cdn.jsdelivr.net/gh/Parking-Master/FPS/sights.png") : (sights.src = "https://cdn.jsdelivr.net/gh/Parking-Master/FPS/scope.png");
-        newWeapon == "rifle" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/handheld.png");
+        newWeapon == "pistol" ? (sights.src = "https://fps5.ml/sights.png") : (sights.src = "https://fps5.ml/scope.png");
+        newWeapon == "rifle" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/rifle/rifle.png");
         newWeapon == "pistol" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/pistol/pistol.png");
         scene.remove(gun);
         camera.remove(gun);
