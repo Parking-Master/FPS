@@ -11,6 +11,8 @@
         cursor: url(./cursors/cursor2.png), auto !important;
         overflow: hidden !important;
         user-select: none !important;
+        transition: top .2s;
+        background: #eeeeee;
       }
       * {
         cursor: url(./cursors/cursor2.png), auto !important;
@@ -59,6 +61,9 @@
         background: transparent !important;
         pointer-events: none !important;
       }
+      .swal-title {
+        font-size: 30px;
+      }
       .crosshair {
         position: absolute;
         left: 50% !important;
@@ -87,22 +92,24 @@
         border: 2px solid #fff;
         z-index: 9999;
       }
+      body {
+        top: 0px;
+      }
       .statustext {
-        position: absolute;
-        left: 50%;
-        width: 200px;
+        position: relative;
+        text-align: center;
         top: 40%;
-        margin: 0;
         padding: 0;
-        margin-left: -100px;
-        font-size: 18px;
+        font-size: 25px;
         color: #fff;
+        font-weight: 600;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
   <body style="margin:0!important;">
+    <p id="maptext" style="display:none;position:absolute;left:50%;width:300px;padding:0;margin-left:-100px;font-weight:100;color:#fff;font-size:50px;">Haven</p>
     <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
     <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
     <audio id="ambience" src="https://fps5.ml/sounds/ambience.mp3" autoplay loop volume="1"></audio>
@@ -174,6 +181,7 @@
           }).then(() => location.replace("/"));
         }
       }
+      function startGame(){document.querySelector("#maptext").style.display="block";setTimeout(()=>{document.querySelector(".ui").style.display="none",scene.remove(gun),eventsEnabled=!1,freezeFrame=true,camera.position.y=10,camera.rotation.set(0,Math.PI/2,0);let e=setInterval((()=>{camera.rotation.y+=.001})),t=document.createElement("div");t.style="position:absolute;left:0;top:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;background:#000;opacity:0;z-index:99999;transition:opacity .2s",document.body.appendChild(t);let k=setInterval((()=>(camera.rotation._y>=Math.PI)&&(clearInterval(e),document.querySelector("#maptext").remove(),(()=>{let e=setInterval((()=>{camera.position.y<=0&&(freezeFrame=false,document.querySelector(".ui").style.display="block",scene.add(gun),t.style.opacity="0.5",(()=>{swal({text:"Starting...",title:"3",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"2",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"1",button:false})},1000)},1000)})(),setTimeout(()=>{t.remove(),swal.close(),eventsEnabled=true},3000),clearInterval(e))||(camera.position.y+=-.05)}))})(),clearInterval(k))),8250)},2500)}
       otherCharacter = null;
       function handler(e){if(eventsEnabled){return}e.stopPropagation(),e.preventDefault()}document.addEventListener("mousemove",handler,!0);
       const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
@@ -181,7 +189,7 @@
         if (typeof gametime.idList != "undefined" && gametime.idList.length >= 2) {
           allowedToStart = true;
           gametime.run("postPlayerCType", [character + "," + gametime.user.position]);
-          return swal.close(), clearInterval(o), eventsEnabled = true;
+          return swal.close(), startGame(), clearInterval(o), eventsEnabled = true;
         }
       });
       gametime.make("postPlayerCType");
@@ -209,7 +217,7 @@
       controls.isLocked = true;
       controls.pointerSpeed = 2;
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
-      let loader=new THREE.TextureLoader;loader.load("https://fps5.ml/images/clouds2.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
+      let loader=new THREE.TextureLoader;loader.load("https://fps5.ml/images/clouds3.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
       groundGeometry = new THREE.CircleGeometry(30, 50);
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://images.creativemarket.com/0.1.0/ps/6285824/1820/1214/m1/fpnw/wm1/pdoljwzfohfnaadofyq7kl82ttb8a548ydp0c8wdp12abli0sfollywetaojozln-.jpg?1555951636&s=81a26f9928e47104075b066a0d59be47") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -248,26 +256,37 @@
       map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.OBJLoader).load("https://fps5.ml/models/maps/model/Haven.obj",(e)=>{scene.add(e);wt=true;map=e,map.scale.set(.016,.016,.016),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=2}));
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
       canShake = true;
+      freezeFrame = false;
+      function freezeFrameFunction(seconds) {
+        freezeFrame = true;
+        setTimeout(() => { freezeFrame = false }, seconds * 1000);
+      }
+      defaultY = 0;
+      fallingAcc = .005;
+      var raycaster=new THREE.Raycaster();
       function animate() {
+        raycastTargets=[otherPlayer];
         if (typeof(mapVertices) != "undefined" && !isJumping) {
           if (mapVertices[0].eval()) {
             camera.position.y = mapVertices[0].rd;
           } else if (mapVertices[1].eval()) {
             camera.position.y = mapVertices[1].rd;
           } else {
-            !isFalling && (camera.position.y = 0);
+            (!isFalling && !freezeFrame) && (camera.position.y = defaultY);
           }
         }
         scene.children.indexOf(myPlayer) && scene.remove(myPlayer);
         if (isFalling) { eventsEnabled = false }
-        if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x<=-7&&camera.position.x>=-11) {
+        if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x<=-7&&camera.position.x>=-11&&camera.position.y<=defaultY+.1) {
           isFalling = true;
-          camera.position.y += -.25;
-          shake(1, 1, .01, true)
-        } else if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x>=7&&camera.position.x<=11) {
+          fallingAcc += -.0025;
+          camera.position.y += fallingAcc;
+          camera.position.y <= -5 && shake(1, 1, .01, true);
+        } else if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x>=7&&camera.position.x<=11&&camera.position.y<=defaultY+.1) {
           isFalling = true;
-          camera.position.y += -.25;
-          shake(1, 1, .01, true)
+          fallingAcc += -.0025;
+          camera.position.y += fallingAcc;
+          camera.position.y <= -5 && shake(1, 1, .01, true);
         }
         if (camera.position.y <= -20 && !didFallToDeath) {
           didFallToDeath = true;
@@ -283,6 +302,7 @@
             didFallToDeath = false;
             canShake = false;
             isFalling = false;
+            fallingAcc = .005;
             camera.position.set(0,0,8);
             setTimeout(() => {
               camera.rotation.set(0,Math.PI,0);
@@ -294,12 +314,22 @@
         }
         light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
-        let cp=otherPlayer.position.clone();cp.y+=4.5;let threshold=.65,positionScreenSpace=cp.project(camera);positionScreenSpace.setZ(0),isCloseToCenter=(positionScreenSpace.length()<threshold&&!outOfView),pointed=isCloseToCenter?otherPlayer:void(0);
-        if (isCloseToCenter) {
+        center=new THREE.Vector2(0,0);
+        camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
+        if (intersection != null && (intersection.object.name == "Untitled-54ea0c5f" || (intersection.object.type == "LineSegments"))) {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
+          pointed = otherPlayer;
         } else {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
+          pointed = null;
         }
+        (camera.position.z.toFixed(0)=="8"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=0));
+        (camera.position.z.toFixed(0)=="7"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=-.625));
+        (camera.position.z.toFixed(0)=="6"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=-1.25));
+        (camera.position.z.toFixed(0)=="5"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=-1.875));
+        (camera.position.z.toFixed(0)=="4"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=-2.5));
+        (camera.position.x>=-8&&camera.position.x<=-5&&camera.position.z.toFixed(1)=="4.3"&&(defaultY=-2.8));
+        (camera.position.x>=-8&&camera.position.x<=-5&&camera.position.z.toFixed(1)=="6"&&(defaultY=-3.1));
         follower.position.set(camera.position.x,camera.position.y,camera.position.z);
         // if (!d) {
         //   gun.position.y += 0.0025;
@@ -387,7 +417,7 @@
       }
       character = (new URLSearchParams(location.search).get("character") || "default");
       character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),/*setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{let f=camera.position.y;backwardI=setInterval(()=>{if(!isJumping){camera.position.y=f}camera.translateZ(-.02)})})());(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.02})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.02}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.02}))});
+      document.addEventListener("keydown",(e)=>{/*gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{let f=camera.position.y;backwardI=setInterval(()=>{if(!isJumping){camera.position.y=f}camera.translateZ(-.02)})})());(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.02})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.02}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.02}))});
       document.addEventListener("keyup",()=>{gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       animate();
       gametime.make("playerMove");
@@ -446,7 +476,7 @@
                 } else if (mapVertices[1].eval()) {
                   rd = mapVertices[1].rd;
                 } else {
-                  rd = 0;
+                  rd = defaultY;
                 }
               }
             });
@@ -529,6 +559,8 @@
           gun.position.y += t;
         });
       }
+      let c = document.createElement("audio");
+      c.src = shot.src;
       function fire(burst) {
         if (!allowedToStart) {
           return;
@@ -540,21 +572,6 @@
         }
         if (reloading) {
           return;
-        }
-        shot.play();
-        for (let i = 0; i < burst -1; i++) {
-          (function(x) {
-            let c = document.createElement("audio");
-            c.src = shot.src;
-            c.currentTime = .1;
-            setTimeout(() => {
-              document.body.appendChild(c);
-              c.play();
-              setTimeout(() => {
-                c.remove();
-              }, 1000);
-            }, 200 + (70 * x));
-          })(i);
         }
         (document.getElementById("rounds").querySelector("#counter").textContent = rounds);
         let burstfire = 0;
@@ -629,6 +646,19 @@
             }
           }
         }, 75);
+        shot.play();
+        for (let i = 0; i < burst -1; i++) {
+          (function(x) {
+            c.currentTime = .1;
+            setTimeout(() => {
+              document.body.appendChild(c);
+              c.play();
+              setTimeout(() => {
+                c.currentTime = .1;
+              }, 1000);
+            }, 200 + (70 * x));
+          })(i);
+        }
         setTimeout(() => {
           clearInterval(h);
         }, 100);
@@ -704,6 +734,8 @@
           }, 5000);
         } else {
           statusText.textContent = "+1 kill";
+          document.body.style.top = "30px";
+          document.querySelector(".health-wrapper").style.top = "30px";
           for (let u = 0; u < 2; u++) {
             scene.remove(otherPlayer);
           }
@@ -712,6 +744,8 @@
           scene.add(otherPlayer);
           otherPlayer.position.set(0, 0, 0);
           statusText.textContent = "";
+          document.body.style.top = "0px";
+          document.querySelector(".health-wrapper").style.top = "30px";
         }, 5000);
       });
       let v = false;
