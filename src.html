@@ -112,6 +112,9 @@
     <p id="maptext" style="display:none;position:absolute;left:50%;width:300px;padding:0;margin-left:-100px;font-weight:100;color:#fff;font-size:50px;">Haven</p>
     <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
     <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
+    <audio id="explosion" src="https://fps5.ml/sounds/explosion.mp3" volume="1" current-time=".1"></audio>
+    <audio id="intro" src="https://fps5.ml/sounds/intro.mp3" volume=".75"></audio>
+    <audio id="walking" src="https://fps5.ml/sounds/walking.mp3" loop volume="1"></audio>
     <audio id="ambience" src="https://fps5.ml/sounds/ambience.mp3" autoplay loop volume="1"></audio>
     <audio id="shot" src="https://fps5.ml/sounds/shot.mp3"></audio>
     <audio id="reload" src="https://fps5.ml/sounds/reload.mp3"></audio>
@@ -136,6 +139,9 @@
       <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <script>
+      walking = document.querySelector("#walking");
+      intro = document.querySelector("#intro");
+      explosion = document.querySelector("#explosion");
       userIds = [];
       wt = false;
       map = new URLSearchParams(location.search).get("map") || "Vertex";
@@ -162,7 +168,8 @@
       const scene = new THREE.Scene();
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
       let gun = new THREE.Mesh();
-      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s)}));
+      gun.type = "PreDefined";
+      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
         if ((ascore >= 3 && gametime.user.position == 1) || (bscore >= 3 && gametime.user.position == 2)) {
@@ -181,7 +188,15 @@
           }).then(() => location.replace("/"));
         }
       }
-      function startGame(){document.querySelector("#maptext").style.display="block";setTimeout(()=>{document.querySelector(".ui").style.display="none",scene.remove(gun),eventsEnabled=!1,freezeFrame=true,camera.position.y=10,camera.rotation.set(0,Math.PI/2,0);let e=setInterval((()=>{camera.rotation.y+=.001})),t=document.createElement("div");t.style="position:absolute;left:0;top:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;background:#000;opacity:0;z-index:99999;transition:opacity .2s",document.body.appendChild(t);let k=setInterval((()=>(camera.rotation._y>=Math.PI)&&(clearInterval(e),document.querySelector("#maptext").remove(),(()=>{let e=setInterval((()=>{camera.position.y<=0&&(freezeFrame=false,document.querySelector(".ui").style.display="block",scene.add(gun),t.style.opacity="0.5",(()=>{swal({text:"Starting...",title:"3",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"2",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"1",button:false})},1000)},1000)})(),setTimeout(()=>{t.remove(),swal.close(),eventsEnabled=true},3000),clearInterval(e))||(camera.position.y+=-.05)}))})(),clearInterval(k))),8250)},2500)}
+      function startGame(){
+      intro.play();
+      let das;/*document.querySelector("#maptext").style.display="block";*/setTimeout(()=>{document.querySelector(".ui").style.display="none",das=setInterval(()=>scene.remove(gun)),eventsEnabled=!1,freezeFrame=true,camera.position.y=10,camera.rotation.set(0,Math.PI/2,0);let e=setInterval((()=>{camera.rotation.y+=.001})),t=document.createElement("div");t.style="position:absolute;left:0;top:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;background:#000;opacity:0;z-index:99999;transition:opacity .2s",document.body.appendChild(t);
+      let k=setInterval((()=>{
+        if(!(camera.rotation.y>=Math.PI-1)){
+          return;
+        }
+        (()=>{clearInterval(e),document.querySelector("#maptext").remove(),(()=>{let e=setInterval((()=>{camera.position.y<=0&&(freezeFrame=false,document.querySelector(".ui").style.display="block",clearInterval(das),scene.add(gun),t.style.opacity="0.5",(()=>{swal({text:"Starting...",title:"3",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"2",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"1",button:false})},1000)},1000)})(),setTimeout(()=>{t.remove(),swal.close(),eventsEnabled=true},3000),clearInterval(e))||(camera.position.y+=-.05)}))})(),clearInterval(k)})()
+      }),8250)},2500)}
       otherCharacter = null;
       function handler(e){if(eventsEnabled){return}e.stopPropagation(),e.preventDefault()}document.addEventListener("mousemove",handler,!0);
       const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
@@ -221,10 +236,10 @@
       groundGeometry = new THREE.CircleGeometry(30, 50);
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://images.creativemarket.com/0.1.0/ps/6285824/1820/1214/m1/fpnw/wm1/pdoljwzfohfnaadofyq7kl82ttb8a548ydp0c8wdp12abli0sfollywetaojozln-.jpg?1555951636&s=81a26f9928e47104075b066a0d59be47") });
       ground = new THREE.Mesh(groundGeometry, groundMaterial);
-      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://fps5.ml/stone.png") }));
+      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://fps5.ml/images/stone.png") }));
       MapBorder.rotation.x = 1.6;
       MapBorder.position.y = -2;
-      light=new THREE.HemisphereLight(0xffffff,4),light.position.set(0,50,0),light.castShadow=!1,scene.add(light);
+      light=new THREE.HemisphereLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);
       map == "Vertex" && scene.add(MapBorder);
       d = true;
       forwardI = 13;
@@ -252,8 +267,8 @@
       }
       didFallToDeath = false;
       let follower = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: "red" }));
-      map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),scene.children[19].e.children[0].material[0].color.setHex(0x492505),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
-      map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.OBJLoader).load("https://fps5.ml/models/maps/model/Haven.obj",(e)=>{scene.add(e);wt=true;map=e,map.scale.set(.016,.016,.016),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=2}));
+      map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{document.querySelector(".loader-cover").remove();const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),e.children[0].material[0].color.setHex(0x492505),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.OBJLoader).load("https://fps5.ml/models/maps/model/Haven.obj",(e)=>{scene.add(e);wt=true;map=e,map.scale.set(.016,.016,.016),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=1.6}));
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
       canShake = true;
       freezeFrame = false;
@@ -263,6 +278,7 @@
       }
       defaultY = 0;
       fallingAcc = .005;
+      afixed = true;
       var raycaster=new THREE.Raycaster();
       function animate() {
         raycastTargets=[otherPlayer];
@@ -279,11 +295,17 @@
         if (isFalling) { eventsEnabled = false }
         if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x<=-7&&camera.position.x>=-11&&camera.position.y<=defaultY+.1) {
           isFalling = true;
+          afixed = false;
+          eventsEnabled = false;
+          allowedToStart = false;
           fallingAcc += -.0025;
           camera.position.y += fallingAcc;
           camera.position.y <= -5 && shake(1, 1, .01, true);
         } else if (camera.position.z>=19&&camera.position.z<=27&&camera.position.x>=7&&camera.position.x<=11&&camera.position.y<=defaultY+.1) {
           isFalling = true;
+          afixed = false;
+          eventsEnabled = false;
+          allowedToStart = false;
           fallingAcc += -.0025;
           camera.position.y += fallingAcc;
           camera.position.y <= -5 && shake(1, 1, .01, true);
@@ -309,10 +331,13 @@
               eventsEnabled = true;
               canShake = true;
               swal.close();
+              eventsEnabled = true;
+              afixed = true;
+              allowedToStart = true;
             }, 500);
           }, 5000);
         }
-        light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
+        // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z);
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
         center=new THREE.Vector2(0,0);
         camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
@@ -388,14 +413,16 @@
         scene.remove(gun);
         camera.remove(gun);
         gun = new THREE.Mesh();
-        newWeapon == "pistol" && (new THREE.OBJLoader).load("https://fps5.ml/models/pistol/pistol.obj",(e=>{const s=e;(gun=s),s.scale.set(.01,.01,.01),scene.add(s),gun.translateZ(-.5),gun.translateY(-.2),gun.translateX(.5)}));
-        newWeapon == "rifle" && ((gun=plr),gun.scale.set(.01,.01,.01),scene.add(gun));
+        gun.type = "PreDefined";
+        newWeapon == "pistol" && (new THREE.OBJLoader).load("https://fps5.ml/models/pistol/pistol.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),scene.add(s),gun.translateZ(-.5),gun.translateY(-.2),gun.translateX(.5)}));
+        newWeapon == "rifle" && ((gun=plr),gun.children[0].material.color.setHex(0x555555),gun.scale.set(.01,.01,.01),scene.add(gun));
         newWeapon == "rifle" ? br = 3 : br = 1;
         setTimeout(() => {
           newWeapon != "rifle" && scene.add(gun);
           newWeapon != "rifle" && camera.add(gun);
         }, 250);
       }
+      shakeint = 13;
       function shake(seconds, intensity, rate, animate) {
         if (!canShake) {
           return clearInterval(o);
@@ -406,19 +433,67 @@
           let o = setInterval(() => {
             if (e) { let h = setInterval(() => { if (t >= rate) { e = false, clearInterval(h) } else { t += 0.005; camera.rotation.x += t; } }); } else { let h = setInterval(() => { if (t <= 0) { e = true, clearInterval(h) } else { t += -0.005; camera.rotation.x += -t; } }); }
           }, 255 / intensity);
+          shakeint = o;
           setTimeout(() => clearInterval(o), seconds * 1000);
         } else {
           let e = true;
           let o = setInterval(() => {
             if (e) { camera.rotation.x += rate; e = false } else { camera.rotation.x += -rate; e = true }
           }, 255 / intensity);
+          shakeint = o;
           setTimeout(() => clearInterval(o), seconds * 1000);
         }
       }
+      function stopShake() {
+        canShake = false;
+        clearInterval(shakeint);
+        canShake = true;
+      }
+      function moveUp() {
+        if (!eventsEnabled || !allowedToStart) {
+          return;
+        }
+        !isJumping && walking.play();
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{shake(600, .9, .01, false);let f=camera.position.y;forwardI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}if(!isJumping){afixed&&(camera.position.y=f)}camera.translateZ(isJumping?-.01:-.02)})})());
+      }
+      function moveDown() {
+        if (!eventsEnabled || !allowedToStart) {
+          return;
+        }
+        !isJumping && walking.play();
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),(()=>{shake(600, .9, .01, false);let f=camera.position.y;backwardI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}if(!isJumping){afixed&&(camera.position.y=f)}camera.translateZ(isJumping?.01:.02)})})());
+      }
+      grenadeCount = 2;
+      grenadeCooldown = 0;
+      function throwGrenade() {
+        if (grenadeCount <= 0 || grenadeCooldown > 0) {
+          return;
+        }
+        grenadeCount--;
+        grenadeCooldown = 1;
+        (()=>{let h,canmove=true;const grenade=new THREE.Mesh(new THREE.SphereGeometry(.1,10),new THREE.MeshPhongMaterial({color:0x6a6e49,emissive:new THREE.Color(0x0c0c0c),shininess:0,side:THREE.DoubleSide}));grenade.castShadow=true,grenade.recieveShadow=true,grenade.rotation.set(0,-camera.rotation.y-.1,0),scene.add(grenade),grenade.position.set(camera.position.x+1,camera.position.y+.25,camera.position.z);let m=setInterval(()=>{if(canmove){grenade.translateZ(.02),grenade.translateY(-.01)}});setTimeout(()=>{const grenadeFlash=new THREE.Mesh(new THREE.SphereGeometry(2*Math.random(),10),new THREE.MeshPhongMaterial({color:0xffffff,emissive:new THREE.Color(0x0c0c0c),shininess:0,side:THREE.DoubleSide}));grenadeFlash.position.set(grenade.position.x,grenade.position.y,grenade.position.z);var firstObject=grenadeFlash,secondObject=otherPlayer,thirdObject=follower;firstBB=(new THREE.Box3).setFromObject(firstObject),secondBB=(new THREE.Box3).setFromObject(secondObject),thirdBB=(new THREE.Box3).setFromObject(thirdObject);var collision=(firstBB.intersectsBox(secondBB));firstBB.intersectsBox(thirdBB)&&gametime.run("eleminate",[gametime.user.position]);collision&&(gametime.run("eleminate",[gametime.user.position==1?2:1])),explosion.play(),scene.add(grenadeFlash),shake(1,1.6,.025,true);let o=setInterval(()=>{if(light.intensity>=50){return(h=setInterval(()=>{if(light.intensity<=2){return(clearInterval(h),scene.remove(grenadeFlash))}light.intensity+=-1}),clearInterval(o))}light.intensity+=1},5);clearInterval(m),scene.remove(grenade)},2000)})();
+        setTimeout(() => {
+          grenadeCooldown = 0;
+        }, 1000);
+      }
+      function moveLeft() {
+        if (!eventsEnabled || !allowedToStart) {
+          return;
+        }
+        !isJumping && walking.play();
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),shake(600, .9, .01, false),leftI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?-.01:-.02)}));
+      }
+      function moveRight() {
+        if (!eventsEnabled || !allowedToStart) {
+          return;
+        }
+        !isJumping && walking.play();
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),shake(600, .9, .01, false),rightI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?.01:.02)}));
+      }
       character = (new URLSearchParams(location.search).get("character") || "default");
       character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{/*gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{let f=camera.position.y;backwardI=setInterval(()=>{if(!isJumping){camera.position.y=f}camera.translateZ(-.02)})})());(!e.repeat&&e.key=="ArrowDown")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),backwardI=setInterval(()=>{camera.position.z+=.02})),(!e.repeat&&e.key=="ArrowLeft")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),leftI=setInterval(()=>{camera.position.x+=-.02}));(!e.repeat&&e.key=="ArrowRight")&&(gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),rightI=setInterval(()=>{camera.position.x+=.02}))});
-      document.addEventListener("keyup",()=>{gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
+      document.addEventListener("keydown",(e)=>{/*gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
+      document.addEventListener("keyup",()=>{walking.pause(),walking.currentTime=0;for(let i=0;i<5;i++){stopShake()}gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       animate();
       gametime.make("playerMove");
       gametime.on("playerMove", function(pos) {
@@ -755,7 +830,77 @@
           v = true;
           clearInterval(q);
         }
-      })
+      });
+      (() => {
+        let ul = false;
+        let al = false;
+        let tl = false;
+        let kl = false;
+        let hl = false;
+        let dl = false;
+        function gameLoop(){if(!document.hasFocus()){return}(()=>{let o=navigator.getGamepads()[0];(1==o.axes[0]&&!right)?(right=true,moveRight(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(clearInterval(rightI),right=false),(-1==o.axes[0]&&!left)?(left=true,moveLeft(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(clearInterval(leftI),left=false)})();var e=navigator.getGamepads()[0];if(e&&e.connected){e.axes;var a=e.buttons;for(var o in a){1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[16]&&!ul)&&(()=>{fire(br),ul=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),ul=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[0]&&!al)&&(()=>{jump(),al=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),al=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[7]&&!tl)&&(()=>{reload(),tl=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),tl=false}})})())}}}var game_loop;window.addEventListener("gamepadconnected",(function(e){game_loop=setInterval(gameLoop,50)}));
+        Gamepad.JoyStick.RightMoved = () => {
+          if(!document.hasFocus()){return}
+          if (!kl) {
+            kl = true;
+            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position]);
+            moveDown();
+          }
+        };
+        Gamepad.JoyStick.RightCanceled = () => {
+          if(!document.hasFocus()){return}
+          if (kl) {
+            kl = false;
+            clearInterval(backwardI);
+          }
+        };
+        Gamepad.JoyStick.LeftMoved = () => {
+          if(!document.hasFocus()){return}
+          if (!hl) {
+            hl = true;
+            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position]);
+            moveUp();
+          }
+        };
+        Gamepad.JoyStick.LeftCanceled = () => {
+          if(!document.hasFocus()){return}
+          if (hl) {
+            hl = false;
+            clearInterval(forwardI);
+          }
+        };
+        Gamepad.D.LeftButtonPressed = function() {
+          if(!document.hasFocus()){return}
+          bulletPositionX = 0;
+          if (!zoomedInAuto && !dl) {
+            for (let i = 0; i < 11; i++) {
+              dl = true;
+              let o = setInterval(() => {
+                if (!gamepads[0].buttons[14].pressed && dl) { dl = false; clearInterval(o) }
+              });
+              isZoomed = true;
+              zoomedInAuto = true;
+              zoomInFunction();
+              sights.style.display = "block";
+            }
+            setTimeout(() => (dl = false), 2000);
+          }
+          Gamepad.Context.YButtonPressed = function() {
+            if (!dl) {
+              bulletPositionX = gun.position.x;
+              for (let i = 0; i < 11; i++) {
+                isZoomed = false;
+                zoomedInAuto = false;
+                zoomOutFunction();
+                sights.style.display = "none";
+              }
+            }
+          }
+          Gamepad.Context.XButtonPressed = function() {
+            switchWeapon();
+          }
+        };
+      })();
     </script>
   </body>
 </html>
