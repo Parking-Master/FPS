@@ -142,6 +142,7 @@
       <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <script>
+      (()=>{let EventDispatcher=THREE.EventDispatcher,MOUSE=THREE.MOUSE,Quaternion=THREE.Quaternion,Vector2=THREE.Vector2,Vector3=THREE.Vector3;const _changeEvent={type:"change"},_startEvent={type:"start"},_endEvent={type:"end"};class TrackballControls extends EventDispatcher{constructor(e,t){super(),void 0===t&&console.warn('THREE.TrackballControls: The second parameter "domElement" is now mandatory.'),t===document&&console.error('THREE.TrackballControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');const o=this,n=-1,c=0,i=1,a=2,s=3,r=4;this.object=e,this.domElement=t,this.domElement.style.touchAction="none",this.enabled=!0,this.screen={left:0,top:0,width:0,height:0},this.rotateSpeed=1,this.zoomSpeed=1.2,this.panSpeed=.3,this.noRotate=!1,this.noZoom=!1,this.noPan=!1,this.staticMoving=!1,this.dynamicDampingFactor=.2,this.minDistance=0,this.maxDistance=1/0,this.keys=["KeyA","KeyS","KeyD"],this.mouseButtons={LEFT:MOUSE.ROTATE,MIDDLE:MOUSE.DOLLY,RIGHT:MOUSE.PAN},this.target=new Vector3;const p=1e-6,d=new Vector3;let m=1,l=n,h=n,u=0,E=0,g=0;const y=new Vector3,b=new Vector2,v=new Vector2,w=new Vector3,f=new Vector2,j=new Vector2,L=new Vector2,V=new Vector2,T=[],k={};this.target0=this.target.clone(),this.position0=this.object.position.clone(),this.up0=this.object.up.clone(),this.zoom0=this.object.zoom,this.handleResize=function(){const e=o.domElement.getBoundingClientRect(),t=o.domElement.ownerDocument.documentElement;o.screen.left=e.left+window.pageXOffset-t.clientLeft,o.screen.top=e.top+window.pageYOffset-t.clientTop,o.screen.width=e.width,o.screen.height=e.height};const D=function(){const e=new Vector2;return function(t,n){return e.set((t-o.screen.left)/o.screen.width,(n-o.screen.top)/o.screen.height),e}}(),C=function(){const e=new Vector2;return function(t,n){return e.set((t-.5*o.screen.width-o.screen.left)/(.5*o.screen.width),(o.screen.height+2*(o.screen.top-n))/o.screen.width),e}}();function R(e){!1!==o.enabled&&(0===T.length&&(o.domElement.setPointerCapture(e.pointerId),o.domElement.addEventListener("pointermove",Y),o.domElement.addEventListener("pointerup",x)),function(e){T.push(e)}(e),"touch"===e.pointerType?function(e){if(1===(H(e),T.length))l=s,v.copy(C(T[0].pageX,T[0].pageY)),b.copy(v);else{l=r;const e=T[0].pageX-T[1].pageX,t=T[0].pageY-T[1].pageY;E=u=Math.sqrt(e*e+t*t);const o=(T[0].pageX+T[1].pageX)/2,n=(T[0].pageY+T[1].pageY)/2;L.copy(D(o,n)),V.copy(L)}o.dispatchEvent(_startEvent)}(e):function(e){if(l===n)switch(e.button){case o.mouseButtons.LEFT:l=c;break;case o.mouseButtons.MIDDLE:l=i;break;case o.mouseButtons.RIGHT:l=a}const t=h!==n?h:l;t!==c||o.noRotate?t!==i||o.noZoom?t!==a||o.noPan||(L.copy(D(e.pageX,e.pageY)),V.copy(L)):(f.copy(D(e.pageX,e.pageY)),j.copy(f)):(v.copy(C(e.pageX,e.pageY)),b.copy(v));o.dispatchEvent(_startEvent)}(e))}function Y(e){!1!==o.enabled&&("touch"===e.pointerType?function(e){if(1===(H(e),T.length))b.copy(v),v.copy(C(e.pageX,e.pageY));else{const t=function(e){const t=e.pointerId===T[0].pointerId?T[1]:T[0];return k[t.pointerId]}(e),o=e.pageX-t.x,n=e.pageY-t.y;E=Math.sqrt(o*o+n*n);const c=(e.pageX+t.x)/2,i=(e.pageY+t.y)/2;V.copy(D(c,i))}}(e):function(e){const t=h!==n?h:l;t!==c||o.noRotate?t!==i||o.noZoom?t!==a||o.noPan||V.copy(D(e.pageX,e.pageY)):j.copy(D(e.pageX,e.pageY)):(b.copy(v),v.copy(C(e.pageX,e.pageY)))}(e))}function x(e){!1!==o.enabled&&("touch"===e.pointerType?function(e){switch(T.length){case 0:l=n;break;case 1:l=s,v.copy(C(e.pageX,e.pageY)),b.copy(v);break;case 2:l=r,v.copy(C(e.pageX-b.x,e.pageY-b.y)),b.copy(v)}o.dispatchEvent(_endEvent)}(e):(l=n,o.dispatchEvent(_endEvent)),I(e),0===T.length&&(o.domElement.releasePointerCapture(e.pointerId),o.domElement.removeEventListener("pointermove",Y),o.domElement.removeEventListener("pointerup",x)))}function z(e){I(e)}function S(e){!1!==o.enabled&&(window.removeEventListener("keydown",S),h===n&&(e.code!==o.keys[c]||o.noRotate?e.code!==o.keys[i]||o.noZoom?e.code!==o.keys[a]||o.noPan||(h=a):h=i:h=c))}function M(){!1!==o.enabled&&(h=n,window.addEventListener("keydown",S))}function X(e){if(!1!==o.enabled&&!0!==o.noZoom){switch(e.preventDefault(),e.deltaMode){case 2:f.y-=.025*e.deltaY;break;case 1:f.y-=.01*e.deltaY;break;default:f.y-=25e-5*e.deltaY}o.dispatchEvent(_startEvent),o.dispatchEvent(_endEvent)}}function P(e){!1!==o.enabled&&e.preventDefault()}function I(e){delete k[e.pointerId];for(let t=0;t<T.length;t++)if(T[t].pointerId==e.pointerId)return void T.splice(t,1)}function H(e){let t=k[e.pointerId];void 0===t&&(t=new Vector2,k[e.pointerId]=t),t.set(e.pageX,e.pageY)}this.rotateCamera=function(){const e=new Vector3,t=new Quaternion,n=new Vector3,c=new Vector3,i=new Vector3,a=new Vector3;return function(){a.set(v.x-b.x,v.y-b.y,0);let s=a.length();s?(y.copy(o.object.position).sub(o.target),n.copy(y).normalize(),c.copy(o.object.up).normalize(),i.crossVectors(c,n).normalize(),c.setLength(v.y-b.y),i.setLength(v.x-b.x),a.copy(c.add(i)),e.crossVectors(a,y).normalize(),s*=o.rotateSpeed,t.setFromAxisAngle(e,s),y.applyQuaternion(t),o.object.up.applyQuaternion(t),w.copy(e),g=s):!o.staticMoving&&g&&(g*=Math.sqrt(1-o.dynamicDampingFactor),y.copy(o.object.position).sub(o.target),t.setFromAxisAngle(w,g),y.applyQuaternion(t),o.object.up.applyQuaternion(t)),b.copy(v)}}(),this.zoomCamera=function(){let e;l===r?(e=u/E,u=E,o.object.isPerspectiveCamera?y.multiplyScalar(e):o.object.isOrthographicCamera?(o.object.zoom/=e,o.object.updateProjectionMatrix()):console.warn("THREE.TrackballControls: Unsupported camera type")):(e=1+(j.y-f.y)*o.zoomSpeed,1!==e&&e>0&&(o.object.isPerspectiveCamera?y.multiplyScalar(e):o.object.isOrthographicCamera?(o.object.zoom/=e,o.object.updateProjectionMatrix()):console.warn("THREE.TrackballControls: Unsupported camera type")),o.staticMoving?f.copy(j):f.y+=(j.y-f.y)*this.dynamicDampingFactor)},this.panCamera=function(){const e=new Vector2,t=new Vector3,n=new Vector3;return function(){if(e.copy(V).sub(L),e.lengthSq()){if(o.object.isOrthographicCamera){const t=(o.object.right-o.object.left)/o.object.zoom/o.domElement.clientWidth,n=(o.object.top-o.object.bottom)/o.object.zoom/o.domElement.clientWidth;e.x*=t,e.y*=n}e.multiplyScalar(y.length()*o.panSpeed),n.copy(y).cross(o.object.up).setLength(e.x),n.add(t.copy(o.object.up).setLength(e.y)),o.object.position.add(n),o.target.add(n),o.staticMoving?L.copy(V):L.add(e.subVectors(V,L).multiplyScalar(o.dynamicDampingFactor))}}}(),this.checkDistances=function(){o.noZoom&&o.noPan||(y.lengthSq()>o.maxDistance*o.maxDistance&&(o.object.position.addVectors(o.target,y.setLength(o.maxDistance)),f.copy(j)),y.lengthSq()<o.minDistance*o.minDistance&&(o.object.position.addVectors(o.target,y.setLength(o.minDistance)),f.copy(j)))},this.update=function(){y.subVectors(o.object.position,o.target),o.noRotate||o.rotateCamera(),o.noZoom||o.zoomCamera(),o.noPan||o.panCamera(),o.object.position.addVectors(o.target,y),o.object.isPerspectiveCamera?(o.checkDistances(),o.object.lookAt(o.target),d.distanceToSquared(o.object.position)>p&&(o.dispatchEvent(_changeEvent),d.copy(o.object.position))):o.object.isOrthographicCamera?(o.object.lookAt(o.target),(d.distanceToSquared(o.object.position)>p||m!==o.object.zoom)&&(o.dispatchEvent(_changeEvent),d.copy(o.object.position),m=o.object.zoom)):console.warn("THREE.TrackballControls: Unsupported camera type")},this.reset=function(){l=n,h=n,o.target.copy(o.target0),o.object.position.copy(o.position0),o.object.up.copy(o.up0),o.object.zoom=o.zoom0,o.object.updateProjectionMatrix(),y.subVectors(o.object.position,o.target),o.object.lookAt(o.target),o.dispatchEvent(_changeEvent),d.copy(o.object.position),m=o.object.zoom},this.dispose=function(){o.domElement.removeEventListener("contextmenu",P),o.domElement.removeEventListener("pointerdown",R),o.domElement.removeEventListener("pointercancel",z),o.domElement.removeEventListener("wheel",X),o.domElement.removeEventListener("pointermove",Y),o.domElement.removeEventListener("pointerup",x),window.removeEventListener("keydown",S),window.removeEventListener("keyup",M)},this.domElement.addEventListener("contextmenu",P),this.domElement.addEventListener("pointerdown",R),this.domElement.addEventListener("pointercancel",z),this.domElement.addEventListener("wheel",X,{passive:!1}),window.addEventListener("keydown",S),window.addEventListener("keyup",M),this.handleResize(),this.update()}}THREE.TrackballControls=TrackballControls})();
       walking = document.querySelector("#walking");
       intro = document.querySelector("#intro");
       explosion = document.querySelector("#explosion");
@@ -440,25 +441,25 @@
       }
       shakeint = 13;
       function shake(seconds, intensity, rate, animate) {
-        if (!canShake) {
-          return clearInterval(o);
-        }
-        if (animate) {
-          let e = true;
-          let t = 0;
-          let o = setInterval(() => {
-            if (e) { let h = setInterval(() => { if (t >= rate) { e = false, clearInterval(h) } else { t += 0.005; camera.rotation.x += t; } }); } else { let h = setInterval(() => { if (t <= 0) { e = true, clearInterval(h) } else { t += -0.005; camera.rotation.x += -t; } }); }
-          }, 255 / intensity);
-          shakeint = o;
-          setTimeout(() => clearInterval(o), seconds * 1000);
-        } else {
-          let e = true;
-          let o = setInterval(() => {
-            if (e) { camera.rotation.x += rate; e = false } else { camera.rotation.x += -rate; e = true }
-          }, 255 / intensity);
-          shakeint = o;
-          setTimeout(() => clearInterval(o), seconds * 1000);
-        }
+        // if (!canShake) {
+        //   return clearInterval(o);
+        // }
+        // if (animate) {
+        //   let e = true;
+        //   let t = 0;
+        //   let o = setInterval(() => {
+        //     if (e) { let h = setInterval(() => { if (t >= rate) { e = false, clearInterval(h) } else { t += 0.005; camera.rotation.x += t; } }); } else { let h = setInterval(() => { if (t <= 0) { e = true, clearInterval(h) } else { t += -0.005; camera.rotation.x += -t; } }); }
+        //   }, 255 / intensity);
+        //   shakeint = o;
+        //   setTimeout(() => clearInterval(o), seconds * 1000);
+        // } else {
+        //   let e = true;
+        //   let o = setInterval(() => {
+        //     if (e) { camera.rotation.x += rate; e = false } else { camera.rotation.x += -rate; e = true }
+        //   }, 255 / intensity);
+        //   shakeint = o;
+        //   setTimeout(() => clearInterval(o), seconds * 1000);
+        // }
       }
       function stopShake() {
         canShake = false;
@@ -870,7 +871,29 @@
           clearInterval(q);
         }
       });
-      (() => {
+      gameControl.on('connect', controller => {
+        controller.on("button14", () => {}).before("button14", () => {
+          if(!document.hasFocus()){return}
+          bulletPositionX = 0;
+          if (!zoomedInAuto && !dl) {
+            for (let i = 0; i < 11; i++) {
+              dl = true;
+              isZoomed = true;
+              zoomedInAuto = true;
+              zoomInFunction();
+              sights.style.display = "block";
+            }
+          } else {
+            dl = false;
+            bulletPositionX = gun.position.x;
+            for (let i = 0; i < 11; i++) {
+              isZoomed = false;
+              zoomedInAuto = false;
+              zoomOutFunction();
+              sights.style.display = "none";
+            }
+          }
+        }).after("button14", () => {});
         let ul = false;
         let al = false;
         let tl = false;
@@ -878,14 +901,13 @@
         let hl = false;
         let dl = false;
         function gameLoop(){if(!document.hasFocus()){return}(()=>{let o=navigator.getGamepads()[0];(1==o.axes[0]&&!right)?(right=true,moveRight(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(clearInterval(rightI),right=false),(-1==o.axes[0]&&!left)?(left=true,moveLeft(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(clearInterval(leftI),left=false)})();var e=navigator.getGamepads()[0];if(e&&e.connected){e.axes;var a=e.buttons;for(var o in a){1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[16]&&!ul)&&(()=>{fire(br),ul=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),ul=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[0]&&!al)&&(()=>{jump(),al=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),al=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[7]&&!tl)&&(()=>{reload(),tl=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),tl=false}})})())}}}var game_loop;window.addEventListener("gamepadconnected",(function(e){game_loop=setInterval(gameLoop,50)}));
-        Gamepad.JoyStick.RightMoved = () => {
+        controller.on("button16", () => {}).before("button16", () => {
           if(!document.hasFocus()){return}
-          if (!kl) {
-            kl = true;
-            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position]);
-            moveDown();
-          }
-        };
+          // gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position]);
+          // moveDown();
+          fire(br);
+        }).after("button16", () => {});
+        controller.on("button0", () => { jump(); });
         Gamepad.JoyStick.RightCanceled = () => {
           if(!document.hasFocus()){return}
           if (kl) {
@@ -908,38 +930,14 @@
             clearInterval(forwardI);
           }
         };
-        Gamepad.D.LeftButtonPressed = function() {
-          if(!document.hasFocus()){return}
-          bulletPositionX = 0;
-          if (!zoomedInAuto && !dl) {
-            for (let i = 0; i < 11; i++) {
-              dl = true;
-              let o = setInterval(() => {
-                if (!gamepads[0].buttons[14].pressed && dl) { dl = false; clearInterval(o) }
-              });
-              isZoomed = true;
-              zoomedInAuto = true;
-              zoomInFunction();
-              sights.style.display = "block";
-            }
-            setTimeout(() => (dl = false), 2000);
-          }
-          Gamepad.Context.YButtonPressed = function() {
-            if (!dl) {
-              bulletPositionX = gun.position.x;
-              for (let i = 0; i < 11; i++) {
-                isZoomed = false;
-                zoomedInAuto = false;
-                zoomOutFunction();
-                sights.style.display = "none";
-              }
-            }
-          }
-          Gamepad.Context.XButtonPressed = function() {
-            switchWeapon();
-          }
+        Gamepad.Context.XButtonPressed = function() {
+          switchWeapon();
         };
-      })();
+        (()=>{
+          gamepadpointer = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:"#ffffff"}));gamepadpointer.position.copy(camera.position),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),camera.lookAt(gamepadpointer.position)
+        })();
+        controller.on('up0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(-1),camera.lookAt(gamepadpointer.position)}).before('up0',()=>{}).after('up0',()=>{}),controller.on('down0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(1),camera.lookAt(gamepadpointer.position)}).before('down0',()=>{}).after('down0',()=>{}),controller.on('left1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(.5),camera.lookAt(gamepadpointer.position)}).before('left1',()=>{}).after('left1',()=>{}),controller.on('right1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(-.5),camera.lookAt(gamepadpointer.position)}).before('right1',()=>{}).after('right1',()=>{});
+      });
     </script>
   </body>
 </html>
