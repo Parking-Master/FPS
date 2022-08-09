@@ -136,6 +136,7 @@
         <div class="health"></div>
       </div>
       <div class="statustext"></div>
+      <span id="visor"><img src="https://fps5.ml/images/ststxt.png" style="height:105vh;width:100vw" />
       <img src="https://fps5.ml/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
       <img class="crosshair" src="https://fps5.ml/images/crosshair.png" width="10%" />
       <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
@@ -162,6 +163,7 @@
       zoomedInAuto = false;
       zoomedOutAuto = true;
       allowedToStart = false;
+      testMode = true;
       br = 3;
       function rotatePlayer(unit) {
         camera.rotation.set(0, 0, 0);
@@ -206,7 +208,7 @@
         if (typeof gametime.idList != "undefined" && gametime.idList.length >= 2) {
           allowedToStart = true;
           gametime.run("postPlayerCType", [character + "," + gametime.user.position]);
-          return swal.close(), startGame(), clearInterval(o), eventsEnabled = true;
+          return swal.close(), (testMode ? (eventsEnabled = true, allowedToStart = true, swal.close()) : startGame()), clearInterval(o), eventsEnabled = true;
         }
       });
       gametime.make("postPlayerCType");
@@ -217,7 +219,7 @@
         scene.remove(otherPlayer);
         let character = str.split(",")[0];
         otherCharacter = character;
-        character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+        character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
       });
       swal({
         title: "Please wait...",
@@ -290,6 +292,15 @@
             camera.position.y = mapVertices[0].rd;
           } else if (mapVertices[1].eval()) {
             camera.position.y = mapVertices[1].rd;
+          } else if (mapVertices[2].eval()) {
+            defaultY = -3.5;
+            camera.position.y = mapVertices[2].rd;
+          } else if (mapVertices[3].eval()) {
+            defaultY = -4;
+            camera.position.y = mapVertices[3].rd;
+          } else if (mapVertices[4].eval()) {
+            defaultY = -3.5;
+            camera.position.y = mapVertices[4].rd;
           } else {
             (!isFalling && !freezeFrame) && (camera.position.y = defaultY);
           }
@@ -329,6 +340,7 @@
             isFalling = false;
             fallingAcc = .005;
             camera.position.set(0,0,8);
+            camera.rotation.set(0,Math.PI,0);
             setTimeout(() => {
               camera.rotation.set(0,Math.PI,0);
               eventsEnabled = true;
@@ -338,6 +350,7 @@
               afixed = true;
               allowedToStart = true;
             }, 500);
+            camera.rotation.set(0,Math.PI,0);
           }, 5000);
         }
         // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z);
@@ -474,7 +487,7 @@
         }
         grenadeCount--;
         grenadeCooldown = 1;
-        (()=>{let h,canmove=true;const grenade=new THREE.Mesh(new THREE.SphereGeometry(.1,10),new THREE.MeshPhongMaterial({color:0x6a6e49,emissive:new THREE.Color(0x0c0c0c),shininess:0,side:THREE.DoubleSide}));grenade.castShadow=true,grenade.recieveShadow=true,grenade.rotation.set(0,-camera.rotation.y-.1,0),scene.add(grenade),grenade.position.set(camera.position.x+1,camera.position.y+.25,camera.position.z);let m=setInterval(()=>{if(canmove){grenade.translateZ(.02),grenade.translateY(-.01)}});setTimeout(()=>{const grenadeFlash=new THREE.Mesh(new THREE.SphereGeometry(2*Math.random(),10),new THREE.MeshPhongMaterial({color:0xffffff,emissive:new THREE.Color(0x0c0c0c),shininess:0,side:THREE.DoubleSide}));grenadeFlash.position.set(grenade.position.x,grenade.position.y,grenade.position.z);var firstObject=grenadeFlash,secondObject=otherPlayer,thirdObject=follower;firstBB=(new THREE.Box3).setFromObject(firstObject),secondBB=(new THREE.Box3).setFromObject(secondObject),thirdBB=(new THREE.Box3).setFromObject(thirdObject);var collision=(firstBB.intersectsBox(secondBB));firstBB.intersectsBox(thirdBB)&&gametime.run("eleminate",[gametime.user.position]);collision&&(gametime.run("eleminate",[gametime.user.position==1?2:1])),explosion.play(),scene.add(grenadeFlash),shake(1,1.6,.025,true);let o=setInterval(()=>{if(light.intensity>=50){return(h=setInterval(()=>{if(light.intensity<=4){return(clearInterval(h),scene.remove(grenadeFlash))}light.intensity+=-1}),clearInterval(o))}light.intensity+=1},5);clearInterval(m),scene.remove(grenade)},2000)})();
+        (()=>{let h,canmove=true;const grenade=new THREE.Mesh(new THREE.SphereGeometry(.1,10),new THREE.MeshPhongMaterial({color:0x6a6e49,emissive:new THREE.Color(0x0c0c0c),shininess:0,side:THREE.DoubleSide}));grenade.castShadow=true,grenade.recieveShadow=true,grenade.rotation.set(0,-camera.rotation.y-.1,0),scene.add(grenade),grenade.position.set(camera.position.x+1,camera.position.y+.25,camera.position.z);let m=setInterval(()=>{if(canmove){grenade.translateZ(.02),grenade.translateY(-.01)}});setTimeout(()=>{const grenadeFlash=new THREE.Mesh(new THREE.SphereGeometry(2*Math.random(),10),new THREE.MeshPhongMaterial({color:0xffffff,emissive:new THREE.Color(0x0c0c0c),shininess:0,side:THREE.DoubleSide}));grenadeFlash.position.set(grenade.position.x,grenade.position.y,grenade.position.z);var firstObject=grenadeFlash,secondObject=otherPlayer,thirdObject=follower;firstBB=(new THREE.Box3).setFromObject(firstObject),secondBB=(new THREE.Box3).setFromObject(secondObject),thirdBB=(new THREE.Box3).setFromObject(thirdObject);var collision=(firstBB.intersectsBox(secondBB));firstBB.intersectsBox(thirdBB)&&gametime.run("eleminate",[gametime.user.position+",0"]);collision&&(gametime.run("eleminate",[gametime.user.position==1?2:1])),explosion.play(),scene.add(grenadeFlash),shake(1,1.6,.025,true);let o=setInterval(()=>{if(light.intensity>=50){return(h=setInterval(()=>{if(light.intensity<=4){return(clearInterval(h),scene.remove(grenadeFlash))}light.intensity+=-1}),clearInterval(o))}light.intensity+=1},5);clearInterval(m),scene.remove(grenade)},2000)})();
         setTimeout(() => {
           grenadeCooldown = 0;
         }, 1000);
@@ -494,7 +507,7 @@
         (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),shake(600, .9, .01, false),rightI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?.01:.02)}));
       }
       character = (new URLSearchParams(location.search).get("character") || "default");
-      character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-4,5),scene.add(otherPlayer)}));
+      character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
       document.addEventListener("keydown",(e)=>{/*gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),*/(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
       document.addEventListener("keyup",()=>{walking.pause(),walking.currentTime=0;for(let i=0;i<5;i++){stopShake()}gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       gametime.make("playerMove");
@@ -523,6 +536,24 @@
             return (camera.position.z>=18&&camera.position.z<=23&&camera.position.x<=-1.6&&camera.position.x>=-6.5&&camera.position.y>-1&&camera.position.y<=1) || (camera.position.x>=1.6&&camera.position.x<=6.5&&camera.position.z>=18&&camera.position.z<=23&&camera.position.y>-1&&camera.position.y<=1)
           }),
           rd: .5
+        },
+        {
+          eval: (() => {
+            return (camera.position.x>=10.5&&camera.position.x<=12&&camera.position.z<=29&&camera.position.z>=26&&camera.position.y.toFixed(0)==0);
+          }),
+          rd: -3.25
+        },
+        {
+          eval: (() => {
+            return (camera.position.z<=18.8&&camera.position.z>=13.2&&camera.position.y<=-3.5&&camera.position.x.toFixed(0)==11);
+          }),
+          rd: -4
+        },
+        {
+          eval: (() => {
+            return (camera.position.z<=18.8&&camera.position.z>=13.2&&camera.position.y<=-4&&camera.position.x.toFixed(0)==12);
+          }),
+          rd: -3.5
         }
       ];
       let isJumping = false;
@@ -552,6 +583,10 @@
                   rd = mapVertices[0].rd;
                 } else if (mapVertices[1].eval()) {
                   rd = mapVertices[1].rd;
+                } else if (mapVertices[2].eval()) {
+                  rd = mapVertices[2].rd;
+                } else if (mapVertices[3].eval()) {
+                  rd = mapVertices[3].rd;
                 } else {
                   rd = defaultY;
                 }
@@ -657,7 +692,7 @@
           return;
         }
         burstfire += 1;
-        const geometry = new THREE.CylinderGeometry(.01, .02, 10, 8);
+        const geometry = new THREE.BoxGeometry(.02, .02, 10);
         const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bullet = new THREE.Mesh(geometry, material);
         const casegeometry = new THREE.CylinderGeometry(.025, .025, .06, 10);
@@ -665,9 +700,10 @@
         const bcase = new THREE.Mesh(casegeometry, casematerial);
         scene.add(bullet);
         scene.add(bcase);
-        bullet.position.copy(camera.position),bullet.rotation.copy(camera.rotation),bullet.updateMatrix(),bullet.translateZ(-1);
-        bullet.rotation.copy(camera.rotation);
-        bullet.rotation.set(gun.rotation.x+(-Math.PI/2),gun.rotation.y,gun.rotation.z);
+        bullet.rotation.x = Math.PI/2;
+        bullet.rotation.copy(gun.rotation);
+        bullet.position.set(gun.position.x,gun.position.y+.65,gun.position.z);
+        gun.attach(bullet);
         bcase.position.z = gun.position.y;
         bcase.position.x = gun.position.x;
         bcase.position.y = gun.position.y;
@@ -763,7 +799,7 @@
       ref = false;
       gametime.on("eleminate", function(s) {
         let player = s.split(",")[0];
-        let scored = s.split(",")[1] == "1";
+        let scored = (!s.split(",")[1] ? true : (!s.split(",")[1] == "1"));
         if (!ref) {
           ref = true;
           scored && (player == 1 ? bscore += 1 : ascore += 1);
@@ -778,7 +814,7 @@
         if (player != gametime.user.position) {
           setTimeout(() => {
             scene.add(otherPlayer);
-            otherPlayer.position.set(0, -4, 5);
+            otherPlayer.position.set(0, -.8, 8);
           }, 5000);
         }
         if (player == gametime.user.position) {
@@ -820,7 +856,7 @@
         }
         setTimeout(() => {
           scene.add(otherPlayer);
-          otherPlayer.position.set(0, 0, 0);
+          otherPlayer.position.set(0, -.8, 8);
           statusText.textContent = "";
           document.body.style.top = "0px";
           document.querySelector(".health-wrapper").style.top = "30px";
