@@ -872,6 +872,7 @@
         }
       });
       gameControl.on('connect', controller => {
+      globalThis.controller = controller;
         controller.on("button14", () => {}).before("button14", () => {
           if(!document.hasFocus()){return}
           bulletPositionX = 0;
@@ -937,6 +938,7 @@
           gamepadpointer = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:"#ffffff"}));gamepadpointer.position.copy(camera.position),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),camera.lookAt(gamepadpointer.position)
         })();
         controller.on('up0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(-1),camera.lookAt(gamepadpointer.position)}).before('up0',()=>{}).after('up0',()=>{}),controller.on('down0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(1),camera.lookAt(gamepadpointer.position)}).before('down0',()=>{}).after('down0',()=>{}),controller.on('left1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(.5),camera.lookAt(gamepadpointer.position)}).before('left1',()=>{}).after('left1',()=>{}),controller.on('right1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(-.5),camera.lookAt(gamepadpointer.position)}).before('right1',()=>{}).after('right1',()=>{});
+        dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveLeft(),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(leftI),clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveRight(),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(rightI),clearInterval(e)})))})),controller.on("right0",(()=>{})).before("right0",(()=>{moveDown()})).after("right0",(()=>{clearInterval(backwardI)})),controller.on("left0",(()=>{})).before("left0",(()=>{moveUp()})).after("left0",(()=>{clearInterval(forwardI)})),controller.on("button15",(()=>{throwGrenade()})),controller.on("l1",(()=>{})).before("l1",(()=>{switchWeapon()}));
       });
     </script>
   </body>
