@@ -603,7 +603,9 @@
         });
         setTimeout(() => (isJumping = false), 1200);
       }
+      requestedpointer = false;
       document.addEventListener("mousemove", function() {
+        if (!requestedpointer) { requestedpointer = true; renderer.domElement.requestPointerLock = renderer.domElement.requestPointerLock || renderer.domElement.mozRequestPointerLock; renderer.domElement.requestPointerLock(); }
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
       })
       gametime.make("playerJump");
