@@ -6,7 +6,7 @@ game which uses Gametime.js, PubNub, and Three.js for the best<br>
 multiplayer 3d experience!<br>
 \> \> [WWW.FPS5.ML](https://www.fps5.ml) \< \<
 <br>
-[![Three.js](https://shields.io/badge/three.js-green?logo=threedotjs&style=plastic)](https://three.js.org)
+[![Three.js](https://shields.io/badge/three.js-green?logo=threedotjs&style=plastic)](https://threejs.org)
 [![PubNub](https://shields.io/badge/PubNub-red?style=plastic)](https://www.pubnub.com)
 [![Gametime.js](https://shields.io/badge/Gametime.js-yellow?logo=javascript&style=plastic)](https://gametime.js.org)
 <br>
