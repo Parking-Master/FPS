@@ -1,0 +1,11 @@
+Model Information:
+* title:	Warthogs (Halo 4)
+* source:	https://sketchfab.com/3d-models/warthogs-halo-4-5a2e9515cd7941dd939f7b30744c130e
+* author:	Iso-Didact (https://sketchfab.com/Matthew.James.Logothetis)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Warthogs (Halo 4)" (https://sketchfab.com/3d-models/warthogs-halo-4-5a2e9515cd7941dd939f7b30744c130e) by Iso-Didact (https://sketchfab.com/Matthew.James.Logothetis) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
