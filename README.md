@@ -42,11 +42,10 @@ The Colt M.1911 pistol is a Semi-Automatic pistol only used in close-quarters co
 <img align="center" width="100%" alt="Default" src="/models/pistol/pistol.png">
 
 ###### <i>Note: More weapons may be coming soon</i>
-<img width="1440" alt="Screen Shot 2022-08-12 at 3 02 06 PM" src="https://user-images.githubusercontent.com/88283567/184426556-2ef10a37-c362-44bd-9a1f-2221e3da07e8.png">
 
 ### In-game photos
+<img width="1440" alt="Zoomed in pistol" src="https://user-images.githubusercontent.com/88283567/184426556-2ef10a37-c362-44bd-9a1f-2221e3da07e8.png">
 <img width="100%" alt="First look" src="https://user-images.githubusercontent.com/88283567/184426550-13b307c8-c690-45fc-8cf7-8ed3228ba98e.png">
-<img width="100%" alt="Zoomed in pistol" src="https://user-images.githubusercontent.com/88283567/184426576-75edd09b-8ea8-44b2-8af0-a4e93b82eba3.png">
 <img width="100%" alt="Grenade explosion" src="https://user-images.githubusercontent.com/88283567/184426706-d56dea88-4b9f-467e-a2fd-10c9062f3e48.png">
 
 ## Support & Contribution
