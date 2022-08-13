@@ -8,14 +8,16 @@
       html, body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 20px;
-        cursor: none /*url(./cursors/cursor2.png), auto */!important;
+        cursor: default /*url(./cursors/cursor2.png), auto */!important;
         overflow: hidden !important;
         user-select: none !important;
         transition: top .2s;
         background: #eeeeee;
+        width: 1440px;
+        height: 900px;
       }
       * {
-        cursor: none /*url(./cursors/cursor2.png), auto */!important;
+        cursor: default /*url(./cursors/cursor2.png), auto */!important;
       }
       .scoreboard {
         position: absolute;
@@ -39,15 +41,15 @@
         position: absolute;
         background: #fff;
         border-radius: 5px;
-        left: 50px;
-        bottom: 50px;
+        left: 90%;
+        top: 50px;
         color: #444;
         padding: 3px;
         font-family: 'Courier New', Courier, monospace;
         letter-spacing: -2px;
         font-weight: 600;
       }
-      .ui img {
+      .ui img:not(.statustext) {
         position: absolute;
         left: 0;
         top: -10px;
@@ -96,13 +98,20 @@
         top: 0px;
       }
       .statustext {
-        position: relative;
-        text-align: center;
-        top: 40%;
-        padding: 0;
-        font-size: 25px;
-        color: #fff;
-        font-weight: 600;
+        position: absolute;
+        top: -10%;
+        left: 50%;
+        width: 50%;
+        margin-left: -25%;
+        display: none;
+      }
+      .ui .radar {
+        position: absolute;
+        left: 50px !important;
+        top: 70% !important;
+      }
+      #visor {
+        pointer-events: none !important;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
@@ -113,6 +122,12 @@
     <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
     <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div>
     <audio id="explosion" src="https://fps5.ml/sounds/explosion.mp3" volume="1" current-time=".1"></audio>
+    <audio id="death1" src="https://fps5.ml/sounds/death1.mp3" volume="1" current-time="0"></audio>
+    <audio id="death2" src="https://fps5.ml/sounds/death2.mp3" volume="1" current-time="0"></audio>
+    <audio id="death3" src="https://fps5.ml/sounds/death3.mp3" volume="1" current-time="0"></audio>
+    <audio id="death4" src="https://fps5.ml/sounds/death4.mp3" volume="1" current-time="0"></audio>
+    <audio id="death5" src="https://fps5.ml/sounds/death5.mp3" volume="1" current-time="0"></audio>
+    <audio id="death6" src="https://fps5.ml/sounds/death6.mp3" volume="1" current-time="0"></audio>
     <audio id="intro" src="https://fps5.ml/sounds/intro.mp3" volume=".75"></audio>
     <audio id="walking" src="https://fps5.ml/sounds/walking.mp3" loop volume="1"></audio>
     <audio id="ambience" src="https://fps5.ml/sounds/ambience.mp3" autoplay loop volume="1"></audio>
@@ -126,6 +141,7 @@
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
     </script>
+    <div id="container"></div>
     <div class="ui">
       <div class="scoreboard">
         <span class="player1">A: <span class="score">0</span></span>
@@ -135,14 +151,16 @@
       <div class="health-wrapper">
         <div class="health"></div>
       </div>
-      <div class="statustext"></div>
+      <img src="https://fps5.ml/images/kill.gif" class="statustext" />
       <span id="visor"><img src="https://fps5.ml/images/ststxt.png" style="height:105vh;width:100vw" />
       <img src="https://fps5.ml/scope.png" width="100%" style="display:none;position:absolute;left:50%;margin-left:-50%;bottom:0;top:0;height:100%;" id="sights" />
       <img class="crosshair" src="https://fps5.ml/images/crosshair.png" width="10%" />
+      <img class="radar" src="https://fps5.ml/images/radar.png" width="10%" />
       <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <script>
-      (()=>{let EventDispatcher=THREE.EventDispatcher,MOUSE=THREE.MOUSE,Quaternion=THREE.Quaternion,Vector2=THREE.Vector2,Vector3=THREE.Vector3;const _changeEvent={type:"change"},_startEvent={type:"start"},_endEvent={type:"end"};class TrackballControls extends EventDispatcher{constructor(e,t){super(),void 0===t&&console.warn('THREE.TrackballControls: The second parameter "domElement" is now mandatory.'),t===document&&console.error('THREE.TrackballControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');const o=this,n=-1,c=0,i=1,a=2,s=3,r=4;this.object=e,this.domElement=t,this.domElement.style.touchAction="none",this.enabled=!0,this.screen={left:0,top:0,width:0,height:0},this.rotateSpeed=1,this.zoomSpeed=1.2,this.panSpeed=.3,this.noRotate=!1,this.noZoom=!1,this.noPan=!1,this.staticMoving=!1,this.dynamicDampingFactor=.2,this.minDistance=0,this.maxDistance=1/0,this.keys=["KeyA","KeyS","KeyD"],this.mouseButtons={LEFT:MOUSE.ROTATE,MIDDLE:MOUSE.DOLLY,RIGHT:MOUSE.PAN},this.target=new Vector3;const p=1e-6,d=new Vector3;let m=1,l=n,h=n,u=0,E=0,g=0;const y=new Vector3,b=new Vector2,v=new Vector2,w=new Vector3,f=new Vector2,j=new Vector2,L=new Vector2,V=new Vector2,T=[],k={};this.target0=this.target.clone(),this.position0=this.object.position.clone(),this.up0=this.object.up.clone(),this.zoom0=this.object.zoom,this.handleResize=function(){const e=o.domElement.getBoundingClientRect(),t=o.domElement.ownerDocument.documentElement;o.screen.left=e.left+window.pageXOffset-t.clientLeft,o.screen.top=e.top+window.pageYOffset-t.clientTop,o.screen.width=e.width,o.screen.height=e.height};const D=function(){const e=new Vector2;return function(t,n){return e.set((t-o.screen.left)/o.screen.width,(n-o.screen.top)/o.screen.height),e}}(),C=function(){const e=new Vector2;return function(t,n){return e.set((t-.5*o.screen.width-o.screen.left)/(.5*o.screen.width),(o.screen.height+2*(o.screen.top-n))/o.screen.width),e}}();function R(e){!1!==o.enabled&&(0===T.length&&(o.domElement.setPointerCapture(e.pointerId),o.domElement.addEventListener("pointermove",Y),o.domElement.addEventListener("pointerup",x)),function(e){T.push(e)}(e),"touch"===e.pointerType?function(e){if(1===(H(e),T.length))l=s,v.copy(C(T[0].pageX,T[0].pageY)),b.copy(v);else{l=r;const e=T[0].pageX-T[1].pageX,t=T[0].pageY-T[1].pageY;E=u=Math.sqrt(e*e+t*t);const o=(T[0].pageX+T[1].pageX)/2,n=(T[0].pageY+T[1].pageY)/2;L.copy(D(o,n)),V.copy(L)}o.dispatchEvent(_startEvent)}(e):function(e){if(l===n)switch(e.button){case o.mouseButtons.LEFT:l=c;break;case o.mouseButtons.MIDDLE:l=i;break;case o.mouseButtons.RIGHT:l=a}const t=h!==n?h:l;t!==c||o.noRotate?t!==i||o.noZoom?t!==a||o.noPan||(L.copy(D(e.pageX,e.pageY)),V.copy(L)):(f.copy(D(e.pageX,e.pageY)),j.copy(f)):(v.copy(C(e.pageX,e.pageY)),b.copy(v));o.dispatchEvent(_startEvent)}(e))}function Y(e){!1!==o.enabled&&("touch"===e.pointerType?function(e){if(1===(H(e),T.length))b.copy(v),v.copy(C(e.pageX,e.pageY));else{const t=function(e){const t=e.pointerId===T[0].pointerId?T[1]:T[0];return k[t.pointerId]}(e),o=e.pageX-t.x,n=e.pageY-t.y;E=Math.sqrt(o*o+n*n);const c=(e.pageX+t.x)/2,i=(e.pageY+t.y)/2;V.copy(D(c,i))}}(e):function(e){const t=h!==n?h:l;t!==c||o.noRotate?t!==i||o.noZoom?t!==a||o.noPan||V.copy(D(e.pageX,e.pageY)):j.copy(D(e.pageX,e.pageY)):(b.copy(v),v.copy(C(e.pageX,e.pageY)))}(e))}function x(e){!1!==o.enabled&&("touch"===e.pointerType?function(e){switch(T.length){case 0:l=n;break;case 1:l=s,v.copy(C(e.pageX,e.pageY)),b.copy(v);break;case 2:l=r,v.copy(C(e.pageX-b.x,e.pageY-b.y)),b.copy(v)}o.dispatchEvent(_endEvent)}(e):(l=n,o.dispatchEvent(_endEvent)),I(e),0===T.length&&(o.domElement.releasePointerCapture(e.pointerId),o.domElement.removeEventListener("pointermove",Y),o.domElement.removeEventListener("pointerup",x)))}function z(e){I(e)}function S(e){!1!==o.enabled&&(window.removeEventListener("keydown",S),h===n&&(e.code!==o.keys[c]||o.noRotate?e.code!==o.keys[i]||o.noZoom?e.code!==o.keys[a]||o.noPan||(h=a):h=i:h=c))}function M(){!1!==o.enabled&&(h=n,window.addEventListener("keydown",S))}function X(e){if(!1!==o.enabled&&!0!==o.noZoom){switch(e.preventDefault(),e.deltaMode){case 2:f.y-=.025*e.deltaY;break;case 1:f.y-=.01*e.deltaY;break;default:f.y-=25e-5*e.deltaY}o.dispatchEvent(_startEvent),o.dispatchEvent(_endEvent)}}function P(e){!1!==o.enabled&&e.preventDefault()}function I(e){delete k[e.pointerId];for(let t=0;t<T.length;t++)if(T[t].pointerId==e.pointerId)return void T.splice(t,1)}function H(e){let t=k[e.pointerId];void 0===t&&(t=new Vector2,k[e.pointerId]=t),t.set(e.pageX,e.pageY)}this.rotateCamera=function(){const e=new Vector3,t=new Quaternion,n=new Vector3,c=new Vector3,i=new Vector3,a=new Vector3;return function(){a.set(v.x-b.x,v.y-b.y,0);let s=a.length();s?(y.copy(o.object.position).sub(o.target),n.copy(y).normalize(),c.copy(o.object.up).normalize(),i.crossVectors(c,n).normalize(),c.setLength(v.y-b.y),i.setLength(v.x-b.x),a.copy(c.add(i)),e.crossVectors(a,y).normalize(),s*=o.rotateSpeed,t.setFromAxisAngle(e,s),y.applyQuaternion(t),o.object.up.applyQuaternion(t),w.copy(e),g=s):!o.staticMoving&&g&&(g*=Math.sqrt(1-o.dynamicDampingFactor),y.copy(o.object.position).sub(o.target),t.setFromAxisAngle(w,g),y.applyQuaternion(t),o.object.up.applyQuaternion(t)),b.copy(v)}}(),this.zoomCamera=function(){let e;l===r?(e=u/E,u=E,o.object.isPerspectiveCamera?y.multiplyScalar(e):o.object.isOrthographicCamera?(o.object.zoom/=e,o.object.updateProjectionMatrix()):console.warn("THREE.TrackballControls: Unsupported camera type")):(e=1+(j.y-f.y)*o.zoomSpeed,1!==e&&e>0&&(o.object.isPerspectiveCamera?y.multiplyScalar(e):o.object.isOrthographicCamera?(o.object.zoom/=e,o.object.updateProjectionMatrix()):console.warn("THREE.TrackballControls: Unsupported camera type")),o.staticMoving?f.copy(j):f.y+=(j.y-f.y)*this.dynamicDampingFactor)},this.panCamera=function(){const e=new Vector2,t=new Vector3,n=new Vector3;return function(){if(e.copy(V).sub(L),e.lengthSq()){if(o.object.isOrthographicCamera){const t=(o.object.right-o.object.left)/o.object.zoom/o.domElement.clientWidth,n=(o.object.top-o.object.bottom)/o.object.zoom/o.domElement.clientWidth;e.x*=t,e.y*=n}e.multiplyScalar(y.length()*o.panSpeed),n.copy(y).cross(o.object.up).setLength(e.x),n.add(t.copy(o.object.up).setLength(e.y)),o.object.position.add(n),o.target.add(n),o.staticMoving?L.copy(V):L.add(e.subVectors(V,L).multiplyScalar(o.dynamicDampingFactor))}}}(),this.checkDistances=function(){o.noZoom&&o.noPan||(y.lengthSq()>o.maxDistance*o.maxDistance&&(o.object.position.addVectors(o.target,y.setLength(o.maxDistance)),f.copy(j)),y.lengthSq()<o.minDistance*o.minDistance&&(o.object.position.addVectors(o.target,y.setLength(o.minDistance)),f.copy(j)))},this.update=function(){y.subVectors(o.object.position,o.target),o.noRotate||o.rotateCamera(),o.noZoom||o.zoomCamera(),o.noPan||o.panCamera(),o.object.position.addVectors(o.target,y),o.object.isPerspectiveCamera?(o.checkDistances(),o.object.lookAt(o.target),d.distanceToSquared(o.object.position)>p&&(o.dispatchEvent(_changeEvent),d.copy(o.object.position))):o.object.isOrthographicCamera?(o.object.lookAt(o.target),(d.distanceToSquared(o.object.position)>p||m!==o.object.zoom)&&(o.dispatchEvent(_changeEvent),d.copy(o.object.position),m=o.object.zoom)):console.warn("THREE.TrackballControls: Unsupported camera type")},this.reset=function(){l=n,h=n,o.target.copy(o.target0),o.object.position.copy(o.position0),o.object.up.copy(o.up0),o.object.zoom=o.zoom0,o.object.updateProjectionMatrix(),y.subVectors(o.object.position,o.target),o.object.lookAt(o.target),o.dispatchEvent(_changeEvent),d.copy(o.object.position),m=o.object.zoom},this.dispose=function(){o.domElement.removeEventListener("contextmenu",P),o.domElement.removeEventListener("pointerdown",R),o.domElement.removeEventListener("pointercancel",z),o.domElement.removeEventListener("wheel",X),o.domElement.removeEventListener("pointermove",Y),o.domElement.removeEventListener("pointerup",x),window.removeEventListener("keydown",S),window.removeEventListener("keyup",M)},this.domElement.addEventListener("contextmenu",P),this.domElement.addEventListener("pointerdown",R),this.domElement.addEventListener("pointercancel",z),this.domElement.addEventListener("wheel",X,{passive:!1}),window.addEventListener("keydown",S),window.addEventListener("keyup",M),this.handleResize(),this.update()}}THREE.TrackballControls=TrackballControls})();
+      death_sounds = [document.querySelector("#death1"),document.querySelector("#death2"),document.querySelector("#death3"),document.querySelector("#death4"),document.querySelector("#death5"),document.querySelector("#death6")];
+      (()=>{let EventDispatcher=THREE.EventDispatcher,MOUSE=THREE.MOUSE,Quaternion=THREE.Quaternion,Vector2=THREE.Vector2,Vector3=THREE.Vector3;const _changeEvent={type:"change"},_startEvent={type:"start"},_endEvent={type:"end"};class TrackballControls extends EventDispatcher{constructor(e,t){super(),void 0===t&&console.warn('THREE.TrackballControls: The second parameter "domElement" is now mandatory.'),t===document&&console.error('THREE.TrackballControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');const o=this,n=-1,c=0,i=1,a=2,s=3,r=4;this.object=e,this.domElement=t,this.domElement.style.touchAction="none",this.enabled=!0,this.screen={left:0,top:0,width:0,height:0},this.rotateSpeed=1,this.zoomSpeed=1.2,this.panSpeed=.3,this.noRotate=!1,this.noZoom=!1,this.noPan=!1,this.staticMoving=!1,this.dynamicDampingFactor=.2,this.minDistance=0,this.maxDistance=1/0,this.keys=["KeyA","KeyS","KeyD"],this.mouseButtons={LEFT:MOUSE.ROTATE,MIDDLE:MOUSE.DOLLY,RIGHT:MOUSE.PAN},this.target=new Vector3;const p=1e-6,d=new Vector3;let m=1,l=n,h=n,u=0,E=0,g=0;const y=new Vector3,b=new Vector2,v=new Vector2,w=new Vector3,f=new Vector2,j=new Vector2,L=new Vector2,V=new Vector2,T=[],k={};this.target0=this.target.clone(),this.position0=this.object.position.clone(),this.up0=this.object.up.clone(),this.zoom0=this.object.zoom,this.handleResize=function(){const e=o.domElement.getBoundingClientRect(),t=o.domElement.ownerDocument.documentElement;o.screen.left=e.left+window.pageXOffset-t.clientLeft,o.screen.top=e.top+window.pageYOffset-t.clientTop,o.screen.width=e.width,o.screen.height=e.height};const D=function(){const e=new Vector2();return function(t,n){return e.set((t-o.screen.left)/o.screen.width,(n-o.screen.top)/o.screen.height),e}}(),C=function(){const e=new Vector2();return function(t,n){return e.set((t-.5*o.screen.width-o.screen.left)/(.5*o.screen.width),(o.screen.height+2*(o.screen.top-n))/o.screen.width),e}}();function R(e){!1!==o.enabled&&(0===T.length&&(o.domElement.setPointerCapture(e.pointerId),o.domElement.addEventListener("pointermove",Y),o.domElement.addEventListener("pointerup",x)),function(e){T.push(e)}(e),"touch"===e.pointerType?function(e){if(1===(H(e),T.length))l=s,v.copy(C(T[0].pageX,T[0].pageY)),b.copy(v);else{l=r;const e=T[0].pageX-T[1].pageX,t=T[0].pageY-T[1].pageY;E=u=Math.sqrt(e*e+t*t);const o=(T[0].pageX+T[1].pageX)/2,n=(T[0].pageY+T[1].pageY)/2;L.copy(D(o,n)),V.copy(L)}o.dispatchEvent(_startEvent)}(e):function(e){if(l===n)switch(e.button){case o.mouseButtons.LEFT:l=c;break;case o.mouseButtons.MIDDLE:l=i;break;case o.mouseButtons.RIGHT:l=a}const t=h!==n?h:l;t!==c||o.noRotate?t!==i||o.noZoom?t!==a||o.noPan||(L.copy(D(e.pageX,e.pageY)),V.copy(L)):(f.copy(D(e.pageX,e.pageY)),j.copy(f)):(v.copy(C(e.pageX,e.pageY)),b.copy(v));o.dispatchEvent(_startEvent)}(e))}function Y(e){!1!==o.enabled&&("touch"===e.pointerType?function(e){if(1===(H(e),T.length))b.copy(v),v.copy(C(e.pageX,e.pageY));else{const t=function(e){const t=e.pointerId===T[0].pointerId?T[1]:T[0];return k[t.pointerId]}(e),o=e.pageX-t.x,n=e.pageY-t.y;E=Math.sqrt(o*o+n*n);const c=(e.pageX+t.x)/2,i=(e.pageY+t.y)/2;V.copy(D(c,i))}}(e):function(e){const t=h!==n?h:l;t!==c||o.noRotate?t!==i||o.noZoom?t!==a||o.noPan||V.copy(D(e.pageX,e.pageY)):j.copy(D(e.pageX,e.pageY)):(b.copy(v),v.copy(C(e.pageX,e.pageY)))}(e))}function x(e){!1!==o.enabled&&("touch"===e.pointerType?function(e){switch(T.length){case 0:l=n;break;case 1:l=s,v.copy(C(e.pageX,e.pageY)),b.copy(v);break;case 2:l=r,v.copy(C(e.pageX-b.x,e.pageY-b.y)),b.copy(v)}o.dispatchEvent(_endEvent)}(e):(l=n,o.dispatchEvent(_endEvent)),I(e),0===T.length&&(o.domElement.releasePointerCapture(e.pointerId),o.domElement.removeEventListener("pointermove",Y),o.domElement.removeEventListener("pointerup",x)))}function z(e){I(e)}function S(e){!1!==o.enabled&&(window.removeEventListener("keydown",S),h===n&&(e.code!==o.keys[c]||o.noRotate?e.code!==o.keys[i]||o.noZoom?e.code!==o.keys[a]||o.noPan||(h=a):h=i:h=c))}function M(){!1!==o.enabled&&(h=n,window.addEventListener("keydown",S))}function X(e){if(!1!==o.enabled&&!0!==o.noZoom){switch(e.preventDefault(),e.deltaMode){case 2:f.y-=.025*e.deltaY;break;case 1:f.y-=.01*e.deltaY;break;default:f.y-=25e-5*e.deltaY}o.dispatchEvent(_startEvent),o.dispatchEvent(_endEvent)}}function P(e){!1!==o.enabled&&e.preventDefault()}function I(e){delete k[e.pointerId];for(let t=0;t<T.length;t++)if(T[t].pointerId==e.pointerId)return void T.splice(t,1)}function H(e){let t=k[e.pointerId];void 0===t&&(t=new Vector2,k[e.pointerId]=t),t.set(e.pageX,e.pageY)}this.rotateCamera=function(){const e=new Vector3,t=new Quaternion,n=new Vector3,c=new Vector3,i=new Vector3,a=new Vector3;return function(){a.set(v.x-b.x,v.y-b.y,0);let s=a.length();s?(y.copy(o.object.position).sub(o.target),n.copy(y).normalize(),c.copy(o.object.up).normalize(),i.crossVectors(c,n).normalize(),c.setLength(v.y-b.y),i.setLength(v.x-b.x),a.copy(c.add(i)),e.crossVectors(a,y).normalize(),s*=o.rotateSpeed,t.setFromAxisAngle(e,s),y.applyQuaternion(t),o.object.up.applyQuaternion(t),w.copy(e),g=s):!o.staticMoving&&g&&(g*=Math.sqrt(1-o.dynamicDampingFactor),y.copy(o.object.position).sub(o.target),t.setFromAxisAngle(w,g),y.applyQuaternion(t),o.object.up.applyQuaternion(t)),b.copy(v)}}(),this.zoomCamera=function(){let e;l===r?(e=u/E,u=E,o.object.isPerspectiveCamera?y.multiplyScalar(e):o.object.isOrthographicCamera?(o.object.zoom/=e,o.object.updateProjectionMatrix()):console.warn("THREE.TrackballControls: Unsupported camera type")):(e=1+(j.y-f.y)*o.zoomSpeed,1!==e&&e>0&&(o.object.isPerspectiveCamera?y.multiplyScalar(e):o.object.isOrthographicCamera?(o.object.zoom/=e,o.object.updateProjectionMatrix()):console.warn("THREE.TrackballControls: Unsupported camera type")),o.staticMoving?f.copy(j):f.y+=(j.y-f.y)*this.dynamicDampingFactor)},this.panCamera=function(){const e=new Vector2(),t=new Vector3,n=new Vector3;return function(){if(e.copy(V).sub(L),e.lengthSq()){if(o.object.isOrthographicCamera){const t=(o.object.right-o.object.left)/o.object.zoom/o.domElement.clientWidth,n=(o.object.top-o.object.bottom)/o.object.zoom/o.domElement.clientWidth;e.x*=t,e.y*=n}e.multiplyScalar(y.length()*o.panSpeed),n.copy(y).cross(o.object.up).setLength(e.x),n.add(t.copy(o.object.up).setLength(e.y)),o.object.position.add(n),o.target.add(n),o.staticMoving?L.copy(V):L.add(e.subVectors(V,L).multiplyScalar(o.dynamicDampingFactor))}}}(),this.checkDistances=function(){o.noZoom&&o.noPan||(y.lengthSq()>o.maxDistance*o.maxDistance&&(o.object.position.addVectors(o.target,y.setLength(o.maxDistance)),f.copy(j)),y.lengthSq()<o.minDistance*o.minDistance&&(o.object.position.addVectors(o.target,y.setLength(o.minDistance)),f.copy(j)))},this.update=function(){y.subVectors(o.object.position,o.target),o.noRotate||o.rotateCamera(),o.noZoom||o.zoomCamera(),o.noPan||o.panCamera(),o.object.position.addVectors(o.target,y),o.object.isPerspectiveCamera?(o.checkDistances(),o.object.lookAt(o.target),d.distanceToSquared(o.object.position)>p&&(o.dispatchEvent(_changeEvent),d.copy(o.object.position))):o.object.isOrthographicCamera?(o.object.lookAt(o.target),(d.distanceToSquared(o.object.position)>p||m!==o.object.zoom)&&(o.dispatchEvent(_changeEvent),d.copy(o.object.position),m=o.object.zoom)):console.warn("THREE.TrackballControls: Unsupported camera type")},this.reset=function(){l=n,h=n,o.target.copy(o.target0),o.object.position.copy(o.position0),o.object.up.copy(o.up0),o.object.zoom=o.zoom0,o.object.updateProjectionMatrix(),y.subVectors(o.object.position,o.target),o.object.lookAt(o.target),o.dispatchEvent(_changeEvent),d.copy(o.object.position),m=o.object.zoom},this.dispose=function(){o.domElement.removeEventListener("contextmenu",P),o.domElement.removeEventListener("pointerdown",R),o.domElement.removeEventListener("pointercancel",z),o.domElement.removeEventListener("wheel",X),o.domElement.removeEventListener("pointermove",Y),o.domElement.removeEventListener("pointerup",x),window.removeEventListener("keydown",S),window.removeEventListener("keyup",M)},this.domElement.addEventListener("contextmenu",P),this.domElement.addEventListener("pointerdown",R),this.domElement.addEventListener("pointercancel",z),this.domElement.addEventListener("wheel",X,{passive:!1}),window.addEventListener("keydown",S),window.addEventListener("keyup",M),this.handleResize(),this.update()}}THREE.TrackballControls=TrackballControls})();
       walking = document.querySelector("#walking");
       intro = document.querySelector("#intro");
       explosion = document.querySelector("#explosion");
@@ -164,7 +182,7 @@
       zoomedInAuto = false;
       zoomedOutAuto = true;
       allowedToStart = false;
-      testMode = true;
+      testMode = false;
       br = 3;
       function rotatePlayer(unit) {
         camera.rotation.set(0, 0, 0);
@@ -173,6 +191,7 @@
       const scene = new THREE.Scene();
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
       let gun = new THREE.Mesh();
+      let otherGun = new THREE.Mesh();
       gun.type = "PreDefined";
       (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),scene.add(s)}));
       function GameOver() {
@@ -194,6 +213,18 @@
         }
       }
       function startGame(){
+      otherPlayer=modelalias;
+      if (map == "Haven") {
+        for(let i=0;i<2;i++){
+          let chosenSpawn = HavenSpawnPoints;
+          gametime.user.position==2?(defaultY=-chosenSpawn[0][1],(camera.position.set(chosenSpawn[0][0], chosenSpawn[0][1], chosenSpawn[0][2]),camera.rotation.set(0,0,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(defaultY=chosenSpawn[1][1],(camera.position.set(chosenSpawn[1][0], chosenSpawn[1][1], chosenSpawn[1][2]),camera.rotation.set(0,Math.PI,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position]))
+        }
+      } else if (map == "Harvest") {
+        for(let i=0;i<2;i++){
+          let chosenSpawn = HarvestSpawnPoints;
+          gametime.user.position==2?(defaultY=-chosenSpawn[0][1],(camera.position.set(chosenSpawn[0][0], chosenSpawn[0][1], chosenSpawn[0][2]),camera.rotation.set(0,0,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(defaultY=chosenSpawn[1][1],(camera.position.set(chosenSpawn[1][0], chosenSpawn[1][1], chosenSpawn[1][2]),camera.rotation.set(0,Math.PI,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position]))
+        }
+      }
       intro.play();
       let das;/*document.querySelector("#maptext").style.display="block";*/setTimeout(()=>{document.querySelector(".ui").style.display="none",das=setInterval(()=>scene.remove(gun)),eventsEnabled=!1,freezeFrame=true,camera.position.y=10,camera.rotation.set(0,Math.PI/2,0);let e=setInterval((()=>{camera.rotation.y+=.001})),t=document.createElement("div");t.style="position:absolute;left:0;top:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;background:#000;opacity:0;z-index:99999;transition:opacity .2s",document.body.appendChild(t);
       let k=setInterval((()=>{
@@ -220,7 +251,7 @@
         scene.remove(otherPlayer);
         let character = str.split(",")[0];
         otherCharacter = character;
-        character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
+        // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
       });
       swal({
         title: "Please wait...",
@@ -274,6 +305,7 @@
       let follower = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: "red" }));
       map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{animate(),document.querySelector(".loader-cover").remove();const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),e.children[0].material[0].color.setHex(0x492505),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
       map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/HAVEN/scene.gltf",(e)=>{wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=4}));
+      map == "Harvest" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/harvest/scene.gltf",(e)=>{light=new THREE.DirectionalLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-112,map.rotation.x=-Math.PI/2;camera.position.x=-30,camera.position.z=10;light.color.setHex(0xeeeeff),light.intensity=4}));
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
       canShake = true;
       freezeFrame = false;
@@ -358,7 +390,7 @@
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
         center=new THREE.Vector2(0,0);
         camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
-        if (intersection != null && (intersection.object.name == "Untitled-54ea0c5f" || (intersection.object.type == "LineSegments"))) {
+        if (intersection != null && (intersection.object.name == "vanguard_Mesh" || (intersection.object.type == "LineSegments"))) {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
           pointed = otherPlayer;
         } else {
@@ -380,11 +412,16 @@
         //   gun.position.y += -0.0025;
         //   setTimeout(() => (d = false), 1500);
         // }
-        myPlayer.position.set(camera.position.x,camera.position.y - 4,camera.position.z+.5);
+        // myPlayer.position.set(camera.position.x,camera.position.y - 4,camera.position.z+.5);
         if (d && currentWeapon != "pistol") {
           gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
           gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateZ(-.25),gun.translateX(.25),gun.translateY(-.75);
         }
+        if (d && currentWeapon == "pistol") {
+          gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateZ(-.5),gun.translateX(.15),gun.translateY(-.75);
+        }
+        otherGun.position.z = otherPlayer.position.z - .5, otherGun.position.x = otherPlayer.position.x + .5, otherGun.position.y = otherPlayer.position.y -.75, otherGun.scale.set(.1,.1,.1), otherGun.rotation.y = 4.75;
+        otherGun.position.copy(otherPlayer.position),otherGun.rotation.copy(otherPlayer.rotation),otherGun.updateMatrix(),otherGun.translateZ(-.25),otherGun.translateX(.25),otherGun.translateY(-.75);
         // if (camera.rotation.y >= 1 || camera.rotation.y >= .99) {
         //   camera.rotation.y = .98;
         //   camera.rotation.z = camera.rotation.z;
@@ -404,34 +441,43 @@
         if (player.split(",")[0] != gametime.user.position) {
           return;
         }
-        let type = player.split(",")[1];
+        // let type = player.split(",")[1];
         // type=="forward"&&(otherForwardI=setInterval(()=>{otherPlayer.position.z+=-.02}));
         // type=="left"&&(otherLeftI=setInterval(()=>{otherPlayer.position.x+=-.02}));
         // type=="backward"&&(otherBackwardI=setInterval(()=>{otherPlayer.position.z+=.02}));
         // type=="right"&&(otherRightI=setInterval(()=>{otherPlayer.position.x+=.02}));
+        unPauseAllActions();
       });
       gametime.on("endMove", function(player) {
         if (player != gametime.user.position) {
           return;
         }
-        clearInterval(otherForwardI);
-        clearInterval(otherLeftI);
-        clearInterval(otherRightI);
-        clearInterval(otherBackwardI);
+        // clearInterval(otherForwardI);
+        // clearInterval(otherLeftI);
+        // clearInterval(otherRightI);
+        // clearInterval(otherBackwardI);
+        pauseAllActions();
       });
       plr = new THREE.Mesh();
       (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{plr=e}));
+      HavenSpawnPoints = [
+        [0, 0, 8],
+        [0, -1.75, 45]
+      ];
+      HarvestSpawnPoints = [
+        [-30, 0, 10],
+        [5, 0, -35]
+      ];
       function switchWeapon() {
+        return;
         let newWeapon = currentWeapon == "rifle" ? "pistol" : "rifle";
         currentWeapon = newWeapon;
         newWeapon == "pistol" ? (sights.style.top = "20%", sights.src = "https://fps5.ml/sights.png") : (sights.style.top = "0", sights.src = "https://fps5.ml/scope.png");
         newWeapon == "rifle" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/rifle/rifle.png");
         newWeapon == "pistol" && (document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/pistol/pistol.png");
-        scene.remove(gun);
-        camera.remove(gun);
         gun = new THREE.Mesh();
         gun.type = "PreDefined";
-        newWeapon == "pistol" && (new THREE.OBJLoader).load("https://fps5.ml/models/pistol/pistol.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),scene.add(s),gun.translateZ(-.5),gun.translateY(-.2),gun.translateX(.5)}));
+        newWeapon == "pistol" && (new THREE.OBJLoader).load("https://fps5.ml/models/pistol/pistol-fixed.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),gun.translateZ(-5),gun.translateY(.1),gun.translateX(.5)}));
         newWeapon == "rifle" && ((gun=plr),gun.children[0].material.color.setHex(0x555555),gun.scale.set(.01,.01,.01),scene.add(gun));
         newWeapon == "rifle" ? br = 3 : br = 1;
         setTimeout(() => {
@@ -440,7 +486,7 @@
         }, 250);
       }
       shakeint = 13;
-      function shake(seconds, intensity, rate, animate) {
+      // function shake(seconds, intensity, rate, animate) {
         // if (!canShake) {
         //   return clearInterval(o);
         // }
@@ -460,25 +506,51 @@
         //   shakeint = o;
         //   setTimeout(() => clearInterval(o), seconds * 1000);
         // }
+      // }
+      isShaking = false;
+      function shake(seconds, intensity, rate) {
+        // if (!canShake) {
+        //   return clearInterval(shakeint);
+        // }
+        // if (isShaking) {
+        //   return;
+        // }
+        // isShaking = true;
+        // const shakefollow = new THREE.Mesh();
+        // shakefollow.position.set(camera.position.x,camera.position.y,camera.position.z);
+        // shakefollow.position.copy(camera.position),shakefollow.rotation.copy(camera.rotation),shakefollow.updateMatrix(),shakefollow.translateZ(-1);
+        // var e = false;
+        // let o = setInterval(() => {
+        //   shakefollow.position.copy(camera.position),shakefollow.rotation.copy(camera.rotation),shakefollow.updateMatrix(),shakefollow.translateZ(-1);
+        //   if (!e) {
+        //     e = true;
+        //     shakefollow.translateY((intensity/10));
+        //   } else {
+        //     e = false;
+        //     shakefollow.translateY(-(intensity/10));
+        //   }
+        //   camera.lookAt(shakefollow.position);
+        // }, rate * 100);
+        // shakeint = o;
+        // setTimeout(() => (clearInterval(o)), seconds * 1000);
       }
       function stopShake() {
-        canShake = false;
         clearInterval(shakeint);
-        canShake = true;
+        isShaking = false;
       }
       function moveUp() {
         if (!eventsEnabled || !allowedToStart) {
           return;
         }
         !isJumping && walking.play();
-        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{shake(600, .9, .01, false);let f=camera.position.y;forwardI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}if(!isJumping){afixed&&(camera.position.y=f)}camera.translateZ(isJumping?-.01:-.02)})})());
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",forward"]),(()=>{shake(.5, .1, 3);let f=camera.position.y;forwardI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}if(!isJumping){afixed&&(camera.position.y=f)}camera.translateZ(isJumping?-.01:-.02)})})());
       }
       function moveDown() {
         if (!eventsEnabled || !allowedToStart) {
           return;
         }
         !isJumping && walking.play();
-        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),(()=>{shake(600, .9, .01, false);let f=camera.position.y;backwardI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}if(!isJumping){afixed&&(camera.position.y=f)}camera.translateZ(isJumping?.01:.02)})})());
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",backward"]),(()=>{shake(.5, .1, 3);let f=camera.position.y;backwardI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}if(!isJumping){afixed&&(camera.position.y=f)}camera.translateZ(isJumping?.01:.02)})})());
       }
       grenadeCount = 2;
       grenadeCooldown = 0;
@@ -498,19 +570,19 @@
           return;
         }
         !isJumping && walking.play();
-        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),shake(600, .9, .01, false),leftI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?-.01:-.02)}));
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",left"]),shake(.5, .1, 3),leftI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?-.01:-.02)}));
       }
       function moveRight() {
         if (!eventsEnabled || !allowedToStart) {
           return;
         }
         !isJumping && walking.play();
-        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),shake(600, .9, .01, false),rightI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?.01:.02)}));
+        (gametime.run("startMove",[(gametime.user.position==1?2:1).toString()+",right"]),shake(.5, .1, 3),rightI=setInterval(()=>{if(!eventsEnabled||!allowedToStart){return}camera.translateX(isJumping?.01:.02)}));
       }
       character = (new URLSearchParams(location.search).get("character") || "default");
-      character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{gametime.run("playerMove", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
-      document.addEventListener("keyup",()=>{walking.pause(),walking.currentTime=0;for(let i=0;i<5;i++){stopShake()}gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
+      // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
+      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
+      document.addEventListener("keyup",()=>{walking.pause(),walking.currentTime=0;stopShake(),gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       gametime.make("playerMove");
       gametime.on("playerMove", function(pos) {
         if (pos.split(",")[3] == gametime.user.position) {
@@ -676,6 +748,8 @@
       }
       let c = document.createElement("audio");
       c.src = shot.src;
+      function distanceVector(i,o){var t=i.position.x-o.position.x,n=i.position.y-o.position.y,s=i.position.z-o.position.z;return Math.sqrt(t*t+n*n+s*s)}
+      deg = false;
       function fire(burst) {
         if (!allowedToStart) {
           return;
@@ -800,6 +874,8 @@
       ascore = 0;
       bscore = 0;
       ref = false;
+      gifImage = new Image();
+      gifImage.src = statusText.src;
       gametime.on("eleminate", function(s) {
         let player = s.split(",")[0];
         let scored = (!s.split(",")[1] ? true : (!s.split(",")[1] == "1"));
@@ -815,9 +891,11 @@
           return;
         }
         if (player != gametime.user.position) {
+          (()=>{let g,w=0;let c=otherPlayer.clone();c.rotation.x=Math.PI;scene.add(c);scene.remove(otherPlayer);let t=0,d=0;let o=setInterval(()=>{if(t>=.1){return(clearInterval(o),g=setInterval(()=>{if(w>=.1){return(clearInterval(g))}w+=.001;c.position.y+=-w}))}t+=.001;c.position.y+=t});let h=setInterval(()=>{if(d>=Math.PI/2){return clearInterval(h)}d+=.01;c.rotation.x=d})})()
           setTimeout(() => {
             scene.add(otherPlayer);
             otherPlayer.position.set(0, -.8, 8);
+            otherPlayer.rotation.set(0, 0, 0);
           }, 5000);
         }
         if (player == gametime.user.position) {
@@ -850,7 +928,10 @@
             document.querySelector("#counter").textContent = rounds;
           }, 5000);
         } else {
-          statusText.textContent = "+1 kill";
+          statusText.style.display = "block";
+          !deg && (deg = true, statusText.src = gifImage.src);
+          death_sounds[Math.floor(Math.random()*death_sounds.length)].play();
+          death_sounds[Math.floor(Math.random()*death_sounds.length)].volume = (Math.abs(Math.abs(-distanceVector(camera,otherPlayer).toFixed(2))-10)<0?0:(Math.abs(Math.abs(-distanceVector(camera,otherPlayer).toFixed(2))-10)>1?1:Math.abs(Math.abs(-distanceVector(camera,otherPlayer).toFixed(2))-10))).toFixed(2)-0;
           document.body.style.top = "30px";
           document.querySelector(".health-wrapper").style.top = "30px";
           for (let u = 0; u < 2; u++) {
@@ -859,8 +940,9 @@
         }
         setTimeout(() => {
           scene.add(otherPlayer);
+          deg = false;
+          statusText.style.display = "none";
           otherPlayer.position.set(0, -.8, 8);
-          statusText.textContent = "";
           document.body.style.top = "0px";
           document.querySelector(".health-wrapper").style.top = "30px";
         }, 5000);
@@ -942,6 +1024,471 @@
         controller.on('up0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(-1),camera.lookAt(gamepadpointer.position)}).before('up0',()=>{}).after('up0',()=>{}),controller.on('down0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(1),camera.lookAt(gamepadpointer.position)}).before('down0',()=>{}).after('down0',()=>{}),controller.on('left1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(.5),camera.lookAt(gamepadpointer.position)}).before('left1',()=>{}).after('left1',()=>{}),controller.on('right1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(-.5),camera.lookAt(gamepadpointer.position)}).before('right1',()=>{}).after('right1',()=>{});
         dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveLeft(),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(leftI),clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveRight(),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(rightI),clearInterval(e)})))})),controller.on("right0",(()=>{})).before("right0",(()=>{moveDown()})).after("right0",(()=>{clearInterval(backwardI)})),controller.on("left0",(()=>{})).before("left0",(()=>{moveUp()})).after("left0",(()=>{clearInterval(forwardI)})),controller.on("button15",(()=>{throwGrenade()})),controller.on("l1",(()=>{})).before("l1",(()=>{switchWeapon()}));
       });
+    </script>
+		<style>.dg.ac{display:none}</style><script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script><script src="https://cdn.jsdelivr.net/gh/dataarts/dat.gui/build/dat.gui.min.js"></script><script>
+            (()=>{
+            GLTFLoader = THREE.GLTFLoader;
+            GUI = dat.GUI;
+			let stats;
+			let model, skeleton, mixer, clock;
+
+			const crossFadeControls = [];
+
+			let idleAction, walkAction, runAction;
+			let idleWeight, walkWeight, runWeight;
+			let actions, settings;
+
+			let singleStepMode = false;
+			let sizeOfNextStep = 0;
+
+			init();
+
+			function init() {
+
+				const container = document.getElementById( 'container' );
+
+				clock = new THREE.Clock();
+
+				const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+				hemiLight.position.set( 0, 20, 0 );
+				scene.add( hemiLight );
+
+				const dirLight = new THREE.DirectionalLight( 0xffffff );
+				dirLight.position.set( - 3, 10, - 10 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.top = 2;
+				dirLight.shadow.camera.bottom = - 2;
+				dirLight.shadow.camera.left = - 2;
+				dirLight.shadow.camera.right = 2;
+				dirLight.shadow.camera.near = 0.1;
+				dirLight.shadow.camera.far = 40;
+				scene.add( dirLight );
+
+				// scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
+
+				// ground
+
+				const mesh = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				scene.add( mesh );
+
+				const loader = new GLTFLoader();
+				loader.load('https://threejs.org/examples/models/gltf/Soldier.glb', function ( gltf ) {
+					model = gltf.scene;
+          modelalias = (model);
+					scene.add( model );
+
+					model.traverse( function ( object ) {
+
+						if ( object.isMesh ) object.castShadow = true;
+
+					} );
+
+					//
+
+					skeleton = new THREE.SkeletonHelper( model );
+					skeleton.visible = false;
+					scene.add( skeleton );
+
+					//
+
+					createPanel();
+
+
+					//
+
+					const animations = gltf.animations;
+
+					mixer = new THREE.AnimationMixer( model );
+
+					idleAction = mixer.clipAction( animations[ 0 ] );
+					walkAction = mixer.clipAction( animations[ 3 ] );
+					runAction = mixer.clipAction( animations[ 1 ] );
+
+					actions = [ idleAction, walkAction, runAction ];
+
+					activateAllActions();
+
+					animate();
+
+				} );
+
+        renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				container.appendChild( stats.domElement );
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function createPanel() {
+
+				const panel = new GUI( { width: 310 } );
+
+				const folder1 = panel.addFolder( 'Visibility' );
+				const folder2 = panel.addFolder( 'Activation/Deactivation' );
+				const folder3 = panel.addFolder( 'Pausing/Stepping' );
+				const folder4 = panel.addFolder( 'Crossfading' );
+				const folder5 = panel.addFolder( 'Blend Weights' );
+				const folder6 = panel.addFolder( 'General Speed' );
+
+				settings = {
+					'show model': true,
+					'show skeleton': false,
+					'deactivate all': deactivateAllActions,
+					'activate all': activateAllActions,
+					'pause/continue': pauseContinue,
+					'make single step': toSingleStepMode,
+					'modify step size': 0.05,
+					'from walk to idle': function () {
+
+						prepareCrossFade( walkAction, idleAction, 1.0 );
+
+					},
+					'from idle to walk': function () {
+
+						prepareCrossFade( idleAction, walkAction, 0.5 );
+
+					},
+					'from walk to run': function () {
+
+						prepareCrossFade( walkAction, runAction, 2.5 );
+
+					},
+					'from run to walk': function () {
+
+						prepareCrossFade( runAction, walkAction, 5.0 );
+
+					},
+					'use default duration': true,
+					'set custom duration': 3.5,
+					'modify idle weight': 0.0,
+					'modify walk weight': 1.0,
+					'modify run weight': 0.0,
+					'modify time scale': 1.0
+				};
+
+				folder1.add( settings, 'show model' ).onChange( showModel );
+				folder1.add( settings, 'show skeleton' ).onChange( showSkeleton );
+				folder2.add( settings, 'deactivate all' );
+				folder2.add( settings, 'activate all' );
+				folder3.add( settings, 'pause/continue' );
+				folder3.add( settings, 'make single step' );
+				folder3.add( settings, 'modify step size', 0.01, 0.1, 0.001 );
+				crossFadeControls.push( folder4.add( settings, 'from walk to idle' ) );
+				crossFadeControls.push( folder4.add( settings, 'from idle to walk' ) );
+				crossFadeControls.push( folder4.add( settings, 'from walk to run' ) );
+				crossFadeControls.push( folder4.add( settings, 'from run to walk' ) );
+				folder4.add( settings, 'use default duration' );
+				folder4.add( settings, 'set custom duration', 0, 10, 0.01 );
+				folder5.add( settings, 'modify idle weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
+
+					setWeight( idleAction, weight );
+
+				} );
+				folder5.add( settings, 'modify walk weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
+
+					setWeight( walkAction, weight );
+
+				} );
+				folder5.add( settings, 'modify run weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
+
+					setWeight( runAction, weight );
+
+				} );
+				folder6.add( settings, 'modify time scale', 0.0, 1.5, 0.01 ).onChange( modifyTimeScale );
+
+				folder1.open();
+				folder2.open();
+				folder3.open();
+				folder4.open();
+				folder5.open();
+				folder6.open();
+
+			}
+
+
+			function showModel( visibility ) {
+
+				model.visible = visibility;
+
+			}
+
+
+			function showSkeleton( visibility ) {
+
+				skeleton.visible = visibility;
+
+			}
+
+
+			function modifyTimeScale( speed ) {
+
+				mixer.timeScale = speed;
+
+			}
+
+
+			function deactivateAllActions() {
+
+				actions.forEach( function ( action ) {
+
+					action.stop();
+
+				} );
+
+			}
+
+			function activateAllActions() {
+
+				setWeight( idleAction, settings[ 'modify idle weight' ] );
+				setWeight( walkAction, settings[ 'modify walk weight' ] );
+				setWeight( runAction, settings[ 'modify run weight' ] );
+
+				actions.forEach( function ( action ) {
+
+					action.play();
+
+				} );
+
+			}
+
+			window.pauseContinue = function() {
+
+				if ( singleStepMode ) {
+
+					singleStepMode = false;
+					unPauseAllActions();
+
+				} else {
+
+					if ( idleAction.paused ) {
+
+						unPauseAllActions();
+
+					} else {
+
+						pauseAllActions();
+
+					}
+
+				}
+
+			}
+
+			window.pauseAllActions = function() {
+
+				actions.forEach( function ( action ) {
+
+					action.paused = true;
+
+				} );
+
+			}
+
+			window.unPauseAllActions = function() {
+
+				actions.forEach( function ( action ) {
+
+					action.paused = false;
+
+				} );
+
+			}
+
+			function toSingleStepMode() {
+
+				unPauseAllActions();
+
+				singleStepMode = true;
+				sizeOfNextStep = settings[ 'modify step size' ];
+
+			}
+
+			function prepareCrossFade( startAction, endAction, defaultDuration ) {
+
+				// Switch default / custom crossfade duration (according to the user's choice)
+
+				const duration = setCrossFadeDuration( defaultDuration );
+
+				// Make sure that we don't go on in singleStepMode, and that all actions are unpaused
+
+				singleStepMode = false;
+				unPauseAllActions();
+
+				// If the current action is 'idle' (duration 4 sec), execute the crossfade immediately;
+				// else wait until the current action has finished its current loop
+
+				if ( startAction === idleAction ) {
+
+					executeCrossFade( startAction, endAction, duration );
+
+				} else {
+
+					synchronizeCrossFade( startAction, endAction, duration );
+
+				}
+
+			}
+
+			function setCrossFadeDuration( defaultDuration ) {
+
+				// Switch default crossfade duration <-> custom crossfade duration
+
+				if ( settings[ 'use default duration' ] ) {
+
+					return defaultDuration;
+
+				} else {
+
+					return settings[ 'set custom duration' ];
+
+				}
+
+			}
+
+			function synchronizeCrossFade( startAction, endAction, duration ) {
+
+				mixer.addEventListener( 'loop', onLoopFinished );
+
+				function onLoopFinished( event ) {
+
+					if ( event.action === startAction ) {
+
+						mixer.removeEventListener( 'loop', onLoopFinished );
+
+						executeCrossFade( startAction, endAction, duration );
+
+					}
+
+				}
+
+			}
+
+			function executeCrossFade( startAction, endAction, duration ) {
+
+				// Not only the start action, but also the end action must get a weight of 1 before fading
+				// (concerning the start action this is already guaranteed in this place)
+
+				setWeight( endAction, 1 );
+				endAction.time = 0;
+
+				// Crossfade with warping - you can also try without warping by setting the third parameter to false
+
+				startAction.crossFadeTo( endAction, duration, true );
+
+			}
+
+			// This function is needed, since animationAction.crossFadeTo() disables its start action and sets
+			// the start action's timeScale to ((start animation's duration) / (end animation's duration))
+
+			function setWeight( action, weight ) {
+
+				action.enabled = true;
+				action.setEffectiveTimeScale( 1 );
+				action.setEffectiveWeight( weight );
+
+			}
+
+			// Called by the render loop
+
+			function updateWeightSliders() {
+
+				settings[ 'modify idle weight' ] = idleWeight;
+				settings[ 'modify walk weight' ] = walkWeight;
+				settings[ 'modify run weight' ] = runWeight;
+
+			}
+
+			// Called by the render loop
+
+			function updateCrossFadeControls() {
+
+				if ( idleWeight === 1 && walkWeight === 0 && runWeight === 0 ) {
+
+					// crossFadeControls[ 0 ].disable();
+					// crossFadeControls[ 1 ].enable();
+					// crossFadeControls[ 2 ].disable();
+					// crossFadeControls[ 3 ].disable();
+
+				}
+
+				if ( idleWeight === 0 && walkWeight === 1 && runWeight === 0 ) {
+
+					// crossFadeControls[ 0 ].enable();
+					// crossFadeControls[ 1 ].disable();
+					// crossFadeControls[ 2 ].enable();
+					// crossFadeControls[ 3 ].disable();
+
+				}
+
+				if ( idleWeight === 0 && walkWeight === 0 && runWeight === 1 ) {
+
+					// crossFadeControls[ 0 ].disable();
+					// crossFadeControls[ 1 ].disable();
+					// crossFadeControls[ 2 ].disable();
+					// crossFadeControls[ 3 ].enable();
+
+				}
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				// Render loop
+
+				requestAnimationFrame( animate );
+
+				idleWeight = idleAction.getEffectiveWeight();
+				walkWeight = walkAction.getEffectiveWeight();
+				runWeight = runAction.getEffectiveWeight();
+
+				// Update the panel values if weights are modified from "outside" (by crossfadings)
+
+				updateWeightSliders();
+
+				// Enable/disable crossfade controls according to current weight values
+
+				updateCrossFadeControls();
+
+				// Get the time elapsed since the last frame, used for mixer update (if not in single step mode)
+
+				let mixerUpdateDelta = clock.getDelta();
+
+				// If in single step mode, make one step and then do nothing (until the user clicks again)
+
+				if ( singleStepMode ) {
+
+					mixerUpdateDelta = sizeOfNextStep;
+					sizeOfNextStep = 0;
+
+				}
+
+				// Update the animation mixer, the stats panel, and render this frame
+
+				mixer.update( mixerUpdateDelta );
+
+				stats.update();
+
+				renderer.render( scene, camera );
+
+			}
+        })();
     </script>
   </body>
 </html>
