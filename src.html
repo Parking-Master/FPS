@@ -193,7 +193,7 @@
       let gun = new THREE.Mesh();
       let otherGun = new THREE.Mesh();
       gun.type = "PreDefined";
-      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),scene.add(s)}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
         if ((ascore >= 3 && gametime.user.position == 1) || (bscore >= 3 && gametime.user.position == 2)) {
@@ -212,8 +212,13 @@
           }).then(() => location.replace("/"));
         }
       }
+      let body = new THREE.Mesh();
+      (new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{body=e.scene.children[0];body.scale.set(.01,.01,.01)}));
       function startGame(){
       otherPlayer=modelalias;
+      let b=setInterval(() => {
+        typeof modelalias != "undefined" && ((scene.children.indexOf(modelalias) > -1) || (scene.add(modelalias), clearInterval(b)));
+      });
       if (map == "Haven") {
         for(let i=0;i<2;i++){
           let chosenSpawn = HavenSpawnPoints;
@@ -318,7 +323,6 @@
       afixed = true;
       var raycaster=new THREE.Raycaster();
       function animate() {
-        raycastTargets=[otherPlayer];
         // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
         if (typeof(mapVertices) != "undefined" && !isJumping) {
           if (mapVertices[0].eval()) {
@@ -387,16 +391,6 @@
           }, 5000);
         }
         // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z);
-        let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
-        center=new THREE.Vector2(0,0);
-        camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
-        if (intersection != null && (intersection.object.name == "vanguard_Mesh" || (intersection.object.type == "LineSegments"))) {
-          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
-          pointed = otherPlayer;
-        } else {
-          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
-          pointed = null;
-        }
         (camera.position.z.toFixed(0)=="8"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=0));
         (camera.position.z.toFixed(0)=="7"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=-.625));
         (camera.position.z.toFixed(0)=="6"&&camera.position.x<=1.7&&camera.position.x>=-1.7&&(defaultY=-1.25));
@@ -430,8 +424,6 @@
         //   controls.isLocked = true;
         // }
         typeof otherPlayer.material != "undefined" && otherPlayer.material.color.setHex(0x333333);
-        document.querySelector(".player1").querySelector(".score").textContent = ascore;
-        document.querySelector(".player2").querySelector(".score").textContent = bscore;
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
@@ -675,9 +667,18 @@
         });
         setTimeout(() => (isJumping = false), 1200);
       }
-      requestedpointer = false;
       document.addEventListener("mousemove", function() {
-        if (!requestedpointer) { requestedpointer = true; renderer.domElement.requestPointerLock = renderer.domElement.requestPointerLock || renderer.domElement.mozRequestPointerLock; renderer.domElement.requestPointerLock(); }
+        raycastTargets=[otherPlayer];
+        let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
+        center=new THREE.Vector2(0,0);
+        camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
+        if (intersection != null && (intersection.object.name == "vanguard_Mesh" || (intersection.object.type == "LineSegments"))) {
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
+          pointed = otherPlayer;
+        } else {
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
+          pointed = null;
+        }
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
       })
       gametime.make("playerJump");
@@ -876,6 +877,7 @@
       ref = false;
       gifImage = new Image();
       gifImage.src = statusText.src;
+      didDie = false;
       gametime.on("eleminate", function(s) {
         let player = s.split(",")[0];
         let scored = (!s.split(",")[1] ? true : (!s.split(",")[1] == "1"));
@@ -883,19 +885,25 @@
           ref = true;
           scored && (player == 1 ? bscore += 1 : ascore += 1);
           (ascore >= 3 || bscore >= 3) ? GameOver() : void(0);
+          document.querySelector(".player1").querySelector(".score").textContent = ascore;
+          document.querySelector(".player2").querySelector(".score").textContent = bscore;
           setTimeout(() => {
             ref = false;
+            document.querySelector(".player1").querySelector(".score").textContent = ascore;
+            document.querySelector(".player2").querySelector(".score").textContent = bscore;
           }, 5000);
         }
         if (!eventsEnabled) {
           return;
         }
         if (player != gametime.user.position) {
-          (()=>{let g,w=0;let c=otherPlayer.clone();c.rotation.x=Math.PI;scene.add(c);scene.remove(otherPlayer);let t=0,d=0;let o=setInterval(()=>{if(t>=.1){return(clearInterval(o),g=setInterval(()=>{if(w>=.1){return(clearInterval(g))}w+=.001;c.position.y+=-w}))}t+=.001;c.position.y+=t});let h=setInterval(()=>{if(d>=Math.PI/2){return clearInterval(h)}d+=.01;c.rotation.x=d})})()
+          !didDie && (()=>{(new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{c=e.scene.children[0];c.scale.set(.01,.01,.01);scene.add(c),c.position.set(otherPlayer.position.x,otherPlayer.position.y,otherPlayer.position.z);let g,w=0;c.rotation.x=0;scene.add(c);let t=0,d=0;let o=setInterval(()=>{if(t>=.1){return(clearInterval(o),g=setInterval(()=>{if(w>=.1){return(clearInterval(g))}w+=.001;c.position.y+=-w}))}t+=.001;c.position.y+=t});let h=setInterval(()=>{if(d<=-Math.PI){return clearInterval(h)}d+=-.01;c.rotation.x=d})}))})()
+          didDie = true;
           setTimeout(() => {
             scene.add(otherPlayer);
             otherPlayer.position.set(0, -.8, 8);
             otherPlayer.rotation.set(0, 0, 0);
+            didDie = false;
           }, 5000);
         }
         if (player == gametime.user.position) {
@@ -1025,470 +1033,8 @@
         dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveLeft(),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(leftI),clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveRight(),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(rightI),clearInterval(e)})))})),controller.on("right0",(()=>{})).before("right0",(()=>{moveDown()})).after("right0",(()=>{clearInterval(backwardI)})),controller.on("left0",(()=>{})).before("left0",(()=>{moveUp()})).after("left0",(()=>{clearInterval(forwardI)})),controller.on("button15",(()=>{throwGrenade()})),controller.on("l1",(()=>{})).before("l1",(()=>{switchWeapon()}));
       });
     </script>
-		<style>.dg.ac{display:none}</style><script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script><script src="https://cdn.jsdelivr.net/gh/dataarts/dat.gui/build/dat.gui.min.js"></script><script>
-            (()=>{
-            GLTFLoader = THREE.GLTFLoader;
-            GUI = dat.GUI;
-			let stats;
-			let model, skeleton, mixer, clock;
-
-			const crossFadeControls = [];
-
-			let idleAction, walkAction, runAction;
-			let idleWeight, walkWeight, runWeight;
-			let actions, settings;
-
-			let singleStepMode = false;
-			let sizeOfNextStep = 0;
-
-			init();
-
-			function init() {
-
-				const container = document.getElementById( 'container' );
-
-				clock = new THREE.Clock();
-
-				const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-				hemiLight.position.set( 0, 20, 0 );
-				scene.add( hemiLight );
-
-				const dirLight = new THREE.DirectionalLight( 0xffffff );
-				dirLight.position.set( - 3, 10, - 10 );
-				dirLight.castShadow = true;
-				dirLight.shadow.camera.top = 2;
-				dirLight.shadow.camera.bottom = - 2;
-				dirLight.shadow.camera.left = - 2;
-				dirLight.shadow.camera.right = 2;
-				dirLight.shadow.camera.near = 0.1;
-				dirLight.shadow.camera.far = 40;
-				scene.add( dirLight );
-
-				// scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
-
-				// ground
-
-				const mesh = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
-				mesh.rotation.x = - Math.PI / 2;
-				mesh.receiveShadow = true;
-				scene.add( mesh );
-
-				const loader = new GLTFLoader();
-				loader.load('https://threejs.org/examples/models/gltf/Soldier.glb', function ( gltf ) {
-					model = gltf.scene;
-          modelalias = (model);
-					scene.add( model );
-
-					model.traverse( function ( object ) {
-
-						if ( object.isMesh ) object.castShadow = true;
-
-					} );
-
-					//
-
-					skeleton = new THREE.SkeletonHelper( model );
-					skeleton.visible = false;
-					scene.add( skeleton );
-
-					//
-
-					createPanel();
-
-
-					//
-
-					const animations = gltf.animations;
-
-					mixer = new THREE.AnimationMixer( model );
-
-					idleAction = mixer.clipAction( animations[ 0 ] );
-					walkAction = mixer.clipAction( animations[ 3 ] );
-					runAction = mixer.clipAction( animations[ 1 ] );
-
-					actions = [ idleAction, walkAction, runAction ];
-
-					activateAllActions();
-
-					animate();
-
-				} );
-
-        renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.outputEncoding = THREE.sRGBEncoding;
-				renderer.shadowMap.enabled = true;
-				container.appendChild( renderer.domElement );
-
-				stats = new Stats();
-				container.appendChild( stats.domElement );
-
-				window.addEventListener( 'resize', onWindowResize );
-
-			}
-
-			function createPanel() {
-
-				const panel = new GUI( { width: 310 } );
-
-				const folder1 = panel.addFolder( 'Visibility' );
-				const folder2 = panel.addFolder( 'Activation/Deactivation' );
-				const folder3 = panel.addFolder( 'Pausing/Stepping' );
-				const folder4 = panel.addFolder( 'Crossfading' );
-				const folder5 = panel.addFolder( 'Blend Weights' );
-				const folder6 = panel.addFolder( 'General Speed' );
-
-				settings = {
-					'show model': true,
-					'show skeleton': false,
-					'deactivate all': deactivateAllActions,
-					'activate all': activateAllActions,
-					'pause/continue': pauseContinue,
-					'make single step': toSingleStepMode,
-					'modify step size': 0.05,
-					'from walk to idle': function () {
-
-						prepareCrossFade( walkAction, idleAction, 1.0 );
-
-					},
-					'from idle to walk': function () {
-
-						prepareCrossFade( idleAction, walkAction, 0.5 );
-
-					},
-					'from walk to run': function () {
-
-						prepareCrossFade( walkAction, runAction, 2.5 );
-
-					},
-					'from run to walk': function () {
-
-						prepareCrossFade( runAction, walkAction, 5.0 );
-
-					},
-					'use default duration': true,
-					'set custom duration': 3.5,
-					'modify idle weight': 0.0,
-					'modify walk weight': 1.0,
-					'modify run weight': 0.0,
-					'modify time scale': 1.0
-				};
-
-				folder1.add( settings, 'show model' ).onChange( showModel );
-				folder1.add( settings, 'show skeleton' ).onChange( showSkeleton );
-				folder2.add( settings, 'deactivate all' );
-				folder2.add( settings, 'activate all' );
-				folder3.add( settings, 'pause/continue' );
-				folder3.add( settings, 'make single step' );
-				folder3.add( settings, 'modify step size', 0.01, 0.1, 0.001 );
-				crossFadeControls.push( folder4.add( settings, 'from walk to idle' ) );
-				crossFadeControls.push( folder4.add( settings, 'from idle to walk' ) );
-				crossFadeControls.push( folder4.add( settings, 'from walk to run' ) );
-				crossFadeControls.push( folder4.add( settings, 'from run to walk' ) );
-				folder4.add( settings, 'use default duration' );
-				folder4.add( settings, 'set custom duration', 0, 10, 0.01 );
-				folder5.add( settings, 'modify idle weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
-
-					setWeight( idleAction, weight );
-
-				} );
-				folder5.add( settings, 'modify walk weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
-
-					setWeight( walkAction, weight );
-
-				} );
-				folder5.add( settings, 'modify run weight', 0.0, 1.0, 0.01 ).listen().onChange( function ( weight ) {
-
-					setWeight( runAction, weight );
-
-				} );
-				folder6.add( settings, 'modify time scale', 0.0, 1.5, 0.01 ).onChange( modifyTimeScale );
-
-				folder1.open();
-				folder2.open();
-				folder3.open();
-				folder4.open();
-				folder5.open();
-				folder6.open();
-
-			}
-
-
-			function showModel( visibility ) {
-
-				model.visible = visibility;
-
-			}
-
-
-			function showSkeleton( visibility ) {
-
-				skeleton.visible = visibility;
-
-			}
-
-
-			function modifyTimeScale( speed ) {
-
-				mixer.timeScale = speed;
-
-			}
-
-
-			function deactivateAllActions() {
-
-				actions.forEach( function ( action ) {
-
-					action.stop();
-
-				} );
-
-			}
-
-			function activateAllActions() {
-
-				setWeight( idleAction, settings[ 'modify idle weight' ] );
-				setWeight( walkAction, settings[ 'modify walk weight' ] );
-				setWeight( runAction, settings[ 'modify run weight' ] );
-
-				actions.forEach( function ( action ) {
-
-					action.play();
-
-				} );
-
-			}
-
-			window.pauseContinue = function() {
-
-				if ( singleStepMode ) {
-
-					singleStepMode = false;
-					unPauseAllActions();
-
-				} else {
-
-					if ( idleAction.paused ) {
-
-						unPauseAllActions();
-
-					} else {
-
-						pauseAllActions();
-
-					}
-
-				}
-
-			}
-
-			window.pauseAllActions = function() {
-
-				actions.forEach( function ( action ) {
-
-					action.paused = true;
-
-				} );
-
-			}
-
-			window.unPauseAllActions = function() {
-
-				actions.forEach( function ( action ) {
-
-					action.paused = false;
-
-				} );
-
-			}
-
-			function toSingleStepMode() {
-
-				unPauseAllActions();
-
-				singleStepMode = true;
-				sizeOfNextStep = settings[ 'modify step size' ];
-
-			}
-
-			function prepareCrossFade( startAction, endAction, defaultDuration ) {
-
-				// Switch default / custom crossfade duration (according to the user's choice)
-
-				const duration = setCrossFadeDuration( defaultDuration );
-
-				// Make sure that we don't go on in singleStepMode, and that all actions are unpaused
-
-				singleStepMode = false;
-				unPauseAllActions();
-
-				// If the current action is 'idle' (duration 4 sec), execute the crossfade immediately;
-				// else wait until the current action has finished its current loop
-
-				if ( startAction === idleAction ) {
-
-					executeCrossFade( startAction, endAction, duration );
-
-				} else {
-
-					synchronizeCrossFade( startAction, endAction, duration );
-
-				}
-
-			}
-
-			function setCrossFadeDuration( defaultDuration ) {
-
-				// Switch default crossfade duration <-> custom crossfade duration
-
-				if ( settings[ 'use default duration' ] ) {
-
-					return defaultDuration;
-
-				} else {
-
-					return settings[ 'set custom duration' ];
-
-				}
-
-			}
-
-			function synchronizeCrossFade( startAction, endAction, duration ) {
-
-				mixer.addEventListener( 'loop', onLoopFinished );
-
-				function onLoopFinished( event ) {
-
-					if ( event.action === startAction ) {
-
-						mixer.removeEventListener( 'loop', onLoopFinished );
-
-						executeCrossFade( startAction, endAction, duration );
-
-					}
-
-				}
-
-			}
-
-			function executeCrossFade( startAction, endAction, duration ) {
-
-				// Not only the start action, but also the end action must get a weight of 1 before fading
-				// (concerning the start action this is already guaranteed in this place)
-
-				setWeight( endAction, 1 );
-				endAction.time = 0;
-
-				// Crossfade with warping - you can also try without warping by setting the third parameter to false
-
-				startAction.crossFadeTo( endAction, duration, true );
-
-			}
-
-			// This function is needed, since animationAction.crossFadeTo() disables its start action and sets
-			// the start action's timeScale to ((start animation's duration) / (end animation's duration))
-
-			function setWeight( action, weight ) {
-
-				action.enabled = true;
-				action.setEffectiveTimeScale( 1 );
-				action.setEffectiveWeight( weight );
-
-			}
-
-			// Called by the render loop
-
-			function updateWeightSliders() {
-
-				settings[ 'modify idle weight' ] = idleWeight;
-				settings[ 'modify walk weight' ] = walkWeight;
-				settings[ 'modify run weight' ] = runWeight;
-
-			}
-
-			// Called by the render loop
-
-			function updateCrossFadeControls() {
-
-				if ( idleWeight === 1 && walkWeight === 0 && runWeight === 0 ) {
-
-					// crossFadeControls[ 0 ].disable();
-					// crossFadeControls[ 1 ].enable();
-					// crossFadeControls[ 2 ].disable();
-					// crossFadeControls[ 3 ].disable();
-
-				}
-
-				if ( idleWeight === 0 && walkWeight === 1 && runWeight === 0 ) {
-
-					// crossFadeControls[ 0 ].enable();
-					// crossFadeControls[ 1 ].disable();
-					// crossFadeControls[ 2 ].enable();
-					// crossFadeControls[ 3 ].disable();
-
-				}
-
-				if ( idleWeight === 0 && walkWeight === 0 && runWeight === 1 ) {
-
-					// crossFadeControls[ 0 ].disable();
-					// crossFadeControls[ 1 ].disable();
-					// crossFadeControls[ 2 ].disable();
-					// crossFadeControls[ 3 ].enable();
-
-				}
-
-			}
-
-			function onWindowResize() {
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			function animate() {
-
-				// Render loop
-
-				requestAnimationFrame( animate );
-
-				idleWeight = idleAction.getEffectiveWeight();
-				walkWeight = walkAction.getEffectiveWeight();
-				runWeight = runAction.getEffectiveWeight();
-
-				// Update the panel values if weights are modified from "outside" (by crossfadings)
-
-				updateWeightSliders();
-
-				// Enable/disable crossfade controls according to current weight values
-
-				updateCrossFadeControls();
-
-				// Get the time elapsed since the last frame, used for mixer update (if not in single step mode)
-
-				let mixerUpdateDelta = clock.getDelta();
-
-				// If in single step mode, make one step and then do nothing (until the user clicks again)
-
-				if ( singleStepMode ) {
-
-					mixerUpdateDelta = sizeOfNextStep;
-					sizeOfNextStep = 0;
-
-				}
-
-				// Update the animation mixer, the stats panel, and render this frame
-
-				mixer.update( mixerUpdateDelta );
-
-				stats.update();
-
-				renderer.render( scene, camera );
-
-			}
-        })();
+		<style>.dg.ac{display:none}</style><script xsrc="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js">var Stats=function(){function e(e){return n.appendChild(e.dom),e}function t(e){for(var t=0;t<n.children.length;t++)n.children[t].style.display=t===e?"block":"none";l=e}var l=0,n=document.createElement("div");n.style.cssText="cursor:pointer;opacity:0.9",n.addEventListener("click",function(e){e.preventDefault(),t(++l%n.children.length)},!1);var a=(performance||Date).now(),i=a,o=0,r=e(new Stats.Panel("FPS","#0ff","#002")),f=e(new Stats.Panel("MS","#0f0","#020"));if(self.performance&&self.performance.memory)var c=e(new Stats.Panel("MB","#f08","#201"));return t(0),{REVISION:16,domElement:n,addPanel:e,showPanel:t,setMode:t,begin:function(){a=(performance||Date).now()},end:function(){o++;var e=(performance||Date).now();if(f.update(e-a,200),e>i+1e3&&(r.update(1e3*o/(e-i),100),i=e,o=0,c)){var t=performance.memory;c.update(t.usedJSHeapSize/1048576,t.jsHeapSizeLimit/1048576)}return e},update:function(){a=this.end()}}};Stats.Panel=function(e,t,l){var n=1/0,a=0,i=Math.round,o=i(window.devicePixelRatio||1),r=80*o,f=48*o,c=3*o,d=2*o,s=3*o,p=15*o,u=74*o,m=30*o,h=document.createElement("canvas");h.height=f,h.style.cssText="height:48px";var S=h.getContext("2d");return S.font="bold "+9*o+"px Helvetica,Arial,sans-serif",S.textBaseline="top",S.fillStyle=l,S.fillRect(0,0,r,f),S.fillStyle=t,S.fillText(e,c,d),S.fillRect(s,p,u,m),S.fillStyle=l,S.globalAlpha=.9,S.fillRect(s,p,u,m),{dom:h,update:function(f,v){n=Math.min(n,f),a=Math.max(a,f),S.fillStyle=l,S.globalAlpha=1,S.fillRect(0,0,r,p),S.fillStyle=t,S.fillText(i(f)+" "+e+" ("+i(n)+"-"+i(a)+")",c,d),S.drawImage(h,s+o,p,u-o,m,s,p,u-o,m),S.fillRect(s+u-o,p,o,m),S.fillStyle=l,S.globalAlpha=.9,S.fillRect(s+u-o,p,o,i((1-f/v)*m))}}},"object"==typeof module&&(module.exports=Stats);//# sourceMappingURL=./Stats.min.js.map</script><script src="https://cdn.jsdelivr.net/gh/dataarts/dat.gui/build/dat.gui.min.js"></script><script>
+    (()=>{let e,n,o,t,i;GLTFLoader=THREE.GLTFLoader,GUI=dat.GUI;const a=[];let d,s,l,c,r,u,f,w,m=!1,h=0;function p(e){n.visible=e}function g(e){o.visible=e}function E(e){t.timeScale=e}function A(){f.forEach((function(e){e.stop()}))}function y(){R(d,w["modify idle weight"]),R(s,w["modify walk weight"]),R(l,w["modify run weight"]),f.forEach((function(e){e.play()}))}function k(){unPauseAllActions(),m=!0,h=w["modify step size"]}function v(e,n,o){const i=function(e){return w["use default duration"]?e:w["set custom duration"]}(o);m=!1,unPauseAllActions(),e===d?T(e,n,i):function(e,n,o){function i(a){a.action===e&&(t.removeEventListener("loop",i),T(e,n,o))}t.addEventListener("loop",i)}(e,n,i)}function T(e,n,o){R(n,1),n.time=0,e.crossFadeTo(n,o,!0)}function R(e,n){e.enabled=!0,e.setEffectiveTimeScale(1),e.setEffectiveWeight(n)}function H(){w["modify idle weight"]=c,w["modify walk weight"]=r,w["modify run weight"]=u;let n=i.getDelta();m&&(n=h,h=0),t.update(n),renderer.render(scene,camera),requestAnimationFrame(H)}!function(){const c=document.getElementById("container");i=new THREE.Clock;const r=new THREE.HemisphereLight(16777215,4473924);r.position.set(0,20,0),scene.add(r);const u=new THREE.DirectionalLight(16777215);u.position.set(-3,10,-10),u.castShadow=!0,u.shadow.camera.top=2,u.shadow.camera.bottom=-2,u.shadow.camera.left=-2,u.shadow.camera.right=2,u.shadow.camera.near=.1,u.shadow.camera.far=40,scene.add(u);const m=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshPhongMaterial({color:10066329,depthWrite:!1}));m.rotation.x=-Math.PI/2,m.receiveShadow=!0,scene.add(m);(new GLTFLoader).load("https://threejs.org/examples/models/gltf/Soldier.glb",(function(e){n=e.scene,modelalias=n,scene.add(n),n.traverse((function(e){e.isMesh&&(e.castShadow=!0)})),o=new THREE.SkeletonHelper(n),o.visible=!1,scene.add(o),function(){const e=new GUI(),n=e.addFolder("Visibility"),o=e.addFolder("Activation/Deactivation"),t=e.addFolder("Pausing/Stepping"),i=e.addFolder("Crossfading"),c=e.addFolder("Blend Weights"),r=e.addFolder("General Speed");w={"show model":!0,"show skeleton":!1,"deactivate all":A,"activate all":y,"pause/continue":pauseContinue,"make single step":k,"modify step size":.05,"from walk to idle":function(){v(s,d,1)},"from idle to walk":function(){v(d,s,.5)},"from walk to run":function(){v(s,l,2.5)},"from run to walk":function(){v(l,s,5)},"use default duration":!0,"set custom duration":3.5,"modify idle weight":0,"modify walk weight":1,"modify run weight":0,"modify time scale":1},n.add(w,"show model").onChange(p),n.add(w,"show skeleton").onChange(g),o.add(w,"deactivate all"),o.add(w,"activate all"),t.add(w,"pause/continue"),t.add(w,"make single step"),t.add(w,"modify step size",.01,.1,.001),a.push(i.add(w,"from walk to idle")),a.push(i.add(w,"from idle to walk")),a.push(i.add(w,"from walk to run")),a.push(i.add(w,"from run to walk")),i.add(w,"use default duration"),i.add(w,"set custom duration",0,10,.01),c.add(w,"modify idle weight",0,1,.01).listen().onChange((function(e){R(d,e)})),c.add(w,"modify walk weight",0,1,.01).listen().onChange((function(e){R(s,e)})),c.add(w,"modify run weight",0,1,.01).listen().onChange((function(e){R(l,e)})),r.add(w,"modify time scale",0,1.5,.01).onChange(E),n.open(),o.open(),t.open(),i.open(),c.open(),r.open()}();const i=e.animations;t=new THREE.AnimationMixer(n),d=t.clipAction(i[0]),s=t.clipAction(i[3]),l=t.clipAction(i[1]),f=[d,s,l],y(),pauseAllActions(),H()})),renderer.setPixelRatio(window.devicePixelRatio)/*,renderer.setSize(window.innerWidth,window.innerHeight)*/,renderer.outputEncoding=THREE.sRGBEncoding,renderer.shadowMap.enabled=!0,c.appendChild(renderer.domElement),e=new Stats,c.appendChild(e.domElement)}(),window.pauseContinue=function(){m?(m=!1,unPauseAllActions()):d.paused?unPauseAllActions():pauseAllActions()},window.pauseAllActions=function(){f.forEach((function(e){e.paused=!0}))},window.unPauseAllActions=function(){f.forEach((function(e){e.paused=!1}))}})();
     </script>
   </body>
 </html>
