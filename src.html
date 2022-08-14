@@ -13,8 +13,6 @@
         user-select: none !important;
         transition: top .2s;
         background: #eeeeee;
-        width: 1440px;
-        height: 900px;
       }
       * {
         cursor: default /*url(./cursors/cursor2.png), auto */!important;
@@ -112,6 +110,13 @@
       }
       #visor {
         pointer-events: none !important;
+      }
+      canvas:first {
+        position: absolute;
+        width: 62.5vw;
+        height: 100vw;
+        left: 50% !important;
+        margin-left: -31.25vw !important;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
@@ -272,7 +277,7 @@
       const controls = new PointerLockControls(camera, renderer.domElement);
       controls.isLocked = true;
       controls.pointerSpeed = 2;
-      function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)}window.addEventListener("resize",onWindowResize,!1);
+      function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
       let loader=new THREE.TextureLoader;loader.load("https://fps5.ml/images/clouds3.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
       groundGeometry = new THREE.CircleGeometry(30, 50);
       groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://images.creativemarket.com/0.1.0/ps/6285824/1820/1214/m1/fpnw/wm1/pdoljwzfohfnaadofyq7kl82ttb8a548ydp0c8wdp12abli0sfollywetaojozln-.jpg?1555951636&s=81a26f9928e47104075b066a0d59be47") });
@@ -311,7 +316,7 @@
       map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{animate(),document.querySelector(".loader-cover").remove();const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),e.children[0].material[0].color.setHex(0x492505),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
       map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/HAVEN/scene.gltf",(e)=>{wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=4}));
       map == "Harvest" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/harvest/scene.gltf",(e)=>{light=new THREE.DirectionalLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-112,map.rotation.x=-Math.PI/2;camera.position.x=-30,camera.position.z=10;light.color.setHex(0xeeeeff),light.intensity=4}));
-      const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
+      const zoomInFunction=o=>{sights.style.left=0,sights.style.width=screen.width+"px";const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
       canShake = true;
       freezeFrame = false;
       function freezeFrameFunction(seconds) {
@@ -665,7 +670,7 @@
             camera.position.y += y;
           }
         });
-        setTimeout(() => (isJumping = false), 1200);
+        let f = setInterval(() => (camera.position.y <= defaultY && (isJumping = false, clearInterval(f)), 1200));
       }
       document.addEventListener("mousemove", function() {
         raycastTargets=[otherPlayer];
