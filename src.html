@@ -137,6 +137,7 @@
     <audio id="walking" src="https://fps5.ml/sounds/walking.mp3" loop volume="1"></audio>
     <audio id="ambience" src="https://fps5.ml/sounds/ambience.mp3" autoplay loop volume="1"></audio>
     <audio id="shot" src="https://fps5.ml/sounds/shot.mp3"></audio>
+    <audio id="gunsound-burst" src="https://fps5.ml/sounds/guns/default_rifle.mp3"></audio>
     <audio id="reload" src="https://fps5.ml/sounds/reload.mp3"></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
@@ -171,6 +172,9 @@
       explosion = document.querySelector("#explosion");
       userIds = [];
       wt = false;
+      gunsounds = {
+        burst: document.querySelector("#gunsound-burst")
+      };
       map = new URLSearchParams(location.search).get("map") || "Vertex";
       document.querySelector(".map").textContent = map;
       gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
@@ -198,7 +202,7 @@
       let gun = new THREE.Mesh();
       let otherGun = new THREE.Mesh();
       gun.type = "PreDefined";
-      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/rifle-holding.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
         if ((ascore >= 3 && gametime.user.position == 1) || (bscore >= 3 && gametime.user.position == 2)) {
@@ -316,7 +320,7 @@
       map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{animate(),document.querySelector(".loader-cover").remove();const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].color.setHex(2250001),e.children[0].material[0].color.setHex(0x492505),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
       map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/HAVEN/scene.gltf",(e)=>{wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=4}));
       map == "Harvest" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/harvest/scene.gltf",(e)=>{light=new THREE.DirectionalLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-112,map.rotation.x=-Math.PI/2;camera.position.x=-30,camera.position.z=10;light.color.setHex(0xeeeeff),light.intensity=4}));
-      const zoomInFunction=o=>{sights.style.left=0,sights.style.width=screen.width+"px";const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
+      const zoomInFunction=o=>{/*sights.style.left=0,sights.style.width=screen.width+"px";*/const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
       canShake = true;
       freezeFrame = false;
       function freezeFrameFunction(seconds) {
@@ -456,7 +460,7 @@
         pauseAllActions();
       });
       plr = new THREE.Mesh();
-      (new THREE.OBJLoader).load("https://fps5.ml/models/rifle/rifle.obj",(e=>{plr=e}));
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/rifle-holding.obj",(e=>{plr=e}));
       HavenSpawnPoints = [
         [0, 0, 8],
         [0, -1.75, 45]
@@ -806,13 +810,7 @@
           delete bcase;
         }, 200);
         }, 100);
-        let b = setInterval(() => {
-          d = false;
-          gun.rotation.x += 0.2;
-          gun.position.z += 0.01;
-          setTimeout(() => (gun.rotation.x += -0.2, gun.position.z += -0.01, d = true), 100);
-        }, 100);
-        setTimeout(() => clearInterval(b), (burst.toString() + "00" - 0));
+        (()=>{let t=0,n=setInterval((()=>{if(t>=3)return clearInterval(n);d=!1,t++,gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>(gun.rotation.x+=-.2,gun.position.z+=-.01,d=!0)),50)}),100)})();
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
             reload();
@@ -829,7 +827,7 @@
           object.maxshot += -burst;
           if (scene.children.indexOf(object) > -1) {
             gametime.run("hit", [(gametime.user.position == 1 ? 2 : 1)]);
-            (()=>{var e=new THREE.CircleGeometry(.75*Math.random(),25),o=new THREE.MeshBasicMaterial({color:"red"}),r=new THREE.Mesh(e,o);scene.add(r),r.position.set(otherPlayer.position.x,otherPlayer.position.y+2,otherPlayer.position.z),r.traverse((function(e){e.material&&(e.material.side=THREE.DoubleSide)})),setTimeout((()=>{scene.remove(r),delete r}),500)})();
+            (()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/blood.png"),side:THREE.DoubleSide,transparent:true}));x.position.set(otherPlayer.position.x,otherPlayer.position.y+1,otherPlayer.position.z),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),450)})();
             if (object.maxshot <= 0) {
               if (scene.children.indexOf(object) > -1) {
                 gametime.run("eleminate", [(gametime.user.position == 1 ? 2 : 1)]);
@@ -842,22 +840,26 @@
             }
           }
         }, 75);
-        shot.play();
-        for (let i = 0; i < burst -1; i++) {
-          (function(x) {
-            c.currentTime = .1;
-            setTimeout(() => {
-              document.body.appendChild(c);
-              c.play();
+        if (currentWeapon == "rifle") {
+          gunsounds.burst.play();
+        } else {
+          shot.play();
+          for (let i = 0; i < burst -1; i++) {
+            (function(x) {
+              c.currentTime = .1;
               setTimeout(() => {
-                c.currentTime = .1;
-              }, 1000);
-            }, 200 + (70 * x));
-          })(i);
+                document.body.appendChild(c);
+                c.play();
+                setTimeout(() => {
+                  c.currentTime = .1;
+                }, 1000);
+              }, 200 + (70 * x));
+            })(i);
+          }
+          setTimeout(() => {
+            clearInterval(h);
+          }, 100);
         }
-        setTimeout(() => {
-          clearInterval(h);
-        }, 100);
       }
       gametime.make("hit");
       let health = 100;
