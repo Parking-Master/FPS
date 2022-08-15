@@ -240,11 +240,12 @@
         }
       }
       intro.play();
-      let das;/*document.querySelector("#maptext").style.display="block";*/setTimeout(()=>{document.querySelector(".ui").style.display="none",das=setInterval(()=>scene.remove(gun)),eventsEnabled=!1,freezeFrame=true,camera.position.y=10,camera.rotation.set(0,Math.PI/2,0);let e=setInterval((()=>{camera.rotation.y+=.001})),t=document.createElement("div");t.style="position:absolute;left:0;top:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;background:#000;opacity:0;z-index:99999;transition:opacity .2s",document.body.appendChild(t);
+      let das;/*document.querySelector("#maptext").style.display="block";*/setTimeout(()=>{document.querySelector(".ui").style.display="none",das=setInterval(()=>scene.remove(gun)),eventsEnabled=!1,freezeFrame=true,camera.position.y=10,swal.close(),camera.rotation.set(0,Math.PI/2,0);let e=setInterval((()=>{camera.rotation.y+=.001})),t=document.createElement("div");t.style="position:absolute;left:0;top:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;background:#000;opacity:0;z-index:99999;transition:opacity .2s",document.body.appendChild(t);
       let k=setInterval((()=>{
         if(!(camera.rotation.y>=Math.PI-1)){
           return;
         }
+        eventsEnabled=true,allowedToStart=true,swal.close();
         (()=>{clearInterval(e),document.querySelector("#maptext").remove(),(()=>{let e=setInterval((()=>{camera.position.y<=0&&(freezeFrame=false,document.querySelector(".ui").style.display="block",clearInterval(das),scene.add(gun),t.style.opacity="0.5",(()=>{swal({text:"Starting...",title:"3",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"2",button:false}),setTimeout(()=>{swal({text:"Starting...",title:"1",button:false})},1000)},1000)})(),setTimeout(()=>{t.remove(),swal.close(),eventsEnabled=true},3000),clearInterval(e))||(camera.position.y+=-.05)}))})(),clearInterval(k)})()
       }),8250)},2500)}
       otherCharacter = null;
@@ -254,7 +255,7 @@
         if (typeof gametime.idList != "undefined" && gametime.idList.length >= 2) {
           allowedToStart = true;
           gametime.run("postPlayerCType", [character + "," + gametime.user.position]);
-          return swal.close(), (testMode ? (eventsEnabled = true, allowedToStart = true, swal.close()) : startGame()), clearInterval(o), eventsEnabled = true;
+          return (testMode ? (eventsEnabled = true, allowedToStart = true, swal.close()) : startGame()), clearInterval(o);
         }
       });
       gametime.make("postPlayerCType");
@@ -333,6 +334,17 @@
       var raycaster=new THREE.Raycaster();
       function animate() {
         // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
+        raycastTargets=[otherPlayer];
+        let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
+        center=new THREE.Vector2(0,0);
+        camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
+        if (intersection != null && (intersection.object.name == "vanguard_Mesh" || (intersection.object.type == "LineSegments"))) {
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
+          pointed = otherPlayer;
+        } else {
+          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
+          pointed = null;
+        }
         if (typeof(mapVertices) != "undefined" && !isJumping) {
           if (mapVertices[0].eval()) {
             camera.position.y = mapVertices[0].rd;
@@ -677,17 +689,6 @@
         let f = setInterval(() => (camera.position.y <= defaultY && (isJumping = false, clearInterval(f)), 1200));
       }
       document.addEventListener("mousemove", function() {
-        raycastTargets=[otherPlayer];
-        let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
-        center=new THREE.Vector2(0,0);
-        camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
-        if (intersection != null && (intersection.object.name == "vanguard_Mesh" || (intersection.object.type == "LineSegments"))) {
-          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
-          pointed = otherPlayer;
-        } else {
-          (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
-          pointed = null;
-        }
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
       })
       gametime.make("playerJump");
@@ -821,7 +822,7 @@
             return;
           }
           let object = pointed;
-          if (object.maxshot <= 0) {
+          if (object.maxshot <= 0 || burstfire >= burst) {
             return clearInterval(h);
           }
           object.maxshot += -burst;
