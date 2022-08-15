@@ -810,7 +810,7 @@
           delete bcase;
         }, 200);
         }, 100);
-        (()=>{let t=0,n=setInterval((()=>{if(t>=3)return clearInterval(n);d=!1,t++,gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>(gun.rotation.x+=-.2,gun.position.z+=-.01,d=!0)),50)}),100)})();
+        (()=>{let t=0,n=setInterval((()=>{if(t>=burst)return clearInterval(n);d=!1,t++,sights.style.top="-15px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>(sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,d=!0)),50)}),100)})();
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
             reload();
