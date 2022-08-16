@@ -528,7 +528,6 @@
         currentWeapon = newWeapon;
         scene.remove(gun);
         if (newWeapon == "pistol") {
-          rounds = currentPistolRounds;
           document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/pistol/pistol.png";
           sights.style.top = "20%";
           sights.src = "https://fps5.ml/sights.png";
@@ -536,7 +535,6 @@
           scene.add(gun);
           br = 1;
         } else if (newWeapon == "rifle") {
-          rounds = currentRifleRounds;
           document.querySelector("#rounds").querySelector("img").src = "https://fps5.ml/models/rifle/rifle.png";
           sights.style.top = "0";
           sights.src = "https://fps5.ml/scope.png";
