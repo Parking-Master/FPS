@@ -118,6 +118,31 @@
         left: 50% !important;
         margin-left: -31.25vw !important;
       }
+      .splitframe {
+        position: absolute;
+        height: 50%;
+        top: 50%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 9999;
+      }
+      .splitframe0 {
+        position: absolute;
+        height: 50%;
+        top: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 9999;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -178,7 +203,15 @@
       map = new URLSearchParams(location.search).get("map") || "Vertex";
       document.querySelector(".map").textContent = map;
       gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
-      gametime.set("channel", decodeURIComponent(new URLSearchParams(location.search).get("lobby")));
+      locallobby = Math.random().toString();
+      function splitscreen() {
+        document.body.innerHTML += `
+        <iframe src="${location.href.split("?")[0]}?character=${new URLSearchParams(location.search).get("character")}&map=${new URLSearchParams(location.search).get("map")}&lobby=${locallobby}" class="splitframe0"></iframe>
+        `;
+        document.body.innerHTML += `
+        <iframe src="${location.href.split("?")[0]}?character=${new URLSearchParams(location.search).get("character")}&map=${new URLSearchParams(location.search).get("map")}&lobby=${locallobby}" class="splitframe"></iframe>
+        `;
+      }
       gametime.make("startMove");
       gametime.make("endMove");
       eventsEnabled = false;
@@ -1040,6 +1073,7 @@
         controller.on('up0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(-1),camera.lookAt(gamepadpointer.position)}).before('up0',()=>{}).after('up0',()=>{}),controller.on('down0',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateX(1),camera.lookAt(gamepadpointer.position)}).before('down0',()=>{}).after('down0',()=>{}),controller.on('left1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(.5),camera.lookAt(gamepadpointer.position)}).before('left1',()=>{}).after('left1',()=>{}),controller.on('right1',()=>{gamepadpointer.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z),gamepadpointer.translateY(-.5),camera.lookAt(gamepadpointer.position)}).before('right1',()=>{}).after('right1',()=>{});
         dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveLeft(),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(leftI),clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(!dl&&moveRight(),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(rightI),clearInterval(e)})))})),controller.on("right0",(()=>{})).before("right0",(()=>{moveDown()})).after("right0",(()=>{clearInterval(backwardI)})),controller.on("left0",(()=>{})).before("left0",(()=>{moveUp()})).after("left0",(()=>{clearInterval(forwardI)})),controller.on("button15",(()=>{throwGrenade()})),controller.on("l1",(()=>{})).before("l1",(()=>{switchWeapon()}));
       });
+      new URLSearchParams(location.search).get("splitscreen") ? (splitscreen(), gametime.set("channel", locallobby)) : gametime.set("channel", decodeURIComponent(new URLSearchParams(location.search).get("lobby")));
     </script>
 		<style>.dg.ac{display:none}</style><script xsrc="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js">var Stats=function(){function e(e){return n.appendChild(e.dom),e}function t(e){for(var t=0;t<n.children.length;t++)n.children[t].style.display=t===e?"block":"none";l=e}var l=0,n=document.createElement("div");n.style.cssText="cursor:pointer;opacity:0.9",n.addEventListener("click",function(e){e.preventDefault(),t(++l%n.children.length)},!1);var a=(performance||Date).now(),i=a,o=0,r=e(new Stats.Panel("FPS","#0ff","#002")),f=e(new Stats.Panel("MS","#0f0","#020"));if(self.performance&&self.performance.memory)var c=e(new Stats.Panel("MB","#f08","#201"));return t(0),{REVISION:16,domElement:n,addPanel:e,showPanel:t,setMode:t,begin:function(){a=(performance||Date).now()},end:function(){o++;var e=(performance||Date).now();if(f.update(e-a,200),e>i+1e3&&(r.update(1e3*o/(e-i),100),i=e,o=0,c)){var t=performance.memory;c.update(t.usedJSHeapSize/1048576,t.jsHeapSizeLimit/1048576)}return e},update:function(){a=this.end()}}};Stats.Panel=function(e,t,l){var n=1/0,a=0,i=Math.round,o=i(window.devicePixelRatio||1),r=80*o,f=48*o,c=3*o,d=2*o,s=3*o,p=15*o,u=74*o,m=30*o,h=document.createElement("canvas");h.height=f,h.style.cssText="height:48px";var S=h.getContext("2d");return S.font="bold "+9*o+"px Helvetica,Arial,sans-serif",S.textBaseline="top",S.fillStyle=l,S.fillRect(0,0,r,f),S.fillStyle=t,S.fillText(e,c,d),S.fillRect(s,p,u,m),S.fillStyle=l,S.globalAlpha=.9,S.fillRect(s,p,u,m),{dom:h,update:function(f,v){n=Math.min(n,f),a=Math.max(a,f),S.fillStyle=l,S.globalAlpha=1,S.fillRect(0,0,r,p),S.fillStyle=t,S.fillText(i(f)+" "+e+" ("+i(n)+"-"+i(a)+")",c,d),S.drawImage(h,s+o,p,u-o,m,s,p,u-o,m),S.fillRect(s+u-o,p,o,m),S.fillStyle=l,S.globalAlpha=.9,S.fillRect(s+u-o,p,o,i((1-f/v)*m))}}},"object"==typeof module&&(module.exports=Stats);//# sourceMappingURL=./Stats.min.js.map</script><script src="https://cdn.jsdelivr.net/gh/dataarts/dat.gui/build/dat.gui.min.js"></script><script>
     (()=>{let e,n,o,t,i;GLTFLoader=THREE.GLTFLoader,GUI=dat.GUI;const a=[];let d,s,l,c,r,u,f,w,m=!1,h=0;function p(e){n.visible=e}function g(e){o.visible=e}function E(e){t.timeScale=e}function A(){f.forEach((function(e){e.stop()}))}function y(){R(d,w["modify idle weight"]),R(s,w["modify walk weight"]),R(l,w["modify run weight"]),f.forEach((function(e){e.play()}))}function k(){unPauseAllActions(),m=!0,h=w["modify step size"]}function v(e,n,o){const i=function(e){return w["use default duration"]?e:w["set custom duration"]}(o);m=!1,unPauseAllActions(),e===d?T(e,n,i):function(e,n,o){function i(a){a.action===e&&(t.removeEventListener("loop",i),T(e,n,o))}t.addEventListener("loop",i)}(e,n,i)}function T(e,n,o){R(n,1),n.time=0,e.crossFadeTo(n,o,!0)}function R(e,n){e.enabled=!0,e.setEffectiveTimeScale(1),e.setEffectiveWeight(n)}function H(){w["modify idle weight"]=c,w["modify walk weight"]=r,w["modify run weight"]=u;let n=i.getDelta();m&&(n=h,h=0),t.update(n),renderer.render(scene,camera),requestAnimationFrame(H)}!function(){const c=document.getElementById("container");i=new THREE.Clock;const r=new THREE.HemisphereLight(16777215,4473924);r.position.set(0,20,0),scene.add(r);const u=new THREE.DirectionalLight(16777215);u.position.set(-3,10,-10),u.castShadow=!0,u.shadow.camera.top=2,u.shadow.camera.bottom=-2,u.shadow.camera.left=-2,u.shadow.camera.right=2,u.shadow.camera.near=.1,u.shadow.camera.far=40,scene.add(u);const m=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshPhongMaterial({color:10066329,depthWrite:!1}));m.rotation.x=-Math.PI/2,m.receiveShadow=!0,scene.add(m);(new GLTFLoader).load("https://threejs.org/examples/models/gltf/Soldier.glb",(function(e){n=e.scene,modelalias=n,scene.add(n),n.traverse((function(e){e.isMesh&&(e.castShadow=!0)})),o=new THREE.SkeletonHelper(n),o.visible=!1,scene.add(o),function(){const e=new GUI(),n=e.addFolder("Visibility"),o=e.addFolder("Activation/Deactivation"),t=e.addFolder("Pausing/Stepping"),i=e.addFolder("Crossfading"),c=e.addFolder("Blend Weights"),r=e.addFolder("General Speed");w={"show model":!0,"show skeleton":!1,"deactivate all":A,"activate all":y,"pause/continue":pauseContinue,"make single step":k,"modify step size":.05,"from walk to idle":function(){v(s,d,1)},"from idle to walk":function(){v(d,s,.5)},"from walk to run":function(){v(s,l,2.5)},"from run to walk":function(){v(l,s,5)},"use default duration":!0,"set custom duration":3.5,"modify idle weight":0,"modify walk weight":1,"modify run weight":0,"modify time scale":1},n.add(w,"show model").onChange(p),n.add(w,"show skeleton").onChange(g),o.add(w,"deactivate all"),o.add(w,"activate all"),t.add(w,"pause/continue"),t.add(w,"make single step"),t.add(w,"modify step size",.01,.1,.001),a.push(i.add(w,"from walk to idle")),a.push(i.add(w,"from idle to walk")),a.push(i.add(w,"from walk to run")),a.push(i.add(w,"from run to walk")),i.add(w,"use default duration"),i.add(w,"set custom duration",0,10,.01),c.add(w,"modify idle weight",0,1,.01).listen().onChange((function(e){R(d,e)})),c.add(w,"modify walk weight",0,1,.01).listen().onChange((function(e){R(s,e)})),c.add(w,"modify run weight",0,1,.01).listen().onChange((function(e){R(l,e)})),r.add(w,"modify time scale",0,1.5,.01).onChange(E),n.open(),o.open(),t.open(),i.open(),c.open(),r.open()}();const i=e.animations;t=new THREE.AnimationMixer(n),d=t.clipAction(i[0]),s=t.clipAction(i[3]),l=t.clipAction(i[1]),f=[d,s,l],y(),pauseAllActions(),H()})),renderer.setPixelRatio(window.devicePixelRatio)/*,renderer.setSize(window.innerWidth,window.innerHeight)*/,renderer.outputEncoding=THREE.sRGBEncoding,renderer.shadowMap.enabled=!0,c.appendChild(renderer.domElement),e=new Stats,c.appendChild(e.domElement)}(),window.pauseContinue=function(){m?(m=!1,unPauseAllActions()):d.paused?unPauseAllActions():pauseAllActions()},window.pauseAllActions=function(){f.forEach((function(e){e.paused=!0}))},window.unPauseAllActions=function(){f.forEach((function(e){e.paused=!1}))}})();
