@@ -837,7 +837,7 @@
         bullet.rotation.x = Math.PI/2;
         bullet.rotation.copy(gun.rotation);
         bullet.position.set(gun.position.x,gun.position.y+.65,gun.position.z);
-        gun.attach(bullet);
+        currentWeapon == "rifle" && gun.attach(bullet);
         bcase.position.z = gun.position.y;
         bcase.position.x = gun.position.x;
         bcase.position.y = gun.position.y;
