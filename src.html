@@ -229,6 +229,7 @@
       allowedToStart = false;
       testMode = false;
       br = 3;
+      ispointedatdeadbody = false;
       function rotatePlayer(unit) {
         camera.rotation.set(0, 0, 0);
         camera.rotateY(unit);
@@ -369,18 +370,22 @@
       fallingAcc = .005;
       afixed = true;
       var raycaster=new THREE.Raycaster();
+      raycastTargets=[otherPlayer];
       function animate() {
         // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
-        raycastTargets=[otherPlayer];
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
         center=new THREE.Vector2(0,0);
+        raycastTargets[0]=otherPlayer;
         camera.updateMatrixWorld(),raycaster.setFromCamera(center,camera);var intersections=raycaster.intersectObjects(raycastTargets);intersection=intersections.length>0?intersections[0]:null;
-        if (intersection != null && (intersection.object.name == "vanguard_Mesh" || (intersection.object.type == "LineSegments"))) {
+        if (intersection != null && ((intersection.object.name != "dead_body" && intersection.object.name == "vanguard_Mesh") || (intersection.object.type == "LineSegments"))) {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair-aim.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair-aim.png");
           pointed = otherPlayer;
+        } else if (intersection != null && intersection.object.name == "dead_body") {
+          ispointedatdeadbody=true;
         } else {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
           pointed = null;
+          ispointedatdeadbody=false;
         }
         if (typeof(mapVertices) != "undefined" && !isJumping) {
           if (mapVertices[0].eval()) {
@@ -854,6 +859,9 @@
           delete bcase;
         }, 200);
         }, 100);
+        if (ispointedatdeadbody) {
+          (()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/blood.png"),side:THREE.DoubleSide,transparent:true}));x.position.set(intersection.object.parent.position.x,intersection.object.parent.position.y,intersection.object.parent.position.z),x.translateZ(-1),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),450)})();
+        }
         (()=>{let t=0,n=setInterval((()=>{let gamepadpointer;if(t>=burst)return clearInterval(n);d=!1,t++,gamepadpointer=new THREE.Mesh();gamepadpointer.position.copy(camera.position),gamepadpointer.rotation.copy(camera.rotation),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),gamepadpointer.translateY(.01),camera.lookAt(gamepadpointer.position),sights.style.top="-25px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/flare.png"),side:THREE.DoubleSide,transparent:true}));x.position.copy(gun.position),x.rotation.copy(gun.rotation),x.updateMatrix(),x.translateZ(-1),x.translateY(.6),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),40)})(),d=!0)),25)}),50)})();
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
@@ -885,9 +893,9 @@
           }
         }, 75);
         if (currentWeapon == "rifle") {
-          gunsounds.burst.play();
+          document.body.appendChild(gunsounds.burst.cloneNode()).play();
         } else if (currentWeapon == "pistol") {
-          gunsounds.pistol.play();
+          document.body.appendChild(gunsounds.pistol.cloneNode()).play();
         } else {
           shot.play();
           for (let i = 0; i < burst -1; i++) {
@@ -951,7 +959,7 @@
           return;
         }
         if (player != gametime.user.position) {
-          !didDie && (()=>{(new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{c=e.scene.children[0];c.scale.set(.01,.01,.01);scene.add(c),c.position.set(otherPlayer.position.x,otherPlayer.position.y,otherPlayer.position.z);let g,w=0;c.rotation.x=0;scene.add(c);let t=0,d=0;let o=setInterval(()=>{if(t>=.1){return(clearInterval(o),g=setInterval(()=>{if(w>=.1){return(clearInterval(g))}w+=.001;c.position.y+=-w}))}t+=.001;c.position.y+=t});let h=setInterval(()=>{if(d<=-Math.PI){return clearInterval(h)}d+=-.01;c.rotation.x=d})}))})()
+          !didDie && (()=>{(new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{c=e.scene.children[0];c.scale.set(.01,.01,.01);scene.add(c),c.position.set(otherPlayer.position.x,otherPlayer.position.y,otherPlayer.position.z);let g,w=0;c.rotation.x=0;scene.add(c);c.children[1].name="dead_body";raycastTargets.push(c);let t=0,d=0;let o=setInterval(()=>{if(t>=.1){return(clearInterval(o),g=setInterval(()=>{if(w>=.1){return(clearInterval(g))}w+=.001;c.position.y+=-w}))}t+=.001;c.position.y+=t});let h=setInterval(()=>{if(d<=-Math.PI){return clearInterval(h)}d+=-.01;c.rotation.x=d})}))})()
           didDie = true;
           setTimeout(() => {
             scene.add(otherPlayer);
