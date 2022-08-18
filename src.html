@@ -190,6 +190,7 @@
       <img class="radar" src="https://fps5.ml/images/radar.png" width="10%" />
       <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
+    <p id="weapontext" style="display:none">Hold [T] to pick up AR-15</p>
     <script>
       function distanceTo(t,n){var r=t.x-n.x,a=t.y-n.y,c=t.z-n.z;return Math.sqrt(r*r+a*a+c*c)}
       death_sounds = [document.querySelector("#death1"),document.querySelector("#death2"),document.querySelector("#death3"),document.querySelector("#death4"),document.querySelector("#death5"),document.querySelector("#death6")];
@@ -199,6 +200,7 @@
       explosion = document.querySelector("#explosion");
       userIds = [];
       wt = false;
+      ordinances = [];
       gunsounds = {
         burst: document.querySelector("#gunsound-burst"),
         pistol: document.querySelector("#gunsound-pistol")
@@ -240,6 +242,17 @@
       let gun = new THREE.Mesh();
       let otherGun = new THREE.Mesh();
       gun.type = "PreDefined";
+      function createWeapon(type, rounds, mags, pos) {
+        if (type == "ar15") {
+          (new THREE.GLTFLoader).load("https://fps5.ml/models/weapons/AR-15/scene.gltf", (e) => {
+            e = e.scene;
+            scene.add(e);
+            e.position.set(pos.x, pos.y, pos.z);
+            e.rotation.set(-Math.PI/2, 0, 0);
+            ordinances.push(e);
+          });
+        }
+      }
       (new THREE.OBJLoader).load("https://fps5.ml/models/character/rifle-holding.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
@@ -372,7 +385,16 @@
       afixed = true;
       var raycaster=new THREE.Raycaster();
       raycastTargets=[otherPlayer];
+      ordinanceTouching = null;
       function animate() {
+        document.querySelector("#weapontext").style.fontFamily = "monospace";
+        document.querySelector("#weapontext").style.fontWeight = "bold";
+        document.querySelector("#weapontext").style.position = "fixed";
+        document.querySelector("#weapontext").style.zIndex = "9999";
+        document.querySelector("#weapontext").style.color = "#fff";
+        document.querySelector("#weapontext").style.top = "80vh";
+        document.querySelector("#weapontext").style.left = "50%";
+        document.querySelector("#weapontext").style.marginLeft = -(getComputedStyle(document.querySelector("#weapontext")).width.split("px")[0]/2) + "px";
         // light.position.set(camera.position.x+10,camera.position.y+10,camera.position.z+10);
         let frustum=new THREE.Frustum,matrix=(new THREE.Matrix4).multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(matrix),frustum.containsPoint(otherPlayer.position)?(outOfView=false):(outOfView=true);
         center=new THREE.Vector2(0,0);
@@ -387,6 +409,15 @@
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
           pointed = null;
           ispointedatdeadbody=false;
+        }
+        for (let i = 0; i < ordinances.length; i++) {
+          if (distanceTo(camera.position, ordinances[i].position) <= 1) {
+            document.querySelector("#weapontext").style.display = "block";
+            ordinanceTouching = ordinances[i];
+          } else {
+            document.querySelector("#weapontext").style.display = "none";
+            ordinanceTouching = null;
+          }
         }
         if (typeof(mapVertices) != "undefined" && !isJumping) {
           if (mapVertices[0].eval()) {
@@ -646,7 +677,7 @@
       character = (new URLSearchParams(location.search).get("character") || "default");
       // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
       document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
-      document.addEventListener("keydown",(e)=>{(e.key=="b"&&!e.repeat)&&(new THREE.OBJLoader).load("https://fps5.ml/models/character/"+currentWeapon+"-punching.obj",(e=>{(distanceTo(camera.position,otherPlayer.position)<=1&&gametime.run("eleminate",[gametime.user.position==1?2:1]));let q=gun;scene.remove(gun),gun=e,scene.add(gun),setTimeout(()=>{scene.remove(gun),gun=q,scene.add(gun)},1000)}))});
+      document.addEventListener("keydown",(e)=>{((e.key=="t"&&!e.repeat&&ordinanceTouching!=null)&&(()=>{ordinanceTouching.rotation.set(0,0,0);gun=ordinanceTouching;ordinances.splice(ordinances.indexOf(gun))})()),(e.key=="b"&&!e.repeat)&&(new THREE.OBJLoader).load("https://fps5.ml/models/character/"+currentWeapon+"-punching.obj",(e=>{(distanceTo(camera.position,otherPlayer.position)<=1&&gametime.run("eleminate",[gametime.user.position==1?2:1]));let q=gun;scene.remove(gun),gun=e,scene.add(gun),setTimeout(()=>{scene.remove(gun),gun=q,scene.add(gun)},1000)}))});
       document.addEventListener("keyup",()=>{walking.pause(),walking.currentTime=0;stopShake(),gametime.run("endMove",[gametime.user.position==1?2:1]),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI)});
       gametime.make("playerMove");
       gametime.on("playerMove", function(pos) {
