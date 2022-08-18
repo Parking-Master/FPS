@@ -826,18 +826,15 @@
           return;
         }
         burstfire += 1;
-        const geometry = new THREE.BoxGeometry(.02, .02, 10);
+        const geometry = new THREE.BoxGeometry(.0075, .0075, 10);
         const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bullet = new THREE.Mesh(geometry, material);
         const casegeometry = new THREE.CylinderGeometry(.025, .025, .06, 10);
         const casematerial = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bcase = new THREE.Mesh(casegeometry, casematerial);
-        currentWeapon == "rifle" && scene.add(bullet);
+        // currentWeapon == "rifle" && scene.add(bullet);
         scene.add(bcase);
-        bullet.rotation.x = Math.PI/2;
-        bullet.rotation.copy(gun.rotation);
-        bullet.position.set(gun.position.x,gun.position.y+.65,gun.position.z);
-        currentWeapon == "rifle" && gun.attach(bullet);
+        // bullet.position.copy(camera.position),bullet.rotation.copy(camera.rotation),bullet.updateMatrix(),bullet.translateZ(-3);
         bcase.position.z = gun.position.y;
         bcase.position.x = gun.position.x;
         bcase.position.y = gun.position.y;
@@ -857,7 +854,7 @@
           delete bcase;
         }, 200);
         }, 100);
-        (()=>{let t=0,n=setInterval((()=>{if(t>=burst)return clearInterval(n);d=!1,t++,sights.style.top="-15px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,d=!0)),50)}),100)})();
+        (()=>{let t=0,n=setInterval((()=>{let gamepadpointer;if(t>=burst)return clearInterval(n);d=!1,t++,gamepadpointer=new THREE.Mesh();gamepadpointer.position.copy(camera.position),gamepadpointer.rotation.copy(camera.rotation),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),gamepadpointer.translateY(.01),camera.lookAt(gamepadpointer.position),sights.style.top="-25px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/flare.png"),side:THREE.DoubleSide,transparent:true}));x.position.copy(gun.position),x.rotation.copy(gun.rotation),x.updateMatrix(),x.translateZ(-1),x.translateY(.6),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),40)})(),d=!0)),25)}),50)})();
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
             reload();
