@@ -192,7 +192,7 @@
       <img class="radar" src="https://fps5.ml/images/radar.png" width="10%" />
       <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
-    <p id="weapontext" style="display:none">Hold [T] to pick up AR-15</p>
+    <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
     <script>
       function distanceTo(t,n){var r=t.x-n.x,a=t.y-n.y,c=t.z-n.z;return Math.sqrt(r*r+a*a+c*c)}
       death_sounds = [document.querySelector("#death1"),document.querySelector("#death2"),document.querySelector("#death3"),document.querySelector("#death4"),document.querySelector("#death5"),document.querySelector("#death6")];
@@ -411,6 +411,11 @@
       var raycaster=new THREE.Raycaster();
       raycastTargets=[otherPlayer];
       ordinanceTouching = null;
+      gunNameDictionary = {
+        "ar15" : "AR-15",
+        "hkg28" : "HK-G28",
+        "spnkr" : "SPNKR",
+      };
       function animate() {
         !(gun.type=="Group")&&(()=>{if(currentWeapon=="ar15"){gun=plr3;scene.add(gun)}else if(currentWeapon=="hkg28"){gun=plr4;scene.add(gun)}})()
         document.querySelector("#weapontext").style.fontFamily = "monospace";
@@ -436,9 +441,11 @@
           pointed = null;
           ispointedatdeadbody=false;
         }
+        (currentWeapon=="pistol"&&gun.children[2].position.z<-1)&&(scene.remove(gun.children[2]),gun.children[2].position.z=0,gametime.run("eleminate",[gametime.user.position]));
         for (let i = 0; i < ordinances.length; i++) {
           if (distanceTo(camera.position, ordinances[i].position) <= 1) {
             document.querySelector("#weapontext").style.display = "block";
+            document.querySelector(".weapon-name").textContent = gunNameDictionary[ordinances[i].name];
             ordinanceTouching = ordinances[i];
           } else {
             document.querySelector("#weapontext").style.display = "none";
@@ -1037,6 +1044,7 @@
       statusText = document.querySelector(".statustext");
       gametime.on("hit", function(player) {
         if (player == gametime.user.position) {
+          (()=>{let k=document.createElement("div");k.style="position:absolute;z-index:99999;width:100%;height:100%;left:0;top:0;margin:0;background:red;opacity:0.5";document.body.appendChild(k),setTimeout(()=>{k.remove()},1000)})();
           clearTimeout(hwt);
           health += -25;
           document.querySelector(".health").style.width = health + "%";
