@@ -412,6 +412,7 @@
       raycastTargets=[otherPlayer];
       ordinanceTouching = null;
       function animate() {
+        !(gun.type=="Group")&&(()=>{if(currentWeapon=="ar15"){gun=plr3;scene.add(gun)}else if(currentWeapon=="hkg28"){gun=plr4;scene.add(gun)}})()
         document.querySelector("#weapontext").style.fontFamily = "monospace";
         document.querySelector("#weapontext").style.fontWeight = "bold";
         document.querySelector("#weapontext").style.position = "fixed";
@@ -726,7 +727,7 @@
       isFiring = false;
       character = (new URLSearchParams(location.search).get("character") || "default");
       // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
+      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br,currentWeapon=="hkg28"?.025:.01,currentWeapon=="hkg28"?5:0),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
       document.addEventListener("keydown",(e)=>{((e.key=="t"&&!e.repeat&&ordinanceTouching!=null)&&(()=>{scene.remove(gun),currentWeapon=ordinanceTouching.name;gun=ordinanceTouching.alias;
       if (ordinanceTouching.name == "ar15") {
         br = 1;
@@ -753,7 +754,7 @@
       }
       });
       setInterval(() => {
-        if (isFiring) {
+        if (isFiring && currentWeapon == "ar15") {
           fire(1);
         }
       }, 60);
@@ -923,7 +924,7 @@
       c.src = shot.src;
       function distanceVector(i,o){var t=i.position.x-o.position.x,n=i.position.y-o.position.y,s=i.position.z-o.position.z;return Math.sqrt(t*t+n*n+s*s)}
       deg = false;
-      function fire(burst) {
+      function fire(burst, recoil = .01, addedDamage = 0) {
         if (!allowedToStart) {
           return;
         }
@@ -974,7 +975,7 @@
         if (ispointedatdeadbody) {
           (()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/blood.png"),side:THREE.DoubleSide,transparent:true}));x.position.set(intersection.object.parent.position.x,intersection.object.parent.position.y,intersection.object.parent.position.z),x.translateZ(-1),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),450)})();
         }
-        (()=>{let t=0,n=setInterval((()=>{let gamepadpointer;if(t>=burst)return clearInterval(n);d=!1,t++,gamepadpointer=new THREE.Mesh();gamepadpointer.position.copy(camera.position),gamepadpointer.rotation.copy(camera.rotation),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),gamepadpointer.translateY(.01),camera.lookAt(gamepadpointer.position),sights.style.top="-25px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/flare.png"),side:THREE.DoubleSide,transparent:true}));x.position.copy(gun.position),x.rotation.copy(gun.rotation),x.updateMatrix(),x.translateZ(-1),x.translateY(.6),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),40)})(),d=!0)),25)}),50)})();
+        (()=>{let t=0,n=setInterval((()=>{let gamepadpointer;if(t>=burst)return clearInterval(n);d=!1,t++,gamepadpointer=new THREE.Mesh();gamepadpointer.position.copy(camera.position),gamepadpointer.rotation.copy(camera.rotation),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),gamepadpointer.translateY(recoil),camera.lookAt(gamepadpointer.position),sights.style.top="-25px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/flare.png"),side:THREE.DoubleSide,transparent:true}));x.position.copy(gun.position),x.rotation.copy(gun.rotation),x.updateMatrix(),x.translateZ(-1),x.translateY(.6),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),40)})(),d=!0)),25)}),50)})();
         setTimeout(() => {
           if (rounds <= 0 && !reloading) {
             reload();
@@ -988,7 +989,7 @@
           if (object.maxshot <= 0 || burstfire >= burst) {
             return clearInterval(h);
           }
-          object.maxshot += -burst;
+          object.maxshot += -(burst + addedDamage);
           if (scene.children.indexOf(object) > -1) {
             gametime.run("hit", [(gametime.user.position == 1 ? 2 : 1)]);
             (()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/blood.png"),side:THREE.DoubleSide,transparent:true}));x.position.set(otherPlayer.position.x,otherPlayer.position.y+1,otherPlayer.position.z),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),450)})();
