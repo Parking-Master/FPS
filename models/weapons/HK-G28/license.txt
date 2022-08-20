@@ -1,0 +1,11 @@
+Model Information:
+* title:	HK G28 Sniper Rifle
+* source:	https://sketchfab.com/3d-models/hk-g28-sniper-rifle-997840668e1e4c1384c7220563323085
+* author:	trolosqlfod (https://sketchfab.com/trolosqlfod)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "HK G28 Sniper Rifle" (https://sketchfab.com/3d-models/hk-g28-sniper-rifle-997840668e1e4c1384c7220563323085) by trolosqlfod (https://sketchfab.com/trolosqlfod) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
