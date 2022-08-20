@@ -256,6 +256,17 @@
             e.name = "ar15";
             ordinances.push(e);
           });
+        } else if (type == "hkg28") {
+          (new THREE.GLTFLoader).load("https://fps5.ml/models/weapons/HK-G28/scene.gltf", (e) => {
+            e = e.scene;
+            scene.add(e);
+            e.position.set(pos.x, pos.y, pos.z);
+            e.rotation.set(-Math.PI/2, 0, 0);
+            e.alias = new THREE.Mesh();
+            (new THREE.OBJLoader).load("https://fps5.ml/models/character/hk-g28-holding.obj", (a) => { e.alias = a; });
+            e.name = "hkg28";
+            ordinances.push(e);
+          });
         }
       }
       (new THREE.OBJLoader).load("https://fps5.ml/models/character/rifle-holding.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
