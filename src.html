@@ -360,15 +360,8 @@
       controls.isLocked = true;
       controls.pointerSpeed = 2;
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
-      let loader=new THREE.TextureLoader;loader.load("https://fps5.ml/images/clouds3.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)}));
-      groundGeometry = new THREE.CircleGeometry(30, 50);
-      groundMaterial = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("https://fps5.ml/images/grass.png") });
-      ground = new THREE.Mesh(groundGeometry, groundMaterial);
-      MapBorder = new THREE.Mesh(new THREE.TorusGeometry(30, 3, 32, 32), new THREE.MeshBasicMaterial({ color: "#999", map: new THREE.TextureLoader().load("https://fps5.ml/images/stone.png") }));
-      MapBorder.rotation.x = 1.6;
-      MapBorder.position.y = -2;
-      light=new THREE.PointLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);
-      map == "Vertex" && scene.add(MapBorder);
+      map != "Vertex" && (() => { let loader=new THREE.TextureLoader;loader.load("https://fps5.ml/images/clouds3.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)})); })();
+      map == "Vertex" ? light = new THREE.Mesh() : light=new THREE.PointLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);
       d = true;
       forwardI = 13;
       backwardI = 13;
@@ -378,11 +371,6 @@
       otherBackwardI = 13;
       otherLeftI = 13;
       otherRightI = 13;
-      ground.position.x = 0;
-      ground.position.y = -4;
-      ground.position.z = -1;
-      ground.rotation.x = -Math.PI / 2;
-      map == "Vertex" && scene.add(ground);
       myPlayer = new THREE.Mesh();
       otherPlayer = new THREE.Mesh();
       isZoomed = false;
@@ -395,7 +383,8 @@
       }
       didFallToDeath = false;
       let follower = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: "red" }));
-      map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{animate(),document.querySelector(".loader-cover").remove();const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].map=(new THREE.TextureLoader).load("https://fps5.ml/images/grass.png"),e.children[0].material[0].map=(new THREE.TextureLoader).load("https://fps5.ml/models/tree/wood.png"),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      // map == "Vertex" && (new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree0.obj",(e=>{animate(),document.querySelector(".loader-cover").remove();const o=e;o.scale.set(.1,.1,.1);for(let e=0;e<20;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-15,-4,Math.floor(20*Math.random())),e.children[0].material[1].map=(new THREE.TextureLoader).load("https://fps5.ml/images/grass.png"),e.children[0].material[0].map=(new THREE.TextureLoader).load("https://fps5.ml/models/tree/wood.png"),scene.add(e)}}))//,(new THREE.OBJLoader).load("https://fps5.ml/models/tree/tree1.obj",(e=>{const o=e;o.scale.set(.01,.01,.01);for(let e=0;e<10;e++){let e=o.clone();e.position.set(Math.floor(20*Math.random())-20,-4,Math.floor(20*Math.random())),e.children[0].material[2].color.setHex(2250001),scene.add(e)}}));
+      map == "Vertex" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/vertex/scene.glb",(e)=>{wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.children[5].rotation.x=(-Math.PI/2)+.6,map.position.y=-2,scene.remove(light),raycastTargets.push(map.children[9])}));
       map == "Haven" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/HAVEN/scene.gltf",(e)=>{wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-301,light.color.setHex(0xeeeeff),light.intensity=4}));
       map == "Harvest" && (rotatePlayer(Math.PI), camera.position.z = 8, (new THREE.GLTFLoader).load("https://fps5.ml/models/maps/harvest/scene.gltf",(e)=>{light=new THREE.DirectionalLight(0xffffff,4),light.position.set(0,10,0),light.castShadow=!1,scene.add(light);wt=true;map=e.scene.children[0],scene.add(map);animate(),map.scale.set(1.6,1.6,1.6),map.position.y=-112,map.rotation.x=-Math.PI/2;camera.position.x=-30,camera.position.z=10;light.color.setHex(0xeeeeff),light.intensity=4}));
       const zoomInFunction=o=>{/*sights.style.left=0,sights.style.width=screen.width+"px";*/const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!0,zoomInFunction(),scene.remove(gun),sights.style.display="block",document.querySelector(".crosshair").style.display="none";if("z"==o.key&&!o.repeat)for(let o=0;o<12;o++)isZoomed=!1,zoomOutFunction(),scene.add(gun),sights.style.display="none",document.querySelector(".crosshair").style.display="block"}));
@@ -932,6 +921,10 @@
         }
         if (reloading) {
           return;
+        }
+        if (intersection != null && map.children[5].name == "SpotLight" && intersection.object.name == "Box_2" && new URLSearchParams(location.search).get("map") == "Vertex") {
+          scene.remove(map.children[5]);
+          map.remove(map.children[5]);
         }
         (document.getElementById("rounds").querySelector("#counter").textContent = rounds);
         let burstfire = 0;
