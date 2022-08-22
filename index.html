@@ -66,6 +66,8 @@
       <button class="button" onclick='setDialog(`open`, { title: `Enter lobby name`, content: `<input onkeyup="window.createlobbytext=this.value" />` }, () => createLobby(createlobbytext))'>CREATE LOBBY</button>
       <br>
       <button class="button" onclick="chooseMap(startLocalGame)">SPLITSCREEN</button>
+      <br>
+      <button class="button" onclick="chooseRandom()">RANDOM MATCH</button>
     </div>
     <script>
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
@@ -90,6 +92,9 @@
       }
       function findLobby() {
         (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?document.querySelector(".dialog-content").innerHTML+='<div class="lobby">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Vertex"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>":setDialog("open",{title:"Choose a map",content:'<div class="lobby">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Vertex"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {}),e=!0}),(e=>{}))}})();
+      }
+      function chooseRandom() {
+        location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
       }
       window.addEventListener("load", () => { document.querySelector("head").innerHTML+="<style>.custom-anchor-tt{position:fixed;z-index:9999;display:none;background:#efefef;left:0;bottom:0;overflow:visible;padding:5px;font-size:18px;border-top-right-radius:5px;border-top:1px solid #999;border-right:1px solid #999;color:#999}a:hover+.custom-anchor-tt{display:block}</style>";for(let e=0;e<document.querySelectorAll("a").length;e++){let o=document.createElement("div");o.className="custom-anchor-tt",o.textContent=(document.querySelectorAll("a")[e].href.split("://")[0]=="http"?document.querySelectorAll("a")[e].href.substr(document.querySelectorAll("a")[e].href.indexOf("://")+3).replace(/(\/)$/g, ""):document.querySelectorAll("a")[e].href.replace(/(\/)$/g, ""));let r=document.querySelectorAll("a")[e].href;document.querySelectorAll("a")[e].addEventListener("click",(()=>location.href=r)),document.querySelectorAll("a")[e].removeAttribute("href"),function(){const e=arguments[0],o=arguments[1];e.parentNode.insertBefore(o,e.nextSibling)}(document.querySelectorAll("a")[e],o)} });
     </script>
