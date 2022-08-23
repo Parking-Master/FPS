@@ -16,11 +16,16 @@ multiplayer 3d experience!<br>
 <img align="center" width="100%" alt="Haven" src="https://user-images.githubusercontent.com/88283567/184418725-f09a113d-8c35-4cce-9af4-dd24bef80134.png">
 <br>
 <h4 align="center">Harvest</h5>
+
 "<i>Similar to those found on other agrarian worlds, the impressive tether network was used to ferry resources off-planet.</i>"
 <img align="center" width="100%" alt="Harvest" src="https://user-images.githubusercontent.com/88283567/184418731-4dbe46ed-e6f9-4ad8-ba73-f6f8807f509e.png">
 <h4 align="center">Vertex</h5>
 "<i>Nicknamed "The Floating Island", Vertex ("Vertical Existence") is a iconic map featuring unlimited scenery and hospitality. It is one of the most unknown maps in its universe.</i>"
-<img align="center" width="100%" alt="Harvest" src="https://user-images.githubusercontent.com/88283567/184421302-1c9e4820-a9e2-43af-a044-3226678c91f9.png">
+<img align="center" width="100%" alt="Vertex" src="https://user-images.githubusercontent.com/88283567/186174136-32ed3bbf-9ddb-4e1a-82d7-4d376da6b2bf.png">
+
+<h4 align="center">Apex</h5>
+"<i>Due to its alias "Vertex", the enemy fighters were jealous of the other's world, so they used this world for emergencies. Apex ("Alternate Existence") is the complete opposite of Vertex. It is was left behind over 550 years after the war.</i>"
+<img align="center" width="100%" alt="Apex" src="https://user-images.githubusercontent.com/88283567/186171246-2bd2e82f-e408-4c0b-85b3-2b849eb914f5.png">
 
 ###### <i>Note: More maps may be coming soon</i>
 ### Characters (Original Halo 4 and Halo 3)
