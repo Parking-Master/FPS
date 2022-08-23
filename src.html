@@ -298,7 +298,7 @@
           }).then(() => location.replace("/"));
         }
       }
-      (()=>{function rand(i,n){if((i=parseInt(i,10))>(n=parseInt(n,10))){var o=i;i=n,n=o}return Math.floor(Math.random()*(n-i+1)+i)}var game,ui;function Fire(){var i=new THREE.MeshBasicMaterial({color:16737792,transparent:!0,opacity:.5,depthWrite:!1,wireframe:!1,blending:THREE.AdditiveBlending}),n=[];function o(o){for(;n.length;)scene.remove(n.shift());for(var t=0;t<o;t++){var e=1*rand(1,2),a=new THREE.Mesh(new THREE.BoxGeometry(e,e,e),i.clone());rg=a;a.position.set(0,10,20),scene.add(a),n.push(a)}}o(50),this.generate=function(i){o(i)},this.update=function(i,o,t){!function(i,o,t){for(var e=0;e<n.length;e++)n[e].position.y<t?(n[e].position.y+=rand(1,i),n[e].material.opacity-=1/t):(n[e].material.opacity=1,n[e].position.y=0,n[e].position.x=rand(-o/2,o/2),n[e].position.z=rand(-o/2,o/2)+20),n[e].position.y>t/2&&(n[e].position.x>0?n[e].position.x-=.3:n[e].position.x+=.3,n[e].position.z>20?n[e].position.z-=20.3:n[e].position.z+=20.3)}(i,o,t)}}f=new Fire;f.generate(0);})();
+      (()=>{function rand(i,n){if((i=parseInt(i,10))>(n=parseInt(n,10))){var o=i;i=n,n=o}return Math.floor(Math.random()*(n-i+1)+i)}var game,ui;function Fire(){var i=new THREE.MeshBasicMaterial({color:16737792,transparent:!0,opacity:.5,depthWrite:!1,wireframe:!1,blending:THREE.AdditiveBlending}),n=[];function o(o){for(;n.length;)scene.remove(n.shift());for(var t=0;t<o;t++){var e=1*rand(1,2),a=new THREE.Mesh(new THREE.BoxGeometry(e,e,e),i.clone());rg=a;a.name="fire";a.position.set(0,10,20),scene.add(a),n.push(a)}}o(50),this.generate=function(i){o(i)},this.update=function(i,o,t){!function(i,o,t){for(var e=0;e<n.length;e++)n[e].position.y<t?(n[e].position.y+=rand(1,i),n[e].material.opacity-=1/t):(n[e].material.opacity=1,n[e].position.y=0,n[e].position.x=rand(-o/2,o/2),n[e].position.z=rand(-o/2,o/2)+20),n[e].position.y>t/2&&(n[e].position.x>0?n[e].position.x-=.3:n[e].position.x+=.3,n[e].position.z>20?n[e].position.z-=20.3:n[e].position.z+=20.3)}(i,o,t)}}f=new Fire;f.generate(0);})();
       let body = new THREE.Mesh();
       (new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{body=e.scene.children[0];body.scale.set(.01,.01,.01)}));
       function startGame(){
@@ -411,7 +411,7 @@
       };
       setInterval(()=>{distanceTo(rg.position,camera.position)<=3&&gametime.run("hit",[gametime.user.position])},200);
       function animate() {
-        f.update(1,5,5);
+        f.update(.1,5,5);
         !(gun.type=="Group")&&(()=>{if(currentWeapon=="ar15"){gun=plr3;scene.add(gun)}else if(currentWeapon=="hkg28"){gun=plr4;scene.add(gun)}})()
         document.getElementById("weapontext").style.fontFamily="monospace",document.getElementById("weapontext").style.fontWeight="bold",document.getElementById("weapontext").style.position="fixed",document.getElementById("weapontext").style.zIndex="9999",document.getElementById("weapontext").style.color="#fff",document.getElementById("weapontext").style.top="80vh",document.getElementById("weapontext").style.left="50%",document.getElementById("weapontext").style.marginLeft=-getComputedStyle(document.getElementById("weapontext")).width.split("px")[0]/2+"px";
         center=new THREE.Vector2(0,0);
@@ -948,7 +948,7 @@
           return;
         }
         burstfire += 1;
-        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{for(let i=0;i<map.children.length;i++){(collision(e,map.children[i])&&map.children[i]!=map.children[10]&&map.children[i]!=e)&&(console.log(scene.children[i]),scene.add(e),clearInterval(f))}e.translateZ(-1)});setTimeout(()=>scene.remove(e),10000)})();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{for(let i=0;i<map.children.length;i++){(collision(e,map.children[i])&&map.children[i]!=map.children[10]&&map.children[i]!=e&&map.children[i].name!="fire")&&(console.log(scene.children[i]),scene.add(e),clearInterval(f))}e.translateZ(-1)});setTimeout(()=>scene.remove(e),10000)})();
         const geometry = new THREE.BoxGeometry(.0075, .0075, 10);
         const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bullet = new THREE.Mesh(geometry, material);
