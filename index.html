@@ -68,6 +68,8 @@
       <button class="button" onclick="chooseMap(startLocalGame)">SPLITSCREEN</button>
       <br>
       <button class="button" onclick="chooseRandom()">RANDOM MATCH</button>
+      <br>
+      <button class="button" onclick="desktopOptions()">CUSTOM OPTIONS</button>
     </div>
     <script>
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
@@ -95,6 +97,10 @@
       }
       function chooseRandom() {
         location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
+      }
+      function desktopOptions() {
+        if (!navigator.userAgent.includes("Electron")) { return alert("This feature is only available for FPS Desktop") }
+        console.log("Eletron:custom_options []");
       }
       window.addEventListener("load", () => { document.querySelector("head").innerHTML+="<style>.custom-anchor-tt{position:fixed;z-index:9999;display:none;background:#efefef;left:0;bottom:0;overflow:visible;padding:5px;font-size:18px;border-top-right-radius:5px;border-top:1px solid #999;border-right:1px solid #999;color:#999}a:hover+.custom-anchor-tt{display:block}</style>";for(let e=0;e<document.querySelectorAll("a").length;e++){let o=document.createElement("div");o.className="custom-anchor-tt",o.textContent=(document.querySelectorAll("a")[e].href.split("://")[0]=="http"?document.querySelectorAll("a")[e].href.substr(document.querySelectorAll("a")[e].href.indexOf("://")+3).replace(/(\/)$/g, ""):document.querySelectorAll("a")[e].href.replace(/(\/)$/g, ""));let r=document.querySelectorAll("a")[e].href;document.querySelectorAll("a")[e].addEventListener("click",(()=>location.href=r)),document.querySelectorAll("a")[e].removeAttribute("href"),function(){const e=arguments[0],o=arguments[1];e.parentNode.insertBefore(o,e.nextSibling)}(document.querySelectorAll("a")[e],o)} });
     </script>
