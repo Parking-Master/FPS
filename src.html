@@ -251,6 +251,10 @@
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
       let gun = new THREE.Mesh();
       let otherGun = new THREE.Mesh();
+      (new THREE.OBJLoader).load("https://fps5.ml/models/character/third-gun-default_rilfe.obj", (e) => {
+        otherGun = e;
+        scene.add(otherGun);
+      });
       gun.type = "PreDefined";
       function createWeapon(type, rounds, mags, pos) {
         if (type == "ar15") {
@@ -301,7 +305,9 @@
       (()=>{function rand(i,n){if((i=parseInt(i,10))>(n=parseInt(n,10))){var o=i;i=n,n=o}return Math.floor(Math.random()*(n-i+1)+i)}var game,ui;function Fire(){var i=new THREE.MeshBasicMaterial({color:16737792,transparent:!0,opacity:.5,depthWrite:!1,wireframe:!1,blending:THREE.AdditiveBlending}),n=[];function o(o){for(;n.length;)scene.remove(n.shift());for(var t=0;t<o;t++){var e=1*rand(1,2),a=new THREE.Mesh(new THREE.BoxGeometry(e,e,e),i.clone());rg=a;a.name="fire";a.position.set(0,10,20),scene.add(a),n.push(a)}}o(50),this.generate=function(i){o(i)},this.update=function(i,o,t){!function(i,o,t){for(var e=0;e<n.length;e++)n[e].position.y<t?(n[e].position.y+=rand(1,i),n[e].material.opacity-=1/t):(n[e].material.opacity=1,n[e].position.y=0,n[e].position.x=rand(-o/2,o/2),n[e].position.z=rand(-o/2,o/2)+20),n[e].position.y>t/2&&(n[e].position.x>0?n[e].position.x-=.3:n[e].position.x+=.3,n[e].position.z>20?n[e].position.z-=20.3:n[e].position.z+=20.3)}(i,o,t)}}f=new Fire;f.generate(0);})();
       let body = new THREE.Mesh();
       (new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{body=e.scene.children[0];body.scale.set(.01,.01,.01)}));
+      fixedothergun=false;
       function startGame(){
+      fixedothergun=true;
       otherPlayer=modelalias;
       otherPlayer.maxshot=12;
       let b=setInterval(() => {
@@ -440,6 +446,7 @@
             ordinanceTouching = null;
           }
         }
+        if (fixedothergun) { otherPlayer.children[0].children[0].children[0].children[0].children[0].children[1].rotation.set((Math.PI/2)+.1,(-Math.PI/2)+.1,-1),otherPlayer.children[0].children[0].children[0].children[0].children[0].children[1].children[0].rotation.set(-Math.PI/2+1,.55,1.5),otherPlayer.children[0].children[0].children[0].children[0].children[0].children[2].rotation.set(0,-1,-.1),otherPlayer.children[0].children[0].children[0].children[0].children[0].children[2].children[0].rotation.set(Math.PI/2+.6,Math.PI,.8) }
         if (typeof(mapVertices) != "undefined" && !isJumping && new URLSearchParams(location.search).get("map") == "Haven") {
           if (mapVertices[0].eval()) {
             camera.position.y = mapVertices[0].rd;
@@ -530,8 +537,7 @@
           gun.position.z = camera.position.z - .5, gun.position.x = camera.position.x + .5, gun.position.y = camera.position.y -.75, gun.scale.set(.1,.1,.1), gun.rotation.y = 4.75;
           gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateZ(-.5),gun.translateX(.3),gun.translateY(-.75);
         }
-        otherGun.position.z = otherPlayer.position.z - .5, otherGun.position.x = otherPlayer.position.x + .5, otherGun.position.y = otherPlayer.position.y -.75, otherGun.scale.set(1,1,1), otherGun.rotation.y = 4.75;
-        otherGun.position.copy(otherPlayer.position),otherGun.rotation.copy(otherPlayer.rotation),otherGun.updateMatrix(),otherGun.translateZ(-.25),otherGun.translateX(.25),otherGun.translateY(-.75);
+        otherGun.position.copy(otherPlayer.position),otherGun.rotation.copy(otherPlayer.rotation),otherGun.updateMatrix(),otherGun.translateZ(-.1);
         // if (camera.rotation.y >= 1 || camera.rotation.y >= .99) {
         //   camera.rotation.y = .98;
         //   camera.rotation.z = camera.rotation.z;
@@ -539,7 +545,6 @@
         // } else {
         //   controls.isLocked = true;
         // }
-        typeof otherPlayer.material != "undefined" && otherPlayer.material.color.setHex(0x333333);
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
@@ -566,6 +571,7 @@
         // clearInterval(otherBackwardI);
         pauseAllActions();
       });
+      rounds = 36;
       currentPrimaryRounds = rounds;
       currentSecondaryRounds = 10;
       plr = new THREE.Mesh();
@@ -740,7 +746,7 @@
         plr4 = ordinanceTouching.alias;
         gun = plr4;
       }
-      currentWeaponDefaultRounds = ordinanceTouching.roundsToUse
+      currentWeaponDefaultRounds = ordinanceTouching.roundsToUse;
       scene.add(gun),ordinances.splice(ordinances.indexOf(gun)
       )})()),(e.key=="b"&&!e.repeat)&&(new THREE.OBJLoader).load("https://fps5.ml/models/character/"+currentWeapon+"-punching.obj",(e=>{(distanceTo(camera.position,otherPlayer.position)<=1&&gametime.run("eleminate",[gametime.user.position==1?2:1]));let q=gun;scene.remove(gun),gun=e,scene.add(gun),setTimeout(()=>{scene.remove(gun),gun=q,scene.add(gun)},1000)}))
       if (e.key == "f") {
@@ -885,7 +891,6 @@
         });
       });
       magcount = 3;
-      rounds = 36;
       reloading = false;
       function reload() {
         if (magcount == 0) {
@@ -958,7 +963,7 @@
           return;
         }
         burstfire += 1;
-        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{for(let i=0;i<map.children.length;i++){(collision(e,map.children[i])&&map.children[i]!=map.children[10]&&map.children[i]!=e&&map.children[i].name!="fire")&&(console.log(scene.children[i]),scene.add(e),gametime.run("bullethole",[e.position.x+","+e.position.y+","+e.position.z+","+gametime.user.position]),clearInterval(f))}e.translateZ(-1)});setTimeout(()=>scene.remove(e),10000)})();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{for(let i=0;i<map.children.length;i++){(collision(e,map.children[i])&&map.children[i]!=map.children[10]&&map.children[i]!=e&&map.children[i].name!="fire"&&map.children[i].name!="Scene")&&(console.log(scene.children[i]),scene.add(e),gametime.run("bullethole",[e.position.x+","+e.position.y+","+e.position.z+","+gametime.user.position]),clearInterval(f))}e.translateZ(-1)});setTimeout(()=>scene.remove(e),10000)})();
         const geometry = new THREE.BoxGeometry(.0075, .0075, 10);
         const material = new THREE.MeshBasicMaterial({ color: "#f1e583" });
         const bullet = new THREE.Mesh(geometry, material);
@@ -1231,7 +1236,7 @@
       new URLSearchParams(location.search).get("splitscreen") ? (splitscreen(), gametime.set("channel", locallobby)) : gametime.set("channel", decodeURIComponent(new URLSearchParams(location.search).get("lobby")));
     </script>
 		<style>.dg.ac{display:none}</style><script xsrc="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js">var Stats=function(){function e(e){return n.appendChild(e.dom),e}function t(e){for(var t=0;t<n.children.length;t++)n.children[t].style.display=t===e?"block":"none";l=e}var l=0,n=document.createElement("div");n.style.cssText="cursor:pointer;opacity:0.9",n.addEventListener("click",function(e){e.preventDefault(),t(++l%n.children.length)},!1);var a=(performance||Date).now(),i=a,o=0,r=e(new Stats.Panel("FPS","#0ff","#002")),f=e(new Stats.Panel("MS","#0f0","#020"));if(self.performance&&self.performance.memory)var c=e(new Stats.Panel("MB","#f08","#201"));return t(0),{REVISION:16,domElement:n,addPanel:e,showPanel:t,setMode:t,begin:function(){a=(performance||Date).now()},end:function(){o++;var e=(performance||Date).now();if(f.update(e-a,200),e>i+1e3&&(r.update(1e3*o/(e-i),100),i=e,o=0,c)){var t=performance.memory;c.update(t.usedJSHeapSize/1048576,t.jsHeapSizeLimit/1048576)}return e},update:function(){a=this.end()}}};Stats.Panel=function(e,t,l){var n=1/0,a=0,i=Math.round,o=i(window.devicePixelRatio||1),r=80*o,f=48*o,c=3*o,d=2*o,s=3*o,p=15*o,u=74*o,m=30*o,h=document.createElement("canvas");h.height=f,h.style.cssText="height:48px";var S=h.getContext("2d");return S.font="bold "+9*o+"px Helvetica,Arial,sans-serif",S.textBaseline="top",S.fillStyle=l,S.fillRect(0,0,r,f),S.fillStyle=t,S.fillText(e,c,d),S.fillRect(s,p,u,m),S.fillStyle=l,S.globalAlpha=.9,S.fillRect(s,p,u,m),{dom:h,update:function(f,v){n=Math.min(n,f),a=Math.max(a,f),S.fillStyle=l,S.globalAlpha=1,S.fillRect(0,0,r,p),S.fillStyle=t,S.fillText(i(f)+" "+e+" ("+i(n)+"-"+i(a)+")",c,d),S.drawImage(h,s+o,p,u-o,m,s,p,u-o,m),S.fillRect(s+u-o,p,o,m),S.fillStyle=l,S.globalAlpha=.9,S.fillRect(s+u-o,p,o,i((1-f/v)*m))}}},"object"==typeof module&&(module.exports=Stats);//# sourceMappingURL=./Stats.min.js.map</script><script src="https://cdn.jsdelivr.net/gh/dataarts/dat.gui/build/dat.gui.min.js"></script><script>
-    (()=>{let e,n,o,t,i;GLTFLoader=THREE.GLTFLoader,GUI=dat.GUI;const a=[];let d,s,l,c,r,u,f,w,m=!1,h=0;function p(e){n.visible=e}function g(e){o.visible=e}function E(e){t.timeScale=e}function A(){f.forEach((function(e){e.stop()}))}function y(){R(d,w["modify idle weight"]),R(s,w["modify walk weight"]),R(l,w["modify run weight"]),f.forEach((function(e){e.play()}))}function k(){unPauseAllActions(),m=!0,h=w["modify step size"]}function v(e,n,o){const i=function(e){return w["use default duration"]?e:w["set custom duration"]}(o);m=!1,unPauseAllActions(),e===d?T(e,n,i):function(e,n,o){function i(a){a.action===e&&(t.removeEventListener("loop",i),T(e,n,o))}t.addEventListener("loop",i)}(e,n,i)}function T(e,n,o){R(n,1),n.time=0,e.crossFadeTo(n,o,!0)}function R(e,n){e.enabled=!0,e.setEffectiveTimeScale(1),e.setEffectiveWeight(n)}function H(){w["modify idle weight"]=c,w["modify walk weight"]=r,w["modify run weight"]=u;let n=i.getDelta();m&&(n=h,h=0),t.update(n),renderer.render(scene,camera),requestAnimationFrame(H)}!function(){const c=document.getElementById("container");i=new THREE.Clock;const r=new THREE.HemisphereLight(16777215,4473924);r.position.set(0,20,0),scene.add(r);const u=new THREE.DirectionalLight(16777215);u.position.set(-3,10,-10),u.castShadow=!0,u.shadow.camera.top=2,u.shadow.camera.bottom=-2,u.shadow.camera.left=-2,u.shadow.camera.right=2,u.shadow.camera.near=.1,u.shadow.camera.far=40,scene.add(u);const m=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshPhongMaterial({color:10066329,depthWrite:!1}));m.rotation.x=-Math.PI/2,m.receiveShadow=!0;(new GLTFLoader).load("https://threejs.org/examples/models/gltf/Soldier.glb",(function(e){n=e.scene,modelalias=n,scene.add(n),n.traverse((function(e){e.isMesh&&(e.castShadow=!0)})),o=new THREE.SkeletonHelper(n),o.visible=!1,scene.add(o),function(){const e=new GUI(),n=e.addFolder("Visibility"),o=e.addFolder("Activation/Deactivation"),t=e.addFolder("Pausing/Stepping"),i=e.addFolder("Crossfading"),c=e.addFolder("Blend Weights"),r=e.addFolder("General Speed");w={"show model":!0,"show skeleton":!1,"deactivate all":A,"activate all":y,"pause/continue":pauseContinue,"make single step":k,"modify step size":.05,"from walk to idle":function(){v(s,d,1)},"from idle to walk":function(){v(d,s,.5)},"from walk to run":function(){v(s,l,2.5)},"from run to walk":function(){v(l,s,5)},"use default duration":!0,"set custom duration":3.5,"modify idle weight":0,"modify walk weight":1,"modify run weight":0,"modify time scale":1},n.add(w,"show model").onChange(p),n.add(w,"show skeleton").onChange(g),o.add(w,"deactivate all"),o.add(w,"activate all"),t.add(w,"pause/continue"),t.add(w,"make single step"),t.add(w,"modify step size",.01,.1,.001),a.push(i.add(w,"from walk to idle")),a.push(i.add(w,"from idle to walk")),a.push(i.add(w,"from walk to run")),a.push(i.add(w,"from run to walk")),i.add(w,"use default duration"),i.add(w,"set custom duration",0,10,.01),c.add(w,"modify idle weight",0,1,.01).listen().onChange((function(e){R(d,e)})),c.add(w,"modify walk weight",0,1,.01).listen().onChange((function(e){R(s,e)})),c.add(w,"modify run weight",0,1,.01).listen().onChange((function(e){R(l,e)})),r.add(w,"modify time scale",0,1.5,.01).onChange(E),n.open(),o.open(),t.open(),i.open(),c.open(),r.open()}();const i=e.animations;t=new THREE.AnimationMixer(n),d=t.clipAction(i[0]),s=t.clipAction(i[3]),l=t.clipAction(i[1]),f=[d,s,l],y(),pauseAllActions(),H()})),renderer.setPixelRatio(window.devicePixelRatio)/*,renderer.setSize(window.innerWidth,window.innerHeight)*/,renderer.outputEncoding=THREE.sRGBEncoding,renderer.shadowMap.enabled=!0,c.appendChild(renderer.domElement),e=new Stats,c.appendChild(e.domElement)}(),window.pauseContinue=function(){m?(m=!1,unPauseAllActions()):d.paused?unPauseAllActions():pauseAllActions()},window.pauseAllActions=function(){f.forEach((function(e){e.paused=!0}))},window.unPauseAllActions=function(){f.forEach((function(e){e.paused=!1}))}})();
+    (()=>{let e,n,o,t,i;GLTFLoader=THREE.GLTFLoader,GUI=dat.GUI;const a=[];let d,s,l,c,r,u,f,w,m=!1,h=0;function p(e){n.visible=e}function g(e){o.visible=e;return o}window.showSkeleton=g;function E(e){t.timeScale=e}function A(){f.forEach((function(e){e.stop()}))}function y(){R(d,w["modify idle weight"]),R(s,w["modify walk weight"]),R(l,w["modify run weight"]),f.forEach((function(e){e.play()}))}function k(){unPauseAllActions(),m=!0,h=w["modify step size"]}function v(e,n,o){const i=function(e){return w["use default duration"]?e:w["set custom duration"]}(o);m=!1,unPauseAllActions(),e===d?T(e,n,i):function(e,n,o){function i(a){a.action===e&&(t.removeEventListener("loop",i),T(e,n,o))}t.addEventListener("loop",i)}(e,n,i)}function T(e,n,o){R(n,1),n.time=0,e.crossFadeTo(n,o,!0)}function R(e,n){e.enabled=!0,e.setEffectiveTimeScale(1),e.setEffectiveWeight(n)}function H(){w["modify idle weight"]=c,w["modify walk weight"]=r,w["modify run weight"]=u;let n=i.getDelta();m&&(n=h,h=0),t.update(n),renderer.render(scene,camera),requestAnimationFrame(H)}!function(){const c=document.getElementById("container");i=new THREE.Clock;const r=new THREE.HemisphereLight(16777215,4473924);r.position.set(0,20,0),scene.add(r);const u=new THREE.DirectionalLight(16777215);u.position.set(-3,10,-10),u.castShadow=!0,u.shadow.camera.top=2,u.shadow.camera.bottom=-2,u.shadow.camera.left=-2,u.shadow.camera.right=2,u.shadow.camera.near=.1,u.shadow.camera.far=40,scene.add(u);const m=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshPhongMaterial({color:10066329,depthWrite:!1}));m.rotation.x=-Math.PI/2,m.receiveShadow=!0;(new GLTFLoader).load("https://threejs.org/examples/models/gltf/Soldier.glb",(function(e){n=e.scene,modelalias=n,scene.add(n),n.traverse((function(e){e.isMesh&&(e.castShadow=!0)})),o=new THREE.SkeletonHelper(n),o.visible=!1,scene.add(o),function(){const e=new GUI(),n=e.addFolder("Visibility"),o=e.addFolder("Activation/Deactivation"),t=e.addFolder("Pausing/Stepping"),i=e.addFolder("Crossfading"),c=e.addFolder("Blend Weights"),r=e.addFolder("General Speed");w={"show model":!0,"show skeleton":!1,"deactivate all":A,"activate all":y,"pause/continue":pauseContinue,"make single step":k,"modify step size":.05,"from walk to idle":function(){v(s,d,1)},"from idle to walk":function(){v(d,s,.5)},"from walk to run":function(){v(s,l,2.5)},"from run to walk":function(){v(l,s,5)},"use default duration":!0,"set custom duration":3.5,"modify idle weight":0,"modify walk weight":1,"modify run weight":0,"modify time scale":1},n.add(w,"show model").onChange(p),n.add(w,"show skeleton").onChange(g),o.add(w,"deactivate all"),o.add(w,"activate all"),t.add(w,"pause/continue"),t.add(w,"make single step"),t.add(w,"modify step size",.01,.1,.001),a.push(i.add(w,"from walk to idle")),a.push(i.add(w,"from idle to walk")),a.push(i.add(w,"from walk to run")),a.push(i.add(w,"from run to walk")),i.add(w,"use default duration"),i.add(w,"set custom duration",0,10,.01),c.add(w,"modify idle weight",0,1,.01).listen().onChange((function(e){R(d,e)})),c.add(w,"modify walk weight",0,1,.01).listen().onChange((function(e){R(s,e)})),c.add(w,"modify run weight",0,1,.01).listen().onChange((function(e){R(l,e)})),r.add(w,"modify time scale",0,1.5,.01).onChange(E),n.open(),o.open(),t.open(),i.open(),c.open(),r.open()}();const i=e.animations;t=new THREE.AnimationMixer(n),d=t.clipAction(i[0]),s=t.clipAction(i[3]),l=t.clipAction(i[1]),f=[d,s,l],y(),pauseAllActions(),H()})),renderer.setPixelRatio(window.devicePixelRatio)/*,renderer.setSize(window.innerWidth,window.innerHeight)*/,renderer.outputEncoding=THREE.sRGBEncoding,renderer.shadowMap.enabled=!0,c.appendChild(renderer.domElement),e=new Stats,c.appendChild(e.domElement)}(),window.pauseContinue=function(){m?(m=!1,unPauseAllActions()):d.paused?unPauseAllActions():pauseAllActions()},window.pauseAllActions=function(){f.forEach((function(e){e.paused=!0}))},window.unPauseAllActions=function(){f.forEach((function(e){e.paused=!1}))}})();
     </script>
   </body>
 </html>
