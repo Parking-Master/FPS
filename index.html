@@ -100,7 +100,7 @@
       }
       function desktopOptions() {
         if (!navigator.userAgent.includes("Electron")) { return alert("This feature is only available for FPS Desktop") }
-        console.log("Eletron:custom_options []");
+        console.log("#Electron:custom_options []");
       }
       window.addEventListener("load", () => { document.querySelector("head").innerHTML+="<style>.custom-anchor-tt{position:fixed;z-index:9999;display:none;background:#efefef;left:0;bottom:0;overflow:visible;padding:5px;font-size:18px;border-top-right-radius:5px;border-top:1px solid #999;border-right:1px solid #999;color:#999}a:hover+.custom-anchor-tt{display:block}</style>";for(let e=0;e<document.querySelectorAll("a").length;e++){let o=document.createElement("div");o.className="custom-anchor-tt",o.textContent=(document.querySelectorAll("a")[e].href.split("://")[0]=="http"?document.querySelectorAll("a")[e].href.substr(document.querySelectorAll("a")[e].href.indexOf("://")+3).replace(/(\/)$/g, ""):document.querySelectorAll("a")[e].href.replace(/(\/)$/g, ""));let r=document.querySelectorAll("a")[e].href;document.querySelectorAll("a")[e].addEventListener("click",(()=>location.href=r)),document.querySelectorAll("a")[e].removeAttribute("href"),function(){const e=arguments[0],o=arguments[1];e.parentNode.insertBefore(o,e.nextSibling)}(document.querySelectorAll("a")[e],o)} });
     </script>
