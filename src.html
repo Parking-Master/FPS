@@ -174,6 +174,8 @@
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/mattatz/THREE.Fire/Fire.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/mattatz/THREE.Fire/FireShader.js"></script>
+    <script src="https://unpkg.com/@seregpie/three.text-texture"></script>
+    <script src="https://unpkg.com/@seregpie/three.text-sprite"></script>
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
     </script>
@@ -285,6 +287,7 @@
           });
         }
       }
+      (()=>{let e=new THREE.TextSprite({alignment:"center",color:"red",fontFamily:"Arial, Helvetica, sans-serif",fontSize:.5,fontStyle:"normal",text:["Mike51177\n⌄"].join("\n")});floatingUsername=e;scene.add(e)})();
       (new THREE.OBJLoader).load("https://fps5.ml/models/character/rifle-holding.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
@@ -419,7 +422,11 @@
       };
       armMaterial = new THREE.MeshPhongMaterial({color:9924412,specular:328965,shininess:1});
       setInterval(()=>{distanceTo(rg.position,camera.position)<=3&&gametime.run("hit",[gametime.user.position])},200);
+      floatingUsername = new THREE.Mesh();
+      username = localStorage["username"] || null;
       function animate() {
+        typeof otherPlayer != "undefined" && floatingUsername.position.set(otherPlayer.position.x,otherPlayer.position.y+2.5,otherPlayer.position.z);
+        typeof otherPlayer != "undefined" && (() => { if (distanceTo(otherPlayer.position, camera.position) >= 10) { scene.children.indexOf(floatingUsername) > -1 && scene.remove(floatingUsername) } else { scene.children.indexOf(floatingUsername) < 0 && scene.add(floatingUsername) } })();
         (new URLSearchParams(location.search).get("map")=="Apex")&&map.traverse((e)=>{(collision(follower,e)&&e.name!="Scene"&&e.name!="Sphere")&&(console.log("collision with",e),(()=>{let r=new THREE.Mesh();r.position.copy(camera.position),r.rotation.y=camera.rotation.y,r.updateMatrix(),r.translateZ(.1),camera.position.set(r.position.x,r.position.y,r.position.z)})(),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI))});
         if(new URLSearchParams(location.search).get("map")=="Vertex"&&(camera.position.z<=5.5&&camera.position.z>=-5.5&&camera.position.x>=-6.5&&camera.position.x<=6.5&&camera.position.y<=0)){defaultY=-1;camera.position.y=-1;typeof watercover=="undefined"?(watercover=document.createElement("div"),watercover.style="position:absolute;z-index:99999;width:100%;height:100%;left:0;top:0;margin:0;background:lightblue;opacity:0.5",document.body.appendChild(watercover)):watercover.style.display="block"}else{typeof watercover!="undefined"&&(watercover.style.display="none",defaultY=0,camera.position.y=0)}
         looker.position.copy(camera.position),looker.rotation.copy(camera.rotation),looker.updateMatrix(),looker.translateZ(2);
