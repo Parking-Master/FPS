@@ -146,6 +146,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/js/username-generator.min.js"></script>
   </head>
   <body style="margin:0!important;">
     <p id="maptext" style="display:none;position:absolute;left:50%;width:300px;padding:0;margin-left:-100px;font-weight:100;color:#fff;font-size:50px;">Haven</p>
@@ -313,9 +314,10 @@
       (new THREE.GLTFLoader).load("https://fps5.ml/models/character/Soldier.glb",(e=>{body=e.scene.children[0];body.scale.set(.01,.01,.01)}));
       fixedothergun=false;
       function startGame(){
+      gametime.run("postusername", [gametime.user.position+","+(localStorage["username"]||generateName())]);
       fixedothergun=true;
       otherPlayer=modelalias;
-      otherPlayer.maxshot=24;
+      otherPlayer.maxshot=12;
       let b=setInterval(() => {
         typeof modelalias != "undefined" && ((scene.children.indexOf(modelalias) > -1) || (scene.add(modelalias), clearInterval(b)));
       });
@@ -437,8 +439,16 @@
       armMaterial = new THREE.MeshPhongMaterial({color:9924412,specular:328965,shininess:1});
       setInterval(()=>{distanceTo(rg.position,camera.position)<=3&&gametime.run("hit",[gametime.user.position])},200);
       floatingUsername = new THREE.Mesh();
-      username = localStorage["username"] || null;
-      (()=>{sprite=makeTextSprite("⌄Mike51177",{fontsize:10,color:"red",fontface:"monospace"}),sprite.position.copy(otherPlayer.position),sprite.position.y+=3,scene.add(sprite),floatingUsername=sprite})();
+      gametime.make("postusername");
+      otherUsername = null;
+      gametime.on("postusername", function(data) {
+        let user = data.split(",")[0];
+        let name = data.split(",")[1];
+        if (user != gametime.user.position) {
+          otherUsername = name;
+        }
+      });
+      let ft=setInterval(()=>{if(otherUsername!=null){sprite=makeTextSprite("⌄ "+otherUsername.toUpperCase(),{fontsize:10,color:"red",fontface:"monospace"}),sprite.position.copy(otherPlayer.position),sprite.position.y+=3,scene.add(sprite),floatingUsername=sprite;clearInterval(ft)}});
       function animate() {
         typeof otherPlayer != "undefined" && floatingUsername.position.set(otherPlayer.position.x,otherPlayer.position.y+2.5,otherPlayer.position.z);
         typeof otherPlayer != "undefined" && (() => { if (distanceTo(otherPlayer.position, camera.position) >= 10) { scene.children.indexOf(floatingUsername) > -1 && scene.remove(floatingUsername) } else { scene.children.indexOf(floatingUsername) < 0 && scene.add(floatingUsername) } })();
@@ -754,7 +764,7 @@
       isFiring = false;
       character = (new URLSearchParams(location.search).get("character") || "default");
       // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br,currentWeapon=="hkg28"?.05:.01,currentWeapon=="hkg28"?5:0),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
+      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br,currentWeapon=="hkg28"?.05:.01,currentWeapon=="hkg28"?5:(currentWeapon=="rifle"?-2:0)),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
       document.addEventListener("keydown",(e)=>{((e.key=="t"&&!e.repeat&&ordinanceTouching!=null)&&(()=>{scene.remove(gun),currentWeapon=ordinanceTouching.name;gun=ordinanceTouching.alias;
       if (ordinanceTouching.name == "ar15") {
         br = 1;
@@ -1113,7 +1123,7 @@
             setTimeout(()=>{health=100,document.querySelector(".health").style.width=health+"%"},5000);
           }
         } else {
-          setTimeout(()=>{otherPlayer.maxshot=24},5000);
+          setTimeout(()=>{otherPlayer.maxshot=12},5000);
         }
       });
       gametime.make("eleminate");
@@ -1151,7 +1161,7 @@
             otherPlayer.position.set(0, -.8, 8);
             otherPlayer.rotation.set(0, 0, 0);
             didDie = false;
-            otherPlayer.maxshot = 24;
+            otherPlayer.maxshot = 12;
           }, 5000);
         }
         if (player == gametime.user.position) {
