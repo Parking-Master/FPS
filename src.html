@@ -169,6 +169,7 @@
     <audio id="gunsound-sniper" src="https://fps5.ml/sounds/guns/hk-g28.mp3"></audio>
     <audio id="reload" src="https://fps5.ml/sounds/reload.mp3"></audio>
     <audio id="countdown" src="https://fps5.ml/sounds/countdown.mp3"></audio>
+    <audio id="warthog" src="https://fps5.ml/sounds/warthog.mp3" loop></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
@@ -220,7 +221,7 @@
       };
       map = new URLSearchParams(location.search).get("map") || "Vertex";
       document.querySelector(".map").textContent = map;
-      gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
+      gametime.set("key", "pub-c-74710794-cf40-43e3-ae10-d978cbdb8822", "sub-c-4da51a44-cbb3-11ec-924a-fed9c56767c0");
       gametime.channel = new URLSearchParams(location.search).get("lobby");
       locallobby = Math.random().toString();
       function splitscreen() {
@@ -326,13 +327,13 @@
       if (map == "Haven") {
         for(let i=0;i<2;i++){
           let chosenSpawn = HavenSpawnPoints;
-          gametime.user.position==2?(defaultY=-chosenSpawn[0][1],(camera.position.set(chosenSpawn[0][0], chosenSpawn[0][1], chosenSpawn[0][2]),camera.rotation.set(0,0,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(defaultY=chosenSpawn[1][1],(camera.position.set(chosenSpawn[1][0], chosenSpawn[1][1], chosenSpawn[1][2]),camera.rotation.set(0,Math.PI,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position]))
+          gametime.user.position==2?(defaultY=-chosenSpawn[0][1],(camera.position.set(chosenSpawn[0][0], chosenSpawn[0][1], chosenSpawn[0][2]),camera.rotation.set(0,0,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(defaultY=chosenSpawn[1][1],(camera.position.set(chosenSpawn[1][0], chosenSpawn[1][1], chosenSpawn[1][2]),camera.rotation.set(0,Math.PI,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position+","+isInWarthog]))
         }
       } else if (map == "Harvest") {
         createWeapon("ar15", 0, 0, { x: -17.25, y: 2, z: 12 });
         for(let i=0;i<2;i++){
           let chosenSpawn = HarvestSpawnPoints;
-          gametime.user.position==2?(defaultY=-chosenSpawn[0][1],(camera.position.set(chosenSpawn[0][0], chosenSpawn[0][1], chosenSpawn[0][2]),camera.rotation.set(0,0,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(defaultY=chosenSpawn[1][1],(camera.position.set(chosenSpawn[1][0], chosenSpawn[1][1], chosenSpawn[1][2]),camera.rotation.set(0,Math.PI,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position]))
+          gametime.user.position==2?(defaultY=-chosenSpawn[0][1],(camera.position.set(chosenSpawn[0][0], chosenSpawn[0][1], chosenSpawn[0][2]),camera.rotation.set(0,0,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(defaultY=chosenSpawn[1][1],(camera.position.set(chosenSpawn[1][0], chosenSpawn[1][1], chosenSpawn[1][2]),camera.rotation.set(0,Math.PI,0)),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position+","+isInWarthog]))
         }
       }
       intro.play();
@@ -467,7 +468,7 @@
       isInWarthog = false;
       ispointedatwarthog = false;
       function animate() {
-        new URLSearchParams(location.search).get("map")=="Apex"&&isInWarthog&&(scene.children.indexOf(warthog)>-1)&&distanceTo(warthog.position,camera.position)<=3&&(document.onkeydown=(e)=>{e.preventDefault();e.key=="ArrowLeft"&&(warthog.rotation.y+=.1,warthog.translateX(.5));e.key=="ArrowRight"&&(warthog.rotation.y+=-.1,warthog.translateX(.5));e.key=="ArrowUp"&&(wf=true);e.key=="ArrowDown"&&(wb=true)},document.onkeyup=(e)=>{e.key=="ArrowUp"&&(wf=false);e.key=="ArrowDown"&&(wb=false);wacc=0},camera.position.copy(warthog.position),camera.rotation.copy(warthog.rotation),camera.updateMatrix(),camera.translateY(1.6),camera.translateZ(-.25),warthog.receiveShadow=true,warthog.castShadow=true,scene.remove(gun),camera.rotation.y+=-Math.PI/2,distanceTo(otherPlayer.position,warthog.position)<=3&&(gametime.run("eleminate",[gametime.user.position==1?2:1])));
+        new URLSearchParams(location.search).get("map")=="Apex"&&isInWarthog&&(scene.children.indexOf(warthog)>-1)&&distanceTo(warthog.position,camera.position)<=3&&(document.onkeydown=(e)=>{e.preventDefault();e.key=="ArrowLeft"&&(warthog.rotation.y+=.1,warthog.translateX(.5),document.querySelector("#warthog").play());e.key=="ArrowRight"&&(warthog.rotation.y+=-.1,warthog.translateX(.5),document.querySelector("#warthog").play());e.key=="ArrowUp"&&(document.querySelector("#warthog").play(),wf=true);e.key=="ArrowDown"&&(document.querySelector("#warthog").play(),wb=true)},document.onkeyup=(e)=>{e.key=="ArrowUp"&&(wf=false);e.key=="ArrowDown"&&(wb=false);wacc=0,document.querySelector("#warthog").pause(),document.querySelector("#warthog").currentTime=0},camera.position.copy(warthog.position),camera.rotation.copy(warthog.rotation),camera.updateMatrix(),camera.translateY(1.6),camera.translateZ(-.25),warthog.receiveShadow=true,warthog.castShadow=true,scene.remove(gun),camera.rotation.y+=-Math.PI/2,distanceTo(otherPlayer.position,warthog.position)<=3&&(gametime.run("eleminate",[gametime.user.position==1?2:1])));
         new URLSearchParams(location.search).get("map")=="Apex"&&!isInWarthog&&(document.onkeydown=null,document.onkeyup=null);
         typeof otherPlayer != "undefined" && floatingUsername.position.set(otherPlayer.position.x,otherPlayer.position.y+2.5,otherPlayer.position.z);
         typeof otherPlayer != "undefined" && (() => { if (distanceTo(otherPlayer.position, camera.position) >= 10) { scene.children.indexOf(floatingUsername) > -1 && scene.remove(floatingUsername) } else { scene.children.indexOf(floatingUsername) < 0 && scene.add(floatingUsername) } })();
@@ -785,7 +786,7 @@
       isFiring = false;
       character = (new URLSearchParams(location.search).get("character") || "default");
       // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
-      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br,currentWeapon=="hkg28"?.05:.01,currentWeapon=="hkg28"?5:(currentWeapon=="rifle"?-2:0)),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
+      document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position+","+isInWarthog]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br,currentWeapon=="hkg28"?.05:.01,currentWeapon=="hkg28"?5:(currentWeapon=="rifle"?-2:0)),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
       document.addEventListener("keydown",(e)=>{(e.key=="t"&&!e.repeat&&distanceTo(warthog.position,camera.position)<=3)&&(!isInWarthog?isInWarthog=true:(isInWarthog=false,camera.translateX(-2),camera.position.y=defaultY,scene.add(gun)));((e.key=="t"&&!e.repeat&&ordinanceTouching!=null)&&(()=>{scene.remove(gun),currentWeapon=ordinanceTouching.name;gun=ordinanceTouching.alias;
       if (ordinanceTouching.name == "ar15") {
         br = 1;
@@ -822,6 +823,7 @@
         if (pos.split(",")[3] == gametime.user.position) {
           return;
         }
+        console.log(pos);
         otherPlayer.position.set(pos.split(",")[0]-0,pos.split(",")[1]-.8,pos.split(",")[2]-0);
         if (pos.split(",")[4] == "true") {
           warthog.position.copy(otherPlayer.positon);
@@ -1282,7 +1284,7 @@
         let kl = false;
         let hl = false;
         let dl = false;
-        function gameLoop(){if(!document.hasFocus()){return}(()=>{let o=navigator.getGamepads()[0];(1==o.axes[0]&&!right)?(right=true,moveRight(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(clearInterval(rightI),right=false),(-1==o.axes[0]&&!left)?(left=true,moveLeft(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position])):(clearInterval(leftI),left=false)})();var e=navigator.getGamepads()[0];if(e&&e.connected){e.axes;var a=e.buttons;for(var o in a){1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[16]&&!ul)&&(()=>{fire(br),ul=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),ul=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[0]&&!al)&&(()=>{jump(),al=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),al=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[7]&&!tl)&&(()=>{reload(),tl=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),tl=false}})})())}}}var game_loop;window.addEventListener("gamepadconnected",(function(e){game_loop=setInterval(gameLoop,50)}));
+        function gameLoop(){if(!document.hasFocus()){return}(()=>{let o=navigator.getGamepads()[0];(1==o.axes[0]&&!right)?(right=true,moveRight(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position+","+isInWarthog])):(clearInterval(rightI),right=false),(-1==o.axes[0]&&!left)?(left=true,moveLeft(),gametime.run("playerMove",[String(camera.position.x)+","+String(camera.position.y)+","+String(camera.position.z)+","+gametime.user.position+","+isInWarthog])):(clearInterval(leftI),left=false)})();var e=navigator.getGamepads()[0];if(e&&e.connected){e.axes;var a=e.buttons;for(var o in a){1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[16]&&!ul)&&(()=>{fire(br),ul=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),ul=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[0]&&!al)&&(()=>{jump(),al=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),al=false}})})());1==a[o].pressed&&((a[o]===navigator.getGamepads()[0].buttons[7]&&!tl)&&(()=>{reload(),tl=true;let h=setInterval(()=>{if(0==a[o].pressed){clearInterval(h),tl=false}})})())}}}var game_loop;window.addEventListener("gamepadconnected",(function(e){game_loop=setInterval(gameLoop,50)}));
         controller.on("button16", () => {}).before("button16", () => {
           if(!document.hasFocus()){return}
           // gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position]);
@@ -1301,7 +1303,7 @@
           if(!document.hasFocus()){return}
           if (!hl) {
             hl = true;
-            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position]);
+            gametime.run("playerMove", [String(camera.position.x) + "," + String(camera.position.y) + "," + String(camera.position.z) + "," + gametime.user.position + "," + isInWarthog]);
             moveUp();
           }
         };
