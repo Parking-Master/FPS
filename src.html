@@ -170,6 +170,7 @@
     <audio id="gunsound-rocket" src="https://fps5.ml/sounds/guns/spnkr.mp3"></audio>
     <audio id="reload" src="https://fps5.ml/sounds/reload.mp3"></audio>
     <audio id="countdown" src="https://fps5.ml/sounds/countdown.mp3"></audio>
+    <audio id="game-over" src="https://fps5.ml/sounds/game_over.mp3"></audio>
     <audio id="warthog" src="https://fps5.ml/sounds/warthog.mp3" loop></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
@@ -310,6 +311,7 @@
       (new THREE.OBJLoader).load("https://fps5.ml/models/character/rifle-holding.obj",(e=>{const s=e;(gun=s),gun.children[0].material.color.setHex(0x555555),s.scale.set(.01,.01,.01),(() => { let z=gun.clone();scene.add(z),otherPlayer.attach(z),z.rotation.set(0,0,0),z.position.set(0,0,0),z.translateY(.7),z.translateX(.2) })(),scene.add(s)}));
       function GameOver() {
         eventsEnabled = false;
+        document.getElementById("game-over").play();
         if ((ascore >= 3 && gametime.user.position == 1) || (bscore >= 3 && gametime.user.position == 2)) {
           swal({
             title: "Game over",
@@ -1110,10 +1112,10 @@
           (()=>{const r=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshBasicMaterial({map:new THREE.TextureLoader().load("https://fps5.ml/images/blood.png"),transparent:true,side:THREE.DoubleSide}));scene.add(r),r.rotation.x=Math.PI/2;r.position.set(otherPlayer.position.x+Math.random(),otherPlayer.position.y-1,otherPlayer.position.z+Math.random())})();
         } else if (ispointedatwarthog) {
           if (warthog.maxshot <= 0) {
-            (scene.children.indexOf(warthog)>-1)&&(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/explosion.png"),side:THREE.DoubleSide,transparent:true}));let v=new THREE.SpotLight(0xffffff,4);v.position.copy(warthog.position),x.position.copy(warthog.position),x.rotation.copy(warthog.rotation),x.translateY(1.5),x.translateZ(-1),x.updateMatrix(),x.lookAt(camera.position),scene.add(x),v.lookAt(camera.position),scene.add(v);setTimeout(()=>{let f=setInterval(()=>{!(x.material.opacity<=0)?x.material.opacity+=-.1:(scene.remove(x),scene.remove(v),raycastTargets.splice(raycastTargets.indexOf(warthog),1),scene.remove(warthog),clearInterval(f))},10)},500)})();
-            return;
+            (scene.children.indexOf(warthog)>-1)&&(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/explosion.png"),side:THREE.DoubleSide,transparent:true}));let v=new THREE.SpotLight(0xffffff,4);v.position.copy(warthog.position),x.position.copy(warthog.position),x.rotation.copy(warthog.rotation),x.translateY(1.5),x.translateZ(-1),x.updateMatrix(),x.lookAt(camera.position),scene.add(x),v.lookAt(camera.position),scene.add(v);setTimeout(()=>{let f=setInterval(()=>{!(x.material.opacity<=0)?x.material.opacity+=-.1:(scene.remove(x),scene.remove(v),scene.remove(warthog),clearInterval(f))},10)},500)})();
+          } else {
+            warthog.maxshot += -(burst + addedDamage);
           }
-          warthog.maxshot += -(burst + addedDamage);
         }
         (()=>{let t=0,n=setInterval((()=>{let gamepadpointer;if(t>=burst)return clearInterval(n);d=!1,t++,gamepadpointer=new THREE.Mesh();gamepadpointer.position.copy(camera.position),gamepadpointer.rotation.copy(camera.rotation),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),gamepadpointer.translateY(recoil),camera.lookAt(gamepadpointer.position),sights.style.top="-25px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/flare.png"),side:THREE.DoubleSide,transparent:true}));gametime.run("flare",[gametime.user.position]);x.position.copy(gun.position),x.rotation.copy(gun.rotation),x.updateMatrix(),x.translateZ(-1),x.translateY(.6),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),40)})(),d=!0)),25)}),50)})();
         setTimeout(() => {
