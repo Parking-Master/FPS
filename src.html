@@ -856,8 +856,8 @@
         console.log(pos);
         otherPlayer.position.set(pos.split(",")[0]-0,pos.split(",")[1]-.8,pos.split(",")[2]-0);
         if (pos.split(",")[4] == "true") {
-          warthog.position.copy(otherPlayer.positon);
-          warthog.rotation.copy(otherPlayer.rotation);
+          warthog.position.set(otherPlayer.position.x,otherPlayer.position.y,otherPlayer.position.z);
+          warthog.rotation.y=otherPlayer.rotation.y;
         }
       });
       gametime.make("playerRotate");
