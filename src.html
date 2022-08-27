@@ -452,9 +452,23 @@
       });
       let ft=setInterval(()=>{if(otherUsername!=null){sprite=makeTextSprite("⌄ "+otherUsername.toUpperCase(),{fontsize:10,color:"red",fontface:"monospace"}),sprite.position.copy(otherPlayer.position),sprite.position.y+=3,scene.add(sprite),floatingUsername=sprite;clearInterval(ft)}});
       warthog = new THREE.Mesh();
-      new URLSearchParams(location.search).get("map")=="Apex"&&(new THREE.OBJLoader).load("https://fps5.ml/models/vehicles/warthog/warthog.obj",(e=>{warthog=e,scene.add(e),e.scale.set(.01,.01,.01),e.position.z=-10,e.position.y=-1}));
+      new URLSearchParams(location.search).get("map")=="Apex"&&(new THREE.OBJLoader).load("https://fps5.ml/models/vehicles/warthog/warthog.obj",(e=>{warthog=e,e.children[0].name="warthog",e.maxshot=50,raycastTargets.push(e),scene.add(e),e.scale.set(.01,.01,.01),e.position.z=-10,e.position.y=-1}));
+      wf = false;
+      wb = false;
+      wacc = 0;
+      setInterval(()=>{
+        wacc >= .1 || (wacc += .01);
+        if (wf) {
+          warthog.translateX(wacc);
+        } else if (wb) {
+          warthog.translateX(-wacc);
+        }
+      });
+      isInWarthog = false;
+      ispointedatwarthog = false;
       function animate() {
-        new URLSearchParams(location.search).get("map")=="Apex"&&distanceTo(warthog.position,camera.position)<=3&&(document.onkeydown=(e)=>{e.preventDefault();e.key=="ArrowLeft"&&(warthog.position.z+=-1);e.key=="ArrowRight"&&(warthog.position.z+=1);e.key=="ArrowUp"&&(warthog.position.x+=1);e.key=="ArrowDown"&&(warthog.position.x+=-1)},camera.position.copy(warthog.position),camera.rotation.copy(warthog.rotation),camera.updateMatrix(),camera.translateY(1.6),camera.translateZ(-.25),warthog.receiveShadow=true,warthog.castShadow=true,scene.remove(gun),camera.rotation.y+=-Math.PI/2,distanceTo(otherPlayer.position,warthog.position)<=3&&(gametime.run("eleminate",[gametime.user.position==1?2:1])));
+        new URLSearchParams(location.search).get("map")=="Apex"&&isInWarthog&&(scene.children.indexOf(warthog)>-1)&&distanceTo(warthog.position,camera.position)<=3&&(document.onkeydown=(e)=>{e.preventDefault();e.key=="ArrowLeft"&&(warthog.rotation.y+=.1,warthog.translateX(.5));e.key=="ArrowRight"&&(warthog.rotation.y+=-.1,warthog.translateX(.5));e.key=="ArrowUp"&&(wf=true);e.key=="ArrowDown"&&(wb=true)},document.onkeyup=(e)=>{e.key=="ArrowUp"&&(wf=false);e.key=="ArrowDown"&&(wb=false);wacc=0},camera.position.copy(warthog.position),camera.rotation.copy(warthog.rotation),camera.updateMatrix(),camera.translateY(1.6),camera.translateZ(-.25),warthog.receiveShadow=true,warthog.castShadow=true,scene.remove(gun),camera.rotation.y+=-Math.PI/2,distanceTo(otherPlayer.position,warthog.position)<=3&&(gametime.run("eleminate",[gametime.user.position==1?2:1])));
+        new URLSearchParams(location.search).get("map")=="Apex"&&!isInWarthog&&(document.onkeydown=null,document.onkeyup=null);
         typeof otherPlayer != "undefined" && floatingUsername.position.set(otherPlayer.position.x,otherPlayer.position.y+2.5,otherPlayer.position.z);
         typeof otherPlayer != "undefined" && (() => { if (distanceTo(otherPlayer.position, camera.position) >= 10) { scene.children.indexOf(floatingUsername) > -1 && scene.remove(floatingUsername) } else { scene.children.indexOf(floatingUsername) < 0 && scene.add(floatingUsername) } })();
         (new URLSearchParams(location.search).get("map")=="Apex")&&map.traverse((e)=>{(collision(follower,e)&&e.name!="Scene"&&e.name!="Sphere")&&(console.log("collision with",e),(()=>{let r=new THREE.Mesh();r.position.copy(camera.position),r.rotation.y=camera.rotation.y,r.updateMatrix(),r.translateZ(.1),camera.position.set(r.position.x,r.position.y,r.position.z)})(),clearInterval(forwardI),clearInterval(backwardI),clearInterval(leftI),clearInterval(rightI))});
@@ -471,6 +485,8 @@
           pointed = otherPlayer;
         } else if (intersection != null && intersection.object.name == "dead_body") {
           ispointedatdeadbody=true;
+        } else if (intersection != null && intersection.object.name == "warthog") {
+          ispointedatwarthog=true;
         } else {
           (typeof otherPlayer.children[0] != "undefined" && document.querySelector(".crosshair").src != "https://fps5.ml/images/crosshair.png") && (document.querySelector(".crosshair").src = "https://fps5.ml/images/crosshair.png");
           pointed = null;
@@ -770,7 +786,7 @@
       character = (new URLSearchParams(location.search).get("character") || "default");
       // character == "default" ? (new THREE.OBJLoader).load("https://fps5.ml/models/character/character.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.03,.03,.03),s.rotation.x=-Math.PI/2,/*scene.add(s),*/s.rotation.set(0,(-Math.PI/2)*2,0),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)})) : (new THREE.OBJLoader).load("https://fps5.ml/models/character/fotus.obj",(e=>{const s=e;(myPlayer=s),s.scale.set(.4,.4,.4),/*scene.add(s),*/s.rotation.set(Math.PI/2,0,Math.PI),otherPlayer=s.clone(),otherPlayer.maxshot=12,otherPlayer.position.set(0,-.8,8),scene.add(otherPlayer)}));
       document.addEventListener("keydown",(e)=>{gametime.run("playerMove",[camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]),setTimeout(()=>shake(1, 1, .02, true),500),(e.key=="p"&&!e.repeat)&&throwGrenade();(e.key=="y"&&!e.repeat)&&switchWeapon(),(e.key=="f"&&currentWeapon!="ar15"&&!e.repeat)&&fire(br,currentWeapon=="hkg28"?.05:.01,currentWeapon=="hkg28"?5:(currentWeapon=="rifle"?-2:0)),(e.key=="r"&&!reloading&&!e.repeat&&rounds<36)&&reload(),(e.which==32)&&(jump()),(!e.repeat&&e.key=="ArrowUp")&&moveUp();(!e.repeat&&e.key=="ArrowDown")&&moveDown();(!e.repeat&&e.key=="ArrowLeft")&&moveLeft();(!e.repeat&&e.key=="ArrowRight")&&moveRight()});
-      document.addEventListener("keydown",(e)=>{((e.key=="t"&&!e.repeat&&ordinanceTouching!=null)&&(()=>{scene.remove(gun),currentWeapon=ordinanceTouching.name;gun=ordinanceTouching.alias;
+      document.addEventListener("keydown",(e)=>{(e.key=="t"&&!e.repeat&&distanceTo(warthog.position,camera.position)<=3)&&(!isInWarthog?isInWarthog=true:(isInWarthog=false,camera.translateX(-2),camera.position.y=defaultY,scene.add(gun)));((e.key=="t"&&!e.repeat&&ordinanceTouching!=null)&&(()=>{scene.remove(gun),currentWeapon=ordinanceTouching.name;gun=ordinanceTouching.alias;
       if (ordinanceTouching.name == "ar15") {
         br = 1;
         document.getElementById("rounds").querySelector("img").src = "https://fps5.ml/models/weapons/AR-15/ar-15.png";
@@ -807,6 +823,10 @@
           return;
         }
         otherPlayer.position.set(pos.split(",")[0]-0,pos.split(",")[1]-.8,pos.split(",")[2]-0);
+        if (pos.split(",")[4] == "true") {
+          warthog.position.copy(otherPlayer.positon);
+          warthog.rotation.copy(otherPlayer.rotation);
+        }
       });
       gametime.make("playerRotate");
       gametime.on("playerRotate", function(pos) {
@@ -1055,6 +1075,12 @@
           (()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/blood.png"),side:THREE.DoubleSide,transparent:true}));x.position.set(intersection.object.parent.position.x,intersection.object.parent.position.y,intersection.object.parent.position.z),x.translateZ(-1),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),450)})();
           let otherPlayer = intersection.object;
           (()=>{const r=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshBasicMaterial({map:new THREE.TextureLoader().load("https://fps5.ml/images/blood.png"),transparent:true,side:THREE.DoubleSide}));scene.add(r),r.rotation.x=Math.PI/2;r.position.set(otherPlayer.position.x+Math.random(),otherPlayer.position.y-1,otherPlayer.position.z+Math.random())})();
+        } else if (ispointedatwarthog) {
+          if (warthog.maxshot <= 0) {
+            (scene.children.indexOf(warthog)>-1)&&(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/explosion.png"),side:THREE.DoubleSide,transparent:true}));let v=new THREE.SpotLight(0xffffff,4);v.position.copy(warthog.position),x.position.copy(warthog.position),x.rotation.copy(warthog.rotation),x.translateY(1.5),x.translateZ(-1),x.updateMatrix(),x.lookAt(camera.position),scene.add(x),v.lookAt(camera.position),scene.add(v);setTimeout(()=>{let f=setInterval(()=>{!(x.material.opacity<=0)?x.material.opacity+=-.1:(scene.remove(x),scene.remove(v),raycastTargets.splice(raycastTargets.indexOf(warthog),1),scene.remove(warthog),clearInterval(f))},10)},500)})();
+            return;
+          }
+          warthog.maxshot += -(burst + addedDamage);
         }
         (()=>{let t=0,n=setInterval((()=>{let gamepadpointer;if(t>=burst)return clearInterval(n);d=!1,t++,gamepadpointer=new THREE.Mesh();gamepadpointer.position.copy(camera.position),gamepadpointer.rotation.copy(camera.rotation),gamepadpointer.updateMatrix(),gamepadpointer.translateZ(-1),gamepadpointer.translateY(recoil),camera.lookAt(gamepadpointer.position),sights.style.top="-25px",gun.rotation.x+=.2,gun.position.z+=.01,setTimeout((()=>((currentWeapon=="pistol"&&(gun.children[2].position.z+=-1)),sights.style.top="0",gun.rotation.x+=-.2,gun.position.z+=-.01,(()=>{let x=new THREE.Mesh(new THREE.CircleGeometry(.5,32),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("https://fps5.ml/images/flare.png"),side:THREE.DoubleSide,transparent:true}));gametime.run("flare",[gametime.user.position]);x.position.copy(gun.position),x.rotation.copy(gun.rotation),x.updateMatrix(),x.translateZ(-1),x.translateY(.6),x.lookAt(camera.position),scene.add(x),setTimeout(()=>scene.remove(x),40)})(),d=!0)),25)}),50)})();
         setTimeout(() => {
