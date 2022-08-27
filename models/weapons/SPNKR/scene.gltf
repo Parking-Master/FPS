@@ -1,384 +1,240 @@
 {
-  "accessors": [
-    {
-      "bufferView": 3,
-      "componentType": 5126,
-      "count": 5197,
-      "max": [
-        3.3085880279541016,
-        9.125102996826172,
-        19.634586334228516
-      ],
-      "min": [
-        -4.0882158279418945,
-        -4.278992176055908,
-        -22.37860870361328
-      ],
-      "type": "VEC3"
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.8.19",
+        "version" : "2.0"
     },
-    {
-      "bufferView": 3,
-      "byteOffset": 62364,
-      "componentType": 5126,
-      "count": 5197,
-      "max": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "min": [
-        -1.0,
-        -1.0,
-        -1.0
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 2,
-      "componentType": 5126,
-      "count": 5197,
-      "max": [
-        0.994733989238739,
-        0.9886710047721863
-      ],
-      "min": [
-        0.015731999650597572,
-        0.024406999349594116
-      ],
-      "type": "VEC2"
-    },
-    {
-      "bufferView": 1,
-      "componentType": 5125,
-      "count": 13734,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 5,
-      "componentType": 5126,
-      "count": 6,
-      "max": [
-        3.81388783454895,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        3.81388783454895,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        3.81388783454895,
-        0.0,
-        12.140522003173828,
-        0.0,
-        33.572906494140625,
-        1.0
-      ],
-      "min": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        -0.42645367980003357,
-        -20.393661499023438,
-        -14.866613388061523,
-        1.0
-      ],
-      "type": "MAT4"
-    },
-    {
-      "bufferView": 0,
-      "componentType": 5123,
-      "count": 5197,
-      "type": "VEC4"
-    },
-    {
-      "bufferView": 4,
-      "componentType": 5126,
-      "count": 5197,
-      "max": [
-        1.0,
-        0.03529411554336548,
-        0.0,
-        0.0
-      ],
-      "min": [
-        0.9647058844566345,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "type": "VEC4"
-    }
-  ],
-  "asset": {
-    "extras": {
-      "author": "Crickett94 (https://sketchfab.com/Crickett94)",
-      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
-      "source": "https://sketchfab.com/3d-models/spnkr-halo-colonial-insurrection-fan-game-e20a8ec28cc547c5af6984b5fcf46bfb",
-      "title": "SPNKR- Halo: Colonial Insurrection Fan game"
-    },
-    "generator": "Sketchfab-12.67.0",
-    "version": "2.0"
-  },
-  "bufferViews": [
-    {
-      "buffer": 0,
-      "byteLength": 41576,
-      "byteStride": 8,
-      "name": "shortBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 54936,
-      "byteOffset": 41576,
-      "name": "floatBufferViews",
-      "target": 34963
-    },
-    {
-      "buffer": 0,
-      "byteLength": 41576,
-      "byteOffset": 96512,
-      "byteStride": 8,
-      "name": "floatBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 124728,
-      "byteOffset": 138088,
-      "byteStride": 12,
-      "name": "floatBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 83152,
-      "byteOffset": 262816,
-      "byteStride": 16,
-      "name": "floatBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 384,
-      "byteOffset": 345968,
-      "name": "floatBufferViews"
-    }
-  ],
-  "buffers": [
-    {
-      "byteLength": 346352,
-      "uri": "scene.bin"
-    }
-  ],
-  "materials": [
-    {
-      "doubleSided": true,
-      "name": "SPNKR_GRinitialShadingGroup1",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.5,
-          0.5,
-          0.5,
-          1.0
-        ],
-        "metallicFactor": 0.0
-      }
-    }
-  ],
-  "meshes": [
-    {
-      "name": "SPNKR_GR:pCylinder19_SPNKR_GR:initialShadingGroup1_0",
-      "primitives": [
+    "scene" : 0,
+    "scenes" : [
         {
-          "attributes": {
-            "JOINTS_0": 5,
-            "NORMAL": 1,
-            "POSITION": 0,
-            "TEXCOORD_0": 2,
-            "WEIGHTS_0": 6
-          },
-          "indices": 3,
-          "material": 0,
-          "mode": 4
+            "name" : "Scene",
+            "nodes" : [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                10,
+                11,
+                12
+            ]
         }
-      ]
-    }
-  ],
-  "nodes": [
-    {
-      "children": [
-        1
-      ],
-      "matrix": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        2.220446049250313e-16,
-        -1.0,
-        0.0,
-        0.0,
-        1.0,
-        2.220446049250313e-16,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "name": "Sketchfab_model"
-    },
-    {
-      "children": [
-        2
-      ],
-      "matrix": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        -1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "name": "SPNKR.fbx"
-    },
-    {
-      "children": [
-        3
-      ],
-      "name": "RootNode"
-    },
-    {
-      "children": [
-        4,
-        6,
-        5
-      ],
-      "name": "Object_3"
-    },
-    {
-      "children": [
-        7
-      ],
-      "name": "_rootJoint"
-    },
-    {
-      "matrix": [
-        2.3353326986404315e-16,
-        0.0,
-        3.8138877270840554,
-        0.0,
-        0.0,
-        3.8138877270840554,
-        0.0,
-        0.0,
-        -3.8138877270840554,
-        0.0,
-        2.3353326986404315e-16,
-        0.0,
-        0.0,
-        -3.470222386240149,
-        12.229155497592942,
-        1.0
-      ],
-      "name": "Object_5"
-    },
-    {
-      "mesh": 0,
-      "name": "Object_6",
-      "skin": 0
-    },
-    {
-      "children": [
-        8,
-        9,
-        10,
-        11
-      ],
-      "name": "Root_00",
-      "translation": [
-        0.0,
-        19.420377731323242,
-        -33.572906494140625
-      ]
-    },
-    {
-      "name": "Barrels_01",
-      "translation": [
-        0.42645367980003357,
-        0.9732837080955505,
-        29.084362030029297
-      ]
-    },
-    {
-      "name": "Lid_02",
-      "translation": [
-        -12.140522003173828,
-        -7.098378658294678,
-        26.636457443237305
-      ]
-    },
-    {
-      "name": "Trigger_03",
-      "translation": [
-        0.0,
-        -15.282058715820313,
-        48.43952178955078
-      ]
-    },
-    {
-      "name": "Muzzleflash_04",
-      "translation": [
-        4.035079479217529,
-        -2.5566580295562744,
-        111.47455596923828
-      ]
-    }
-  ],
-  "scene": 0,
-  "scenes": [
-    {
-      "name": "Sketchfab_Scene",
-      "nodes": [
-        0
-      ]
-    }
-  ],
-  "skins": [
-    {
-      "inverseBindMatrices": 4,
-      "joints": [
-        4,
-        7,
-        8,
-        9,
-        10,
-        11
-      ],
-      "skeleton": 4
-    }
-  ]
+    ],
+    "nodes" : [
+        {
+            "name" : "root"
+        },
+        {
+            "children" : [
+                0
+            ],
+            "name" : "Sketchfab_model",
+            "rotation" : [
+                -0.7071068286895752,
+                0,
+                0,
+                0.7071068286895752
+            ]
+        },
+        {
+            "name" : "Body_0",
+            "rotation" : [
+                0.7071068286895752,
+                0,
+                0,
+                0.7071067094802856
+            ]
+        },
+        {
+            "name" : "LenseF_5",
+            "translation" : [
+                2.820483922958374,
+                2.73126482963562,
+                0.013391941785812378
+            ]
+        },
+        {
+            "name" : "LenseR_6",
+            "translation" : [
+                2.820483922958374,
+                2.7338979244232178,
+                0.002523263916373253
+            ]
+        },
+        {
+            "name" : "Mag_1",
+            "translation" : [
+                3.1168839931488037,
+                -0.6168866753578186,
+                0
+            ]
+        },
+        {
+            "name" : "Reciever_2",
+            "translation" : [
+                2.8640260696411133,
+                1.2996509075164795,
+                0.02972235344350338
+            ]
+        },
+        {
+            "name" : "Scope_3",
+            "translation" : [
+                2.820483922958374,
+                2.7954204082489014,
+                0.11809863895177841
+            ]
+        },
+        {
+            "name" : "RootNode"
+        },
+        {
+            "children" : [
+                8
+            ],
+            "name" : "SPNKR.fbx",
+            "rotation" : [
+                0.7071068286895752,
+                0,
+                0,
+                0.7071068286895752
+            ]
+        },
+        {
+            "children" : [
+                9
+            ],
+            "name" : "Sketchfab_model.001",
+            "rotation" : [
+                -0.7071068286895752,
+                0,
+                0,
+                0.7071068286895752
+            ]
+        },
+        {
+            "mesh" : 0,
+            "name" : "Object_6.001",
+            "scale" : [
+                0.008999999612569809,
+                0.008999999612569809,
+                0.008999999612569809
+            ]
+        },
+        {
+            "name" : "Object_5",
+            "rotation" : [
+                0,
+                -0.7071068286895752,
+                0,
+                0.7071068286895752
+            ],
+            "scale" : [
+                3.81388783454895,
+                3.81388783454895,
+                3.81388783454895
+            ],
+            "translation" : [
+                0,
+                -3.4702224731445312,
+                12.229155540466309
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "SPNKR_GRinitialShadingGroup1",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.5,
+                    0.5,
+                    0.5,
+                    1
+                ],
+                "metallicFactor" : 0
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "SPNKR_GR:pCylinder19_SPNKR_GR:initialShadingGroup1_0",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 6549,
+            "max" : [
+                12.618583679199219,
+                20.473758697509766,
+                99.65421295166016
+            ],
+            "min" : [
+                -15.591996192932129,
+                -30.64795684814453,
+                -60.57939910888672
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 6549,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 6549,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 13734,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 78588,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 78588,
+            "byteOffset" : 78588
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 52392,
+            "byteOffset" : 157176
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 27468,
+            "byteOffset" : 209568
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 237036,
+            "uri" : "scene.bin"
+        }
+    ]
 }
