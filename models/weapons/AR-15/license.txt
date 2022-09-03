@@ -1,0 +1,11 @@
+Model Information:
+* title:	Corrected Ar15
+* source:	https://sketchfab.com/3d-models/corrected-ar15-8e52cbcd512d4865ad7b0240137860fb
+* author:	teenjust500 (https://sketchfab.com/teenjust500)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Corrected Ar15" (https://sketchfab.com/3d-models/corrected-ar15-8e52cbcd512d4865ad7b0240137860fb) by teenjust500 (https://sketchfab.com/teenjust500) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
