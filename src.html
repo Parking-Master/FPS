@@ -37,8 +37,7 @@
       }
       .ui #rounds {
         position: absolute;
-        background: #fff;
-        border-radius: 5px;
+        background: #444;
         left: 90%;
         top: 50px;
         color: #444;
@@ -46,6 +45,8 @@
         font-family: 'Courier New', Courier, monospace;
         letter-spacing: -2px;
         font-weight: 600;
+        box-shadow: 0 0 10px 4px #25750a;
+        border: 2px solid #333;
       }
       .ui img:not(.statustext) {
         position: absolute;
@@ -184,23 +185,23 @@
     <p id="maptext" style="display:none;position:absolute;left:50%;width:300px;padding:0;margin-left:-100px;font-weight:100;color:#fff;font-size:50px;">Haven</p>
     <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
     <!-- <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div> -->
-    <audio id="explosion" src="https://fps5.ml/sounds/explosion.mp3" volume="1" current-time=".1"></audio>
-    <audio id="death1" src="https://fps5.ml/sounds/death1.mp3" volume="1" current-time="0"></audio>
-    <audio id="death2" src="https://fps5.ml/sounds/death2.mp3" volume="1" current-time="0"></audio>
-    <audio id="death3" src="https://fps5.ml/sounds/death3.mp3" volume="1" current-time="0"></audio>
-    <audio id="death4" src="https://fps5.ml/sounds/death4.mp3" volume="1" current-time="0"></audio>
-    <audio id="death5" src="https://fps5.ml/sounds/death5.mp3" volume="1" current-time="0"></audio>
-    <audio id="death6" src="https://fps5.ml/sounds/death6.mp3" volume="1" current-time="0"></audio>
-    <audio id="walking" src="https://fps5.ml/sounds/walking.mp3" loop volume="1"></audio>
-    <audio id="ambience" src="https://fps5.ml/sounds/ambience.mp3" autoplay loop volume="1"></audio>
-    <audio id="gunsound-burst" src="https://fps5.ml/sounds/guns/default_rifle.mp3"></audio>
-    <audio id="gunsound-pistol" src="https://fps5.ml/sounds/guns/colt_m1911.mp3"></audio>
-    <audio id="gunsound-fullauto" src="https://fps5.ml/sounds/guns/ar-15.mp3"></audio>
-    <audio id="gunsound-sniper" src="https://fps5.ml/sounds/guns/hk-g28.mp3"></audio>
-    <audio id="gunsound-rocket" src="https://fps5.ml/sounds/guns/spnkr.mp3"></audio>
-    <audio id="countdown" src="https://fps5.ml/sounds/countdown.mp3"></audio>
-    <audio id="game-over" src="https://fps5.ml/sounds/game_over.mp3"></audio>
-    <audio id="warthog" src="https://fps5.ml/sounds/warthog.mp3" loop></audio>
+    <audio id="explosion" src="sounds/explosion.mp3" volume="1" current-time=".1"></audio>
+    <audio id="death1" src="sounds/death1.mp3" volume="1" current-time="0"></audio>
+    <audio id="death2" src="sounds/death2.mp3" volume="1" current-time="0"></audio>
+    <audio id="death3" src="sounds/death3.mp3" volume="1" current-time="0"></audio>
+    <audio id="death4" src="sounds/death4.mp3" volume="1" current-time="0"></audio>
+    <audio id="death5" src="sounds/death5.mp3" volume="1" current-time="0"></audio>
+    <audio id="death6" src="sounds/death6.mp3" volume="1" current-time="0"></audio>
+    <audio id="walking" src="sounds/walking.mp3" loop volume="1"></audio>
+    <audio id="ambience" src="sounds/ambience.mp3" autoplay loop volume="1"></audio>
+    <audio id="gunsound-burst" src="sounds/guns/default_rifle.mp3"></audio>
+    <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
+    <audio id="gunsound-fullauto" src="sounds/guns/ar-15.mp3"></audio>
+    <audio id="gunsound-sniper" src="sounds/guns/hk-g28.mp3"></audio>
+    <audio id="gunsound-rocket" src="sounds/guns/spnkr.mp3"></audio>
+    <audio id="countdown" src="sounds/countdown.mp3"></audio>
+    <audio id="game-over" src="sounds/game_over.mp3"></audio>
+    <audio id="warthog" src="sounds/warthog.mp3" loop></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
@@ -211,7 +212,7 @@
     <script src="https://unpkg.com/@seregpie/three.text-texture"></script>
     <script src="https://unpkg.com/@seregpie/three.text-sprite"></script>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
-    <audio id="gunsound-pistol" src="https://fps5.ml/sounds/guns/colt_m1911.mp3"></audio>
+    <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
     <audio id="reload-pistol-easy" src="sounds/reloads/easy-reload.mp3"></audio>
     <audio id="reload-pistol-full" src="sounds/reloads/full-reload.mp3"></audio>
     <script>
@@ -232,7 +233,7 @@
       <div class="crosshair"></div>
       <img class="radar" src="images/radar.png" width="10%" />
       <!-- <div id="radar-obj"></div> -->
-      <span id="rounds"><img src="https://fps5.ml/models/rifle/rifle.png" width="100%" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+      <span id="rounds"><img src="images/guns/pistol.png" width="100%" style="margin-top:10px;""margin" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
     <script>
@@ -271,6 +272,7 @@
         [0, 0, 8]
       ];
       otherSelectedCharacter = "mark-vi";
+      lockIntersection = false;
       function respawn(position) {
         let x = position[0];
         let y = position[1];
@@ -375,10 +377,10 @@
       raycastTargets = [otherPlayer];
       center = new THREE.Vector2(0,0);
       function animate() {
-        raycastTargets[0] = otherPlayer;
+        lockIntersection ? (raycastTargets = [], intersection = true) : raycastTargets[0] = otherPlayer;
         camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
         let intersections = raycaster.intersectObjects(raycastTargets);
-        intersection = intersections[0] || null;
+        !lockIntersection && (intersection = intersections[0] || null);
         looker.position.copy(camera.position),looker.rotation.copy(camera.rotation),looker.updateMatrix(),looker.translateZ(-2);
         intersection!=null?(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #ff4444"):(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #25750a");
         walkAxisYLocked && (camera.position.y = defaultY);
@@ -396,6 +398,11 @@
       }
       camera.rotation.order = "YXZ";
       document.addEventListener("mousemove", function(e) {
+        setTimeout(() => {
+          let intersections = raycaster.intersectObjects([otherPlayer]);
+          (intersection = intersections[0] || null);
+          intersection == null && (lockIntersection = false);
+        }, 200);
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
@@ -421,11 +428,13 @@
         (new THREE.GLTFLoader).load("models/characters/" + otherSelectedCharacter + ".glb", (character) => {
           mixer1 = new THREE.AnimationMixer(character.scene);
           window.character = character.scene;
+          character.scene.scale.set(.5,.5,.5);
           otherPlayer = character.scene;
           characterAnimations = character.animations;
           scene.add(character.scene);
           (new THREE.GLTFLoader).load("models/characters/death-poses/" + otherSelectedCharacter + ".glb", (characterDeath) => {
             window.characterDeath = characterDeath.scene;
+            characterDeath.scene.scale.set(.5,.5,.5);
             window.switchToDeath = function() {
               scene.remove(otherPlayer);
               otherPlayer = characterDeath.scene;
@@ -520,6 +529,7 @@
         if (magsLeft <= 0 || shotsLeft >= 10) {
           return;
         }
+        isZoomed && zoomOut(10);
         canFire = false;
         isReloading = true;
         if (shotsLeft <= 0) {
@@ -552,6 +562,7 @@
         (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100)})();
         (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
         document.body.appendChild(gunsounds.pistol.cloneNode()).play();
+        Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/smoke.png"),transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
         if (intersection != null) {
           gametime.run("hit",[gametime.user.position==1?2:1]);
         }
@@ -568,6 +579,9 @@
         }
         gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         if (e.key.startsWith("Arrow") && !e.repeat) {
+          if (intersection != null) {
+            lockIntersection = true;
+          }
           let a = mixer.clipAction(gunAnimations[1]);
           a.play();
         }
@@ -600,6 +614,7 @@
           isWalkingForward = false;
         }
         if (e.key.startsWith("Arrow")) {
+          lockIntersection = false;
           gametime.run("endPlayerWalk", [gametime.user.position]);
           let a = mixer.clipAction(gunAnimations[1]);
           a.stop();
