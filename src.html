@@ -19,7 +19,7 @@
       }
       .scoreboard {
         position: absolute;
-        background: #fff;
+        background: #444;
         width: 75px;
         height: 30px;
         padding: 5px;
@@ -31,22 +31,28 @@
         top: 85vh;
         font-size: 12px;
         letter-spacing: 2px;
-        color: #333;
+        color: #25750a;
         font-family: 'Courier New', Courier, monospace;
         font-weight: 600;
+        box-shadow: 0 0 10px 4px #25750a;
+      }
+      hr {
+        outline-color: #25750a;
+        border-color: #25750a;
       }
       .ui #rounds {
         position: absolute;
         background: #444;
         left: 90%;
         top: 50px;
-        color: #444;
+        color: #25750a;
         padding: 3px;
         font-family: 'Courier New', Courier, monospace;
         letter-spacing: -2px;
         font-weight: 600;
         box-shadow: 0 0 10px 4px #25750a;
         border: 2px solid #333;
+        height: 80px;
       }
       .ui img:not(.statustext) {
         position: absolute;
@@ -176,15 +182,82 @@
         box-shadow: none !important;
         outline: none !important;
       }
+      * {
+        white-space: nowrap;
+      }
+      .loader {
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        background-color: #444;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        margin: 0 !important;
+        left: 0 !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 99999;
+      }
+      .loader-1 {
+        width: 8vmax;
+        height: 8vmax;
+        border-right: 4px solid #25750a;
+        border-radius: 100%;
+        animation: spinRight 800ms linear infinite;
+        margin: 0;
+        margin-top: -100px;
+      }
+      .loader-1:before, .loader-1:after {
+        content: "";
+        width: 6vmax;
+        height: 6vmax;
+        display: block;
+        position: absolute;
+        left: calc(50% - 3vmax);
+        border-left: 3px solid #25750a;
+        border-radius: 100%;
+        animation: spinLeft 800ms linear infinite;
+      }
+      .loader-1:after {
+        width: 4vmax;
+        height: 4vmax;
+        top: calc(50% - 2vmax);
+        left: calc(50% - 2vmax);
+        border: 0;
+        border-right: 2px solid #25750a;
+        animation: none;
+      }
+      @keyframes spinLeft {
+      	from {
+          transform: rotate(0deg);
+      	}
+      	to {
+      	  transform: rotate(720deg);
+      	}
+      }
+      @keyframes spinRight {
+      	from {
+      	  transform: rotate(360deg);
+      	}
+      	to {
+      	  transform: rotate(0deg);
+      	}
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/js/username-generator.min.js"></script>
   </head>
   <body style="margin:0!important;">
-    <p id="maptext" style="display:none;position:absolute;left:50%;width:300px;padding:0;margin-left:-100px;font-weight:100;color:#fff;font-size:50px;">Haven</p>
-    <style>.loader{width:400px;height:40px;background-color:#fff;top:50%;left:50%;margin:-40px;position:absolute;border-radius:100px;box-shadow:inset 0 0 0 2px #333;z-index:99999;}.loader:after{border-radius:100px;content:'';position:absolute;background-color:#333;left:2px;top:2px;bottom:2px;right:360px;animation-name:slide;animation-duration:2s;animation-easing-function:linear;animation-iteration-count:infinite;box-shadow:0 1px 2px rgba(0,0,0,.2)}@keyframes slide{0%{right:360px;left:2px}5%{left:2px}50%{right:2px;left:360px}55%{right:2px}100%{right:360px;left:2px}}</style>
-    <!-- <div class="loader-cover" style="position:absolute;width:100%;height:100%;left:0;top:0;right:0;bottom:0;background:#fff;z-index:99998;"><div class="loader-title" style="position:relative;text-align:center;color:#333;font-weight:bold;font-size:30px;top:150px;">LOADING MAP</div><br><div class="loader-description" style="position:relative;text-align:center;color:#333;font-weight:normal;font-size:20px;top:150px;">Map: "<span class="map">Vertex</span>"</div><div class="loader" style="left:50%;margin-left:-200px;"></div></div> -->
+    <div class="loader">
+      <div class="loader-1"></div>
+      <br>
+      <h2 style="font-size:20px;text-align:center;position:absolute;margin-top:100px;color:#25750a">LOADING</h2>
+    </div>
     <audio id="explosion" src="sounds/explosion.mp3" volume="1" current-time=".1"></audio>
     <audio id="death1" src="sounds/death1.mp3" volume="1" current-time="0"></audio>
     <audio id="death2" src="sounds/death2.mp3" volume="1" current-time="0"></audio>
@@ -202,6 +275,7 @@
     <audio id="countdown" src="sounds/countdown.mp3"></audio>
     <audio id="game-over" src="sounds/game_over.mp3"></audio>
     <audio id="warthog" src="sounds/warthog.mp3" loop></audio>
+    <audio id="punch" src="sounds/punch.mp3"></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
@@ -233,7 +307,7 @@
       <div class="crosshair"></div>
       <img class="radar" src="images/radar.png" width="10%" />
       <!-- <div id="radar-obj"></div> -->
-      <span id="rounds"><img src="images/guns/pistol.png" width="100%" style="margin-top:10px;""margin" /><br><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+      <span id="rounds"><img src="images/guns/pistol.png" width="100%" style="margin-top:10px" /><br style="margin-top:25px"><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
     <script>
@@ -260,13 +334,14 @@
       otherPlayer = new THREE.Mesh();
       otherLooker = new THREE.Mesh();
       looker = new THREE.Mesh();
+      melee = new THREE.Mesh();
       gunAnimations = [];
       shotsLeft = 10;
       magsLeft = 3;
       gunLocked = true;
       isZoomed = false;
       walkAxisYLocked = true;
-      defaultY = 0;
+      defaultY = .7;
       health = 100;
       respawnPoints = [
         [0, 0, 8]
@@ -296,19 +371,27 @@
       gametime.make("eleminate");
       gametime.make("respawn");
       gametime.make("selectCharacter");
+      gametime.make("playerJump");
       gametime.on("respawn", function(data) {
         let player = data.split(",")[0];
+        if (player == gametime.user.position) {
+          return;
+        }
         let x = data.split(",")[1];
         let y = data.split(",")[2];
         let z = data.split(",")[3];
         otherPlayer.rotation.set(0, 0, 0);
         otherPlayer.position.set(x, y, z);
+        scene.add(otherPlayer);
       });
       gametime.on("eleminate", function(player) {
+        document.querySelector("#death3").play();
         if (player != gametime.user.position) {
-          switchToDeath();
+          scene.remove(otherPlayer);
+          switchToDeath(otherPlayer);
           return;
         }
+        switchToDeath(camera);
         let t = 5;
         let spawnPoint = respawnPoints[Math.floor(Math.random() * respawnPoints.length)];
         swal({
@@ -334,6 +417,14 @@
           document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #25750a";
         }
         document.querySelector(".health").style.width = health + "%";
+      });
+      gametime.on("playerJump", function(data) {
+        let player = data.split(",")[1];
+        let defaultY = data.split(",")[0];
+        if (player == gametime.user.position) {
+          return;
+        }
+        (()=>{let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(otherPlayer.position.y<=defaultY){return(clearInterval(h))}(t+=.05);otherPlayer.position.y+=-t},25)})())}(t+=-.05);otherPlayer.position.y+=t},25)})();
       });
       gametime.on("playerRotate", function(pos) {
         if (pos.split(",")[3] == gametime.user.position) {
@@ -366,7 +457,7 @@
         }
         let a = mixer1.clipAction(characterAnimations[0]);
         a.play();
-        otherPlayer.position.set(data.split(",")[0]-0,data.split(",")[1]-0,data.split(",")[2]-0);
+        otherPlayer.position.set(data.split(",")[0]-0,data.split(",")[1]-1.25,data.split(",")[2]-0);
         console.log(data);
       });
       gametime.onconnect = function() {
@@ -409,8 +500,8 @@
       (new THREE.GLTFLoader).load("models/maps/haven/scene.gltf", (map) => {
         window.map = map.scene;
         scene.add(map.scene);
-        map.scene.scale.set(1.6, 1.6, 1.6);
-        map.scene.position.y = -301;
+        map.scene.scale.set(1.65, 1.65, 1.65);
+        map.scene.position.y = -310;
         animate();
       });
       (new THREE.GLTFLoader).load("models/weapons/pistol.glb", (gun) => {
@@ -418,6 +509,9 @@
         window.gun = gun.scene;
         gunAnimations = gun.animations;
         scene.add(gun.scene);
+        (new THREE.GLTFLoader).load("models/weapons/melee/pistol.glb", (melee) => {
+          window.melee = melee.scene;
+        });
       });
       characterWasCreated = false;
       function createCharacter() {
@@ -435,12 +529,34 @@
           (new THREE.GLTFLoader).load("models/characters/death-poses/" + otherSelectedCharacter + ".glb", (characterDeath) => {
             window.characterDeath = characterDeath.scene;
             characterDeath.scene.scale.set(.5,.5,.5);
-            window.switchToDeath = function() {
-              scene.remove(otherPlayer);
-              otherPlayer = characterDeath.scene;
-              scene.add(otherPlayer);
+            window.switchToDeath = function(obj) {
+              let otherPlayer = obj.clone();
+              obj == camera ? otherPlayer.translateY(-defaultY) : otherPlayer.translateY(.2);
+              (new THREE.GLTFLoader).load("models/characters/death-poses/" + otherSelectedCharacter + ".glb", (characterDeath) => {
+                characterDeath.scene.scale.set(.5,.5,.5);
+                let deadBody = characterDeath.scene;
+                deadBody.position.copy(otherPlayer.position);
+                deadBody.rotation.copy(otherPlayer.rotation);
+                deadBody.updateMatrix();
+                scene.add(deadBody);
+                setTimeout(() => {
+                  (new THREE.GLTFLoader).load("models/characters/" + otherSelectedCharacter + ".glb", (e) => {
+                    let character = e.scene;
+                    character.scale.set(.5,.5,.5);
+                    character.position.copy(characterDeath.scene.position);
+                    character.rotation.copy(characterDeath.scene.rotation);
+                    character.updateMatrix();
+                    character.rotateX(Math.PI/2);
+                    scene.remove(deadBody);
+                    scene.add(character);
+                    character.getObjectByName("9mm_pistolglb").visible = false;
+                    // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/blood.png"),transparent:true}));e.position.set(character.position.x,character.position.y,character.position.z),e.rotation.x=-Math.PI/2,scene.add(e),setTimeout(()=>scene.remove(e),20000)})();
+                  });
+                }, 2000);
+              });
             };
           });
+          document.querySelector(".loader").remove();
         });
       }
       (() => {
@@ -577,7 +693,7 @@
           !e.repeat && shake(1000000000);
           isWalkingForward = true;
         }
-        gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
+        e.key.startsWith("Arrow") && gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         if (e.key.startsWith("Arrow") && !e.repeat) {
           if (intersection != null) {
             lockIntersection = true;
@@ -605,6 +721,22 @@
         }
         if (e.key == " " && !e.repeat) {
           (()=>{walkAxisYLocked=false;let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(camera.position.y<=defaultY){return(clearInterval(h),walkAxisYLocked=true)}(t+=.05);camera.position.y+=-t},25)})())}(t+=-.05);camera.position.y+=t},25)})();
+          gametime.run("playerJump", [defaultY+","+gametime.user.position]);
+        }
+        if (e.key == "b" && !e.repeat) {
+          document.querySelector("#punch").play();
+          document.querySelector("#punch").currentTime = .1;
+          let v = gun;
+          scene.remove(gun);
+          gun = melee;
+          scene.add(gun);
+          distanceTo(otherPlayer.position, gun.position) <= 3 && gametime.run("eleminate", [gametime.user.position == 2 ? 1 : 2]);
+          setTimeout(() => {
+            scene.remove(gun);
+            gun = v;
+            scene.add(gun);
+          }, 500);
+          isZoomed && zoomOut(10);
         }
       });
       document.addEventListener("keyup", (e) => {
