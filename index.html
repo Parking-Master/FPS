@@ -7,10 +7,16 @@
     <style>
       html, body {
         font-family: Arial, Helvetica, sans-serif;
-        cursor: url(./cursors/cursor1.png), default !important;
+        cursor: url(./cursors/cursor.png), default !important;
+        background-image: url(https://www.onlygfx.com/wp-content/uploads/2017/02/green-splatter-5.png), url(images/gun.png);
+        background-size: 50vw, 40vw;
+        background-repeat: no-repeat;
+        background-position: 0, 55vw;
+        background-color: #444;
+        user-select: none !important;
       }
       * {
-        cursor: url(./cursors/cursor1.png), default !important;
+        cursor: url(./cursors/cursor.png), default !important;
       }
       .page-title {
         position: relative;
@@ -18,6 +24,7 @@
         color: #333;
         font-size: 60px;
         font-weight: bold;
+        text-shadow: 2px 2px #25750a;
       }
       .page-text {
         position: relative;
@@ -31,8 +38,9 @@
         width: 150px;
         text-align: center;
         color: #333;
-        border: 2px solid #333;
-        background: #fff;
+        text-shadow: 0px 2px #25750a;
+        border: 2px solid #25750a;
+        background: #444;
         padding: 10px;
         font-weight: 600;
         margin-bottom: 25px;
@@ -43,23 +51,43 @@
       button.button:hover {
         transform: scale(1.1);
       }
-      .dialog-box .dialog-action,.dialog-box .dialog-content{right:0;border-top:1px solid #ccc;position:absolute;left:0}.dialog-box{background-color:#fff;border:1px solid #ccc;-webkit-box-shadow:0 1px 5px rgba(0,0,0,.2);-mz-box-shadow:0 1px 5px rgba(0,0,0,.2);box-shadow:0 1px 5px rgba(0,0,0,.2);position:absolute;width:200px;height:100px;margin-top:-51px;margin-left:-101px;z-index:9999;color:#666;visibility:hidden;opacity:0}.dialog-box .dialog-title{margin:0;padding:0 .8em;font:inherit;color:inherit;font-weight:700;height:2em;line-height:2em;overflow:hidden;background-color:#eee;cursor:move}.dialog-box .dialog-content{padding:1em;top:2em;bottom:3em;overflow:auto}.dialog-box .dialog-content iframe{display:block;border:none;background:0 0;margin:0;padding:0;overflow:auto;width:100%;height:100%}.dialog-box .dialog-content::-webkit-scrollbar{width:8px;height:8px;background-color:#f5f5f5;border-left:1px solid #ccc}.dialog-box .dialog-content::-webkit-scrollbar-thumb{background-color:#666;border:none}.dialog-box .dialog-content::-webkit-scrollbar-thumb:hover{background-color:#555}.dialog-box .dialog-content::-webkit-scrollbar-thumb:active{background-color:#444}.dialog-box .dialog-action{bottom:0;height:2em;padding:.5em;background-color:#eee;text-align:right}.dialog-box .dialog-action .btn{text-decoration:none;border:1px solid #ccc;outline:0;color:inherit;font-weight:700;background-color:#fff;-webkit-border-radius:.2em;-moz-border-radius:.2em;border-radius:.2em;padding:.4em 1em;margin-left:.2em;line-height:2em;cursor:pointer}.dialog-box .dialog-close,.dialog-box .dialog-minmax{border:none;outline:0;background:0 0;font:inherit;font-family:Arial,Sans-Serif;font-style:normal;font-weight:700;font-size:150%;line-height:1.4em;color:#aaa;text-decoration:none;position:absolute;top:0;right:.3em;text-align:center;cursor:pointer}.dialog-box .dialog-minmax{right:1.5em}.dialog-box .dialog-action .btn:focus,.dialog-box .dialog-close:focus,.dialog-box .dialog-minmax:focus{border-width:0;outline:0}.dialog-box .dialog-close:hover,.dialog-box .dialog-minmax:hover{color:#777}.dialog-box .dialog-close:focus,.dialog-box .dialog-minmax:focus{color:#c90000}.dialog-box .dialog-close:active,.dialog-box .dialog-minmax:active{color:#444}.dialog-box .dialog-action .btn:hover{border-color:#bbb}.dialog-box .dialog-action .btn:focus{border-color:#aaa;border-width:1px}.dialog-box .dialog-action .btn:active{border-color:#aaa;background-color:#f5f5f5}.dialog-box+.dialog-box-overlay{background-color:#000;opacity:.2;position:fixed!important;top:0;right:0;bottom:0;left:0;z-index:9997;display:none}.dialog-box.fixed-dialog-box{position:fixed!important}.dialog-box.minimize{width:2em!important;height:2em!important;overflow:hidden!important;margin-top:0!important;margin-left:0!important;top:-1px!important;left:1em!important}.dialog-box.minimize .dialog-title{color:transparent;text-shadow:none;text-indent:-9999px}.dialog-box.minimize .dialog-minmax{right:0;left:0}.dialog-box.minimize .dialog-action,.dialog-box.minimize .dialog-close,.dialog-box.minimize .dialog-content{display:none;visibility:hidden}
+      .dialog-box .dialog-action,.dialog-box .dialog-content{right:0;border-top:1px solid #333;position:absolute;left:0}.dialog-box{background-color:#444;border:1px solid #333;-webkit-box-shadow:0 1px 5px rgba(0,0,0,.2);-mz-box-shadow:0 1px 5px rgba(0,0,0,.2);box-shadow:0 1px 5px rgba(0,0,0,.2);position:absolute;width:200px;height:100px;margin-top:-51px;margin-left:-101px;z-index:9999;color:#666;visibility:hidden;opacity:0}.dialog-box .dialog-title{margin:0;padding:0 .8em;font:inherit;color:inherit;font-weight:700;height:2em;line-height:2em;overflow:hidden;background-color:#333;cursor:move}.dialog-box .dialog-content{padding:1em;top:2em;bottom:3em;overflow:auto}.dialog-box .dialog-content iframe{display:block;border:none;background:0 0;margin:0;padding:0;overflow:auto;width:100%;height:100%}.dialog-box .dialog-content::-webkit-scrollbar{width:8px;height:8px;background-color:#444;border-left:1px solid #333}.dialog-box .dialog-content::-webkit-scrollbar-thumb{background-color:#666;border:none}.dialog-box .dialog-content::-webkit-scrollbar-thumb:hover{background-color:#555}.dialog-box .dialog-content::-webkit-scrollbar-thumb:active{background-color:#444}.dialog-box .dialog-action{bottom:0;height:2em;padding:.5em;background-color:#333;text-align:right}.dialog-box .dialog-action .btn{text-decoration:none;border:1px solid #444;outline:0;color:inherit;font-weight:700;background-color:#444;-webkit-border-radius:.2em;-moz-border-radius:.2em;border-radius:.2em;padding:.4em 1em;margin-left:.2em;line-height:2em;cursor:pointer}.dialog-box .dialog-close,.dialog-box .dialog-minmax{border:none;outline:0;background:0 0;font:inherit;font-family:Arial,Sans-Serif;font-style:normal;font-weight:700;font-size:150%;line-height:1.4em;color:#aaa;text-decoration:none;position:absolute;top:0;right:.3em;text-align:center;cursor:pointer}.dialog-box .dialog-minmax{right:1.5em}.dialog-box .dialog-action .btn:focus,.dialog-box .dialog-close:focus,.dialog-box .dialog-minmax:focus{border-width:0;outline:0}.dialog-box .dialog-close:hover,.dialog-box .dialog-minmax:hover{color:#444}.dialog-box .dialog-close:focus,.dialog-box .dialog-minmax:focus{color:#25750a}.dialog-box .dialog-close:active,.dialog-box .dialog-minmax:active{color:#444}.dialog-box .dialog-action .btn:hover{border-color:#333}.dialog-box .dialog-action .btn:focus{border-color:#333;border-width:1px}.dialog-box .dialog-action .btn:active{border-color:#333;background-color:#555}.dialog-box+.dialog-box-overlay{background-color:#000;opacity:.2;position:fixed!important;top:0;right:0;bottom:0;left:0;z-index:9997;display:none}.dialog-box.fixed-dialog-box{position:fixed!important}.dialog-box.minimize{width:2em!important;height:2em!important;overflow:hidden!important;margin-top:0!important;margin-left:0!important;top:-1px!important;left:1em!important}.dialog-box.minimize .dialog-title{color:transparent;text-shadow:none;text-indent:-9999px}.dialog-box.minimize .dialog-minmax{right:0;left:0}.dialog-box.minimize .dialog-action,.dialog-box.minimize .dialog-close,.dialog-box.minimize .dialog-content{display:none;visibility:hidden}
       a {
-        color: #333 !important;
+        color: #25750a !important;
         text-decoration: underline;
       }
       .custom-anchor-tt {
         display: none !important;
+      }
+      button[data-disabled] {
+        opacity: .5;
+        cursor: not-allowed !important;
+        transform: scale(1) !important;
+        pointer-events: none !important;
+      }
+      .tippy-box[data-theme~="default"] {
+        background: #444;
+        box-shadow: 0 0 5px 2px #25750a;
+        color: #25750a;
+        display: block !important;
+      }
+      .tippy-box[data-theme~="default"]:not([data-tippy-content]) {
+        display: none;
+      }
+      .tippy-box[data-theme~="default"][data-placement^="top"] > .tippy-arrow::before {
+        border-top-color: #444;
       }
     </style>
     <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
   </head>
   <body>
     <div class="wrapper">
+      <script src="https://unpkg.com/@popperjs/core@2"></script>
+      <script src="https://unpkg.com/tippy.js@6"></script>
       <h1 class="page-title">F-P-S</h1>
       <h2 class="page-text">Multiplayer shooter</h2>
       <br>
-      <button class="button" onclick="chooseMap()">CHOOSE MAP</button>
+      <button class="button" onclick="chooseMap()" data-disabled data-tippy-content="Coming soon" data-tippy-theme="default" data-tippy-arrow="true">CHOOSE MAP</button>
       <br>
       <button class="button" onclick="findLobby()">FIND LOBBY</button>
       <br>
@@ -72,6 +100,8 @@
       <button class="button" onclick="desktopOptions()">CUSTOM OPTIONS</button>
     </div>
     <script>
+      tippy("[data-tippy-content]");
+      // tippy("button")[0].show();
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       let Lobby = new Parse.Object.extend("Lobby");
       !function(e,i){var t,n,l=(new Date).getTime();t=i.createElement("div"),n=i.createElement("div"),t.className="dialog-box",t.id="dialog-box-"+l,t.innerHTML='<h3 class="dialog-title">&nbsp;</h3><a class="dialog-minmax" title="Minimize">&ndash;</a><a class="dialog-close" title="Close">&times;</a><div class="dialog-content">&nbsp;</div><div class="dialog-action"></div>',n.className="dialog-box-overlay",i.body.appendChild(t),i.body.appendChild(n);var o=!1,a=i.getElementById("dialog-box-"+l),s=a.children[0],c=a.children[1],d=a.children[2],p=a.children[3],r=a.children[4],f=a.nextSibling;function h(){o?(a.className+=" minimize",c.innerHTML="+",c.title=s.innerHTML.replace(/<.*?>/g,""),o=!1):(a.className=a.className.replace(/(^| )minimize($| )/g,""),c.innerHTML="&ndash;",c.title="Minimize",o=!0)}e.setDialog=function(t,n,z){var l=null,m=0,g=0,v=0,x=0,u={title:s.innerHTML,content:p.innerHTML,width:300,height:150,top:!1,left:!1,buttons:{Next:function(){setDialog("close"),z()}},specialClass:"",fixed:!0,overlay:!1};for(var b in n)u[b]=(n[b],n[b]);if(a.className="dialog-box "+(u.fixed?"fixed-dialog-box ":"")+u.specialClass,a.style.visibility="open"==t?"visible":"hidden",a.style.opacity="open"==t?1:0,a.style.width=u.width+"px",a.style.height=u.height+"px",a.style.top=u.top?"0px":"50%",a.style.left=u.left?"0px":"50%",a.style.marginTop=u.top?u.top+"px":"-"+u.height/2+"px",a.style.marginLeft=u.left?u.left+"px":"-"+u.width/2+"px",s.innerHTML=u.title,p.innerHTML=u.content,r.innerHTML="",f.style.display="open"==t&&u.overlay?"block":"none",u.buttons)for(var y in u.buttons){var M=i.createElement("a");M.className="btn",M.innerHTML=y,M.onclick=u.buttons[y],r.appendChild(M)}else r.innerHTML="&nbsp;";s.onmousedown=function(){var e;return e=this.parentNode,v=m-(l=e).offsetLeft,x=g-l.offsetTop,!1},c.innerHTML="&ndash;",c.title="Minimize",c.onclick=h,d.onclick=function(){setDialog("close",{content:""})},i.onmousemove=function(t){m=i.all?e.event.clientX:t.pageX,g=i.all?e.event.clientY:t.pageY,null!==l&&(l.style.left=u.left?m-v-u.left+"px":m-v+l.offsetWidth/2+"px",l.style.top=u.top?g-x-u.top+"px":g-x+l.offsetHeight/2+"px")},i.onmouseup=function(){l=null},o="open"==t}}(window,document);
