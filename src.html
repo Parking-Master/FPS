@@ -332,10 +332,11 @@
       const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}
       scene.add(camera);
       map = new THREE.Mesh();
-      light = new THREE.PointLight(0xffffff, 3), light.position.set(50,50,50), scene.add(light);
+      light = new THREE.PointLight(0xf7f7ea, 3.5), light.position.set(10,20,10), scene.add(light);
       follower = new THREE.Mesh(new THREE.BoxGeometry(.5,1,.5));
       gun = new THREE.Mesh();
       clock = new THREE.Clock();
+      myPlayer = new THREE.Mesh();
       otherPlayer = new THREE.Mesh();
       otherLooker = new THREE.Mesh();
       looker = new THREE.Mesh();
@@ -463,7 +464,6 @@
         let a = mixer1.clipAction(characterAnimations[0]);
         a.play();
         otherPlayer.position.set(data.split(",")[0]-0,data.split(",")[1]-1.25,data.split(",")[2]-0);
-        console.log(data);
       });
       gametime.onconnect = function() {
         gametime.run("selectCharacter", [(new URLSearchParams(location.search).get("character")||"mark-vi")+","+gametime.user.position]);
@@ -473,8 +473,22 @@
       raycastTargets = [otherPlayer];
       center = new THREE.Vector2(0,0);
       function animate() {
-        camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1?camera.position.x+=(-.05):(camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=1?(defaultY=1.7):defaultY=.7);
-        camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1?camera.position.x+=(.05):(camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=1?(defaultY=1.7):defaultY=.7);
+        myPlayer.position.copy(camera.position);
+        myPlayer.rotation.y = camera.rotation.y;
+        myPlayer.translateY(-1.15);
+        myPlayer.translateZ(.2);
+        myPlayer.scale.set(.5,.5,.5);
+        if(camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1){
+          camera.position.x+=(.05);
+        }else if(camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=1){
+          (defaultY=1.7);
+        }else if(camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1){
+          camera.position.x+=(-.05);
+        }else if(camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=1){
+          (defaultY=1.7);
+        }else{
+          defaultY=.7;
+        }
         lockIntersection ? (raycastTargets = [], intersection = true) : raycastTargets[0] = otherPlayer;
         camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
         let intersections = raycaster.intersectObjects(raycastTargets);
@@ -526,6 +540,12 @@
           return;
         }
         characterWasCreated = true;
+        (new THREE.GLTFLoader).load("models/characters/first.glb", (character) => {
+          myPlayer = character.scene;
+          scene.add(myPlayer);
+          mixer2 = new THREE.AnimationMixer(myPlayer);
+          myCharacterAnimations = character.animations;
+        });
         (new THREE.GLTFLoader).load("models/characters/" + otherSelectedCharacter + ".glb", (character) => {
           mixer1 = new THREE.AnimationMixer(character.scene);
           window.character = character.scene;
@@ -564,11 +584,15 @@
             };
           });
           document.querySelector(".loader").remove();
+          setTimeout(() => {
+            start();
+          }, 2000);
         });
       }
       (() => {
         let h = 1;
         window.shake = function shake(ms) {
+          return;
           let isup = true;
           let isdown = false;
           let t = 0;
@@ -593,6 +617,53 @@
           clearInterval(h);
         }
       })();
+      didStart = false;
+      function start() {
+        controls.isLocked = false;
+        swal({
+          title: "Starting game",
+          button: false,
+          text: "Setting player positions..."
+        });
+        setTimeout(()=>(document.querySelector(".swal-text").textContent="Double checking stats..."),1000);
+        setTimeout(()=>(document.querySelector(".swal-text").textContent="Adding player events..."),2000);
+        setTimeout(()=>(document.querySelector(".swal-text").textContent="Cleaning up..."),3000);
+        setTimeout(()=>(document.querySelector(".swal-text").textContent="Starting game..."),5000);
+        setTimeout(()=>{
+          swal({
+            title: "Get ready",
+            button: false,
+            text: "Starting in 3 seconds!"
+          });
+          setTimeout(()=>{
+            swal({
+              title: "3",
+              button: false,
+              text: "Starting"
+            });
+            setTimeout(()=>(document.querySelector(".swal-title").textContent="2"),1000);
+            setTimeout(()=>(document.querySelector(".swal-title").textContent="1"),2000);
+            setTimeout(()=>{
+              swal.close();
+              didStart = true;
+              controls.isLocked = true;
+            }, 3000);
+          }, 1000);
+        },6000);
+      }
+      setInterval(() => {
+        if (!didStart) {
+          if (gametime.user && gametime.user.position == 1) {
+            defaultY = .7;
+            camera.position.set(0, .7, 8);
+            camera.rotation.set(0, -Math.PI, 0);
+          } else if (gametime.user && gametime.user.position == 2) {
+            defaultY = -1;
+            camera.position.set(0, -1, 46);
+            camera.rotation.set(0, 0, 0);
+          }
+        }
+      });
       const controls = new PointerLockControls(camera, renderer.domElement);
       controls.isLocked = true;
       controls.pointerSpeed = 2;
@@ -702,6 +773,8 @@
         }
         e.key.startsWith("Arrow") && gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         if (e.key.startsWith("Arrow") && !e.repeat) {
+          let b = mixer2.clipAction(myCharacterAnimations[0]);
+          b.play();
           if (intersection != null) {
             lockIntersection = true;
           }
@@ -771,7 +844,7 @@
           isWalkingRight = false;
         }
       });
-      (() => { let loader=new THREE.TextureLoader;loader.load("images/clouds.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";scene.add(d),d.position.set(0,0,0)})); })();
+      (() => { let loader=new THREE.TextureLoader;loader.load("images/clouds1.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";sky.rotation.y=-.2,scene.add(d),d.position.set(0,0,0)})); })();
     </script>
   </body>
 </html>
