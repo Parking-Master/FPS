@@ -247,6 +247,21 @@
       	  transform: rotate(0deg);
       	}
       }
+      .progress-bar {
+        position: absolute;
+        width: 100px;
+        height: 10px;
+        padding: 5px;
+        background: #333;
+        left: 50%;
+        margin-left: -50px;
+      }
+      #progress {
+        margin: 0;
+        width: 1%;
+        height: 100%;
+        background: #25750a;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -256,7 +271,7 @@
     <div class="loader">
       <div class="loader-1"></div>
       <br>
-      <h2 style="font-size:20px;text-align:center;position:absolute;margin-top:100px;color:#25750a">LOADING</h2>
+      <h2 style="font-size:20px;text-align:center;position:absolute;margin-top:100px;color:#25750a">LOADING<br><div class="progress-bar"><div id="progress"></div></div></h2>
     </div>
     <audio id="explosion" src="sounds/explosion.mp3" volume="1" current-time=".1"></audio>
     <audio id="death1" src="sounds/death1.mp3" volume="1" current-time="0"></audio>
@@ -316,6 +331,7 @@
       window.CANNON = CANNON;
     </script>
     <script>
+      connectedUsers = 0;
       gunsounds = {
         pistol: document.getElementById("gunsound-pistol")
       };
@@ -367,9 +383,12 @@
         shotsLeft = 10;
         magsLeft = 3;
       }
+      function error(code) {
+        if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
+      }
       /* Gametime.js event variables */
       gametime.set("key", "pub-c-74710794-cf40-43e3-ae10-d978cbdb8822", "sub-c-4da51a44-cbb3-11ec-924a-fed9c56767c0");
-      gametime.set("channel", "default")
+      gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
       gametime.make("playerWalk");
       gametime.make("endPlayerWalk");
       gametime.make("playerRotate");
@@ -378,6 +397,10 @@
       gametime.make("respawn");
       gametime.make("selectCharacter");
       gametime.make("playerJump");
+      gametime.make("connect");
+      gametime.on("connect", function() {
+        connectedUsers++;
+      });
       gametime.on("respawn", function(data) {
         let player = data.split(",")[0];
         if (player == gametime.user.position) {
@@ -466,6 +489,7 @@
         otherPlayer.position.set(data.split(",")[0]-0,data.split(",")[1]-1.25,data.split(",")[2]-0);
       });
       gametime.onconnect = function() {
+        gametime.run("connect");
         gametime.run("selectCharacter", [(new URLSearchParams(location.search).get("character")||"mark-vi")+","+gametime.user.position]);
       };
       /* End Gametime.js event variables */
@@ -486,8 +510,16 @@
           camera.position.x+=(-.05);
         }else if(camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=1){
           (defaultY=1.7);
+        }else if(camera.position.x<=.8&&camera.position.x>=-.8&&camera.position.z>=14.2&&camera.position.z<=18.7){
+          camera.rotation.y<=Math.PI/2?camera.position.x+=(-.05):camera.position.x+=(.05);
         }else{
-          defaultY=.7;
+          camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==8&&(defaultY=.2);
+          camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==7&&(defaultY=-.2);
+          camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==6&&(defaultY=-.6);
+          camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==5&&(defaultY=-1);
+          camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==4&&(defaultY=-1.4);
+          camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==3&&(defaultY=-1.8);
+          !(camera.position.z.toFixed(0)<=8&&camera.position.x>=-2&&camera.position.x<=2)&&(defaultY=.7);
         }
         lockIntersection ? (raycastTargets = [], intersection = true) : raycastTargets[0] = otherPlayer;
         camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
@@ -518,14 +550,14 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      (new THREE.GLTFLoader).load("models/maps/HAVEN/scene.gltf", (map) => {
+      loadingProgress=0;
+      let manager=new THREE.LoadingManager;manager.onProgress=function(e,a,n){loadingProgress=(a/n*100).toFixed(0)};let Loaders={Map:new THREE.GLTFLoader(manager).load("models/maps/HAVEN/scene.gltf", (map) => {
         window.map = map.scene;
         scene.add(map.scene);
         map.scene.scale.set(1.65, 1.65, 1.65);
         map.scene.position.y = -310;
         animate();
-      });
-      (new THREE.GLTFLoader).load("models/weapons/pistol.glb", (gun) => {
+      }),Gun:(new THREE.GLTFLoader).load("models/weapons/pistol.glb", (gun) => {
         mixer = new THREE.AnimationMixer(gun.scene);
         window.gun = gun.scene;
         gunAnimations = gun.animations;
@@ -533,6 +565,10 @@
         (new THREE.GLTFLoader).load("models/weapons/melee/pistol.glb", (melee) => {
           window.melee = melee.scene;
         });
+      })};
+      let lpman = setInterval(() => {
+        loadingProgress >= 99 && clearInterval(lpman);
+        document.querySelector("#progress").style.width = String(loadingProgress) + "%";
       });
       characterWasCreated = false;
       function createCharacter() {
@@ -584,11 +620,35 @@
             };
           });
           document.querySelector(".loader").remove();
-          setTimeout(() => {
-            start();
-          }, 2000);
         });
       }
+      function getLink() {
+        alert(location.href.replace("src.html","play.html"));
+      }
+      function cancelSearch() {
+        connectedUsers = 0;
+        gametime.disconnect();
+        location.replace("/");
+      }
+      let options = document.createElement("div");
+      options.innerHTML = `
+      <a onclick="getLink()" style="text-decoration:underline">Share Link</a><br>
+      <a onclick="cancelSearch()" style="text-decoration:underline">Stop Search</a>
+      `;
+      swal({
+        title: "Searching for players",
+        text: "Please wait... Game will start automatically",
+        button: false,
+        content: options
+      });
+      let searchingEngine = setInterval(() => {
+        if (connectedUsers >= 2) {
+          setTimeout(() => {
+            start();
+          }, 1000);
+          clearInterval(searchingEngine);
+        }
+      });
       (() => {
         let h = 1;
         window.shake = function shake(ms) {
@@ -810,7 +870,7 @@
           scene.remove(gun);
           gun = melee;
           scene.add(gun);
-          distanceTo(otherPlayer.position, gun.position) <= 3 && gametime.run("eleminate", [gametime.user.position == 2 ? 1 : 2]);
+          distanceTo(otherPlayer.position, gun.position) <= 3 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
           setTimeout(() => {
             scene.remove(gun);
             gun = v;
