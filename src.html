@@ -158,16 +158,17 @@
       }
       .crosshair {
         position: absolute;
-        width: 5px;
-        height: 5px;
+        width: 10px;
+        height: 10px;
         margin: 0;
         padding: 0;
         border-radius: 50%;
-        background: #444;
+        border: 2px solid #444;
+        background: transparent;
         left: 50%;
         top: 50%;
-        margin-left: -2.5px;
-        margin-top: -2.5px;
+        margin-left: -5px;
+        margin-top: -5px;
       }
       .swal-modal {
         background: #444;
@@ -398,6 +399,11 @@
       gametime.make("selectCharacter");
       gametime.make("playerJump");
       gametime.make("connect");
+      gametime.make("syncCountdown");
+      countdown = false;
+      gametime.on("syncCountdown", function(d) {
+        d != gametime.user.position && (countdown = true);
+      });
       gametime.on("connect", function() {
         connectedUsers++;
       });
@@ -693,22 +699,28 @@
           swal({
             title: "Get ready",
             button: false,
-            text: "Starting in 3 seconds!"
+            text: "Waiting for other players"
           });
-          setTimeout(()=>{
-            swal({
-              title: "3",
-              button: false,
-              text: "Starting"
-            });
-            setTimeout(()=>(document.querySelector(".swal-title").textContent="2"),1000);
-            setTimeout(()=>(document.querySelector(".swal-title").textContent="1"),2000);
-            setTimeout(()=>{
-              swal.close();
-              didStart = true;
-              controls.isLocked = true;
-            }, 3000);
-          }, 1000);
+          gametime.run("syncCountdown", [gametime.user.position]);
+          let sync = setInterval(() => {
+            if (countdown) {
+              setTimeout(() => {
+                swal({
+                  title: "3",
+                  button: false,
+                  text: "Starting"
+                });
+                setTimeout(()=>(document.querySelector(".swal-title").textContent="2"),1000);
+                setTimeout(()=>(document.querySelector(".swal-title").textContent="1"),2000);
+                setTimeout(()=>{
+                  swal.close();
+                  didStart = true;
+                  controls.isLocked = true;
+                }, 3000);
+              }, 1000);
+              clearInterval(sync);
+            }
+          });
         },6000);
       }
       setInterval(() => {
@@ -808,13 +820,16 @@
         if (!canFire || magsLeft < 0 || shotsLeft <= 0) {
           return;
         }
+        let j = camera.clone();
+        j.rotateY(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100);
+        j.rotateX(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100);
         shotsLeft--;
         let a = mixer.clipAction(gunAnimations[2]);
         a.play();
         a.setLoop(THREE.LoopOnce);
         a.reset();
-        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100)})();
-        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100)})();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
         document.body.appendChild(gunsounds.pistol.cloneNode()).play();
         Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/smoke.png"),transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
         if (intersection != null) {
