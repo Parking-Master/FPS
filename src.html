@@ -473,6 +473,8 @@
       raycastTargets = [otherPlayer];
       center = new THREE.Vector2(0,0);
       function animate() {
+        camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1?camera.position.x+=(-.05):(camera.position.x>=2&&camera.position.z>=9.5&&camera.position.x<=7.1&&camera.position.z<=14.3&&camera.position.y>=1?(defaultY=1.7):defaultY=.7);
+        camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1?camera.position.x+=(.05):(camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=1?(defaultY=1.7):defaultY=.7);
         lockIntersection ? (raycastTargets = [], intersection = true) : raycastTargets[0] = otherPlayer;
         camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
         let intersections = raycaster.intersectObjects(raycastTargets);
@@ -502,7 +504,7 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      (new THREE.GLTFLoader).load("models/maps/haven/scene.gltf", (map) => {
+      (new THREE.GLTFLoader).load("models/maps/HAVEN/scene.gltf", (map) => {
         window.map = map.scene;
         scene.add(map.scene);
         map.scene.scale.set(1.65, 1.65, 1.65);
