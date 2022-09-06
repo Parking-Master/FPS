@@ -383,6 +383,8 @@
         document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #25750a";
         shotsLeft = 10;
         magsLeft = 3;
+        gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
+        gametime.run("endPlayerWalk", [gametime.user.position]);
       }
       function error(code) {
         if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
@@ -434,7 +436,7 @@
           text: "You will respawn in " + t + " seconds..."
         });
         let i = setInterval(() => {
-          t <= 0 ? (clearInterval(i), respawn(spawnPoint), gametime.run("respawn", [gametime.user.position + spawnPoint.join(",")])) : t--;
+          t <= 0 ? (clearInterval(i), respawn(spawnPoint), gametime.run("respawn", [gametime.user.position + "," + spawnPoint.join(",")])) : t--;
           document.querySelector(".swal-text").textContent = "You will respawn in " + t + " seconds...";
         }, 1000);
       });
