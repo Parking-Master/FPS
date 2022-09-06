@@ -335,6 +335,7 @@
       connectedUsers = 0;
       score1 = 0;
       score2 = 0;
+      setScore = 10;
       gunsounds = {
         pistol: document.getElementById("gunsound-pistol")
       };
@@ -391,6 +392,25 @@
       function error(code) {
         if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
       }
+      function GameOver() {
+        if (score1 >= setScore || score2 >= setScore) {
+          if (score1 >= setScore && gametime.user.position == 1 || score2 >= setScore && gametime.user.position == 2) {
+            swal({
+              title: "Game over",
+              text: "You win!"
+            }).then(() => {
+              location.replace("/");
+            });
+          } else {
+            swal({
+              title: "Game over",
+              text: "You lose..."
+            }).then(() => {
+              location.replace("/");
+            });
+          }
+        }
+      }
       /* Gametime.js event variables */
       gametime.set("key", "pub-c-74710794-cf40-43e3-ae10-d978cbdb8822", "sub-c-4da51a44-cbb3-11ec-924a-fed9c56767c0");
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
@@ -402,11 +422,18 @@
       gametime.make("respawn");
       gametime.make("selectCharacter");
       gametime.make("playerJump");
+      gametime.make("shot");
       gametime.make("connect");
       gametime.make("syncCountdown");
       countdown = false;
       gametime.on("syncCountdown", function(d) {
         d != gametime.user.position && (countdown = true);
+      });
+      gametime.on("shot", function(player) {
+        if (player == gametime.user.position) {
+          return;
+        }
+        document.body.appendChild(gunsounds.pistol.cloneNode()).play();
       });
       gametime.on("connect", function() {
         connectedUsers++;
@@ -423,14 +450,18 @@
         otherPlayer.position.set(x, y, z);
         scene.add(otherPlayer);
       });
+      let r = false;
       gametime.on("eleminate", function(player) {
+        setTimeout(() => { r = false }, 1000);
         document.querySelector("#death3").play();
         if (player != gametime.user.position) {
-          gametime.user.position == 1 ? score1++ : score2++;
+          gametime.user.position == 1 && !r ? (score1++, r = true) : (score2++, r = true);
+          GameOver();
           scene.remove(otherPlayer);
           switchToDeath(otherPlayer);
           return;
         }
+        gametime.user.position == 1 && !r ? (score2++, r = true) : (score1++, r = true);
         switchToDeath(camera);
         let t = 5;
         let spawnPoint = respawnPoints[Math.floor(Math.random() * respawnPoints.length)];
@@ -667,29 +698,46 @@
             setTimeout(() => { wr = false }, 7500);
             setTimeout(() => { wo = false }, 2000);
             setTimeout(() => { wi = false }, 1000);
-            setTimeout(() => { setInterval(() => { otherPlayer.lookAt(camera.position), otherPlayer.rotateY(Math.PI), (deathCooldown||(distanceTo(otherPlayer.position,camera.position)<=15&&gametime.run("hit", [gametime.user.position]))) }, ((String(Math.floor(Math.random()*4)+1)+"000")-0)) }, 8000);
+            setTimeout(() => { setInterval(() => { otherPlayer.lookAt(camera.position), otherPlayer.rotateY(Math.PI), (deathCooldown||(distanceTo(otherPlayer.position,camera.position)<=20&&(document.body.appendChild(gunsounds.pistol.cloneNode()).play(),gametime.run("hit", [gametime.user.position])))) }, ((String(Math.floor(Math.random()*4)+1)+"000")-0)) }, 8000);
             gametime.on("hit", function(player) {
               if (player != gametime.user.position) {
                 if (otherPlayer.maxshot <= 0) {
-                  return gametime.run("eleminate", [gametime.user.position==1?2:1])
+                  gametime.run("eleminate", [gametime.user.position==1?2:1])
                 }
                 otherPlayer.maxshot--;
-              }
-            });
-            gametime.on("eleminate", function(player) {
-              document.querySelector("#death3").play();
-              if (player != gametime.user.position) {
-                score1++;
-                scene.remove(otherPlayer);
-                switchToDeath(otherPlayer);
-                otherPlayer.position.set(q==1?-20:20, 0, 20);
-                otherPlayer.rotation.set(0, q==1?-Math.PI/2+.5:Math.PI/2-.5, 0);
                 return;
               }
-              score2++;
+              health += -20;
+              if (health <= 0) {
+                gametime.run("eleminate", [gametime.user.position]);
+              }
+              if (health <= 50) {
+                document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #ff4444";
+              } else {
+                document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #25750a";
+              }
+              document.querySelector(".health").style.width = health + "%";
+            });
+            let r = false;
+            gametime.on("eleminate", function(player) {
+              setTimeout(() => { r = false }, 1000);
               let q = Math.floor(Math.random()*2);
+              document.querySelector("#death3").play();
+              if (player != gametime.user.position) {
+                !r && (score1++, r=true);
+                GameOver();
+                scene.remove(otherPlayer);
+                switchToDeath(otherPlayer);
+                otherPlayer.position.set((q==1?-20:20), 0, 20);
+                otherPlayer.rotation.set(0, (q==1?-Math.PI/2+.5:Math.PI/2-.5), 0);
+                setTimeout(() => { scene.add(otherPlayer) }, 2000);
+                return;
+              }
+              !r && (score2++, r=true);
+              GameOver();
               otherPlayer.position.set(q==1?-20:20, 0, 20);
               otherPlayer.rotation.set(0, q==1?-Math.PI/2+.5:Math.PI/2-.5, 0);
+              otherPlayer.maxshot = 6;
               deathCooldown = true;
               setTimeout(() => {
                 deathCooldown = false;
@@ -907,6 +955,7 @@
         (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
         document.body.appendChild(gunsounds.pistol.cloneNode()).play();
         Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/smoke.png"),transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
+        gametime.run("shot", [gametime.user.position]);
         if (intersection != null) {
           gametime.run("hit",[gametime.user.position==1?2:1]);
         }
