@@ -333,6 +333,8 @@
     </script>
     <script>
       connectedUsers = 0;
+      score1 = 0;
+      score2 = 0;
       gunsounds = {
         pistol: document.getElementById("gunsound-pistol")
       };
@@ -424,6 +426,7 @@
       gametime.on("eleminate", function(player) {
         document.querySelector("#death3").play();
         if (player != gametime.user.position) {
+          gametime.user.position == 1 ? score1++ : score2++;
           scene.remove(otherPlayer);
           switchToDeath(otherPlayer);
           return;
@@ -461,7 +464,7 @@
         if (player == gametime.user.position) {
           return;
         }
-        (()=>{let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(otherPlayer.position.y<=defaultY){return(clearInterval(h))}(t+=.05);otherPlayer.position.y+=-t},25)})())}(t+=-.05);otherPlayer.position.y+=t},25)})();
+        ((defaultY)=>{let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(otherPlayer.position.y<=defaultY){return(clearInterval(h))}(t+=.05);otherPlayer.position.y+=-t},25)})())}(t+=-.05);otherPlayer.position.y+=t},25)})(defaultY);
       });
       gametime.on("playerRotate", function(pos) {
         if (pos.split(",")[3] == gametime.user.position) {
@@ -488,7 +491,6 @@
       });
       gametime.on("playerWalk", function(data) {
         let player = data.split(",")[3];
-        console.log(player);
         if (player == gametime.user.position) {
           return;
         }
@@ -510,6 +512,7 @@
         myPlayer.translateY(-1.15);
         myPlayer.translateZ(.2);
         myPlayer.scale.set(.5,.5,.5);
+        distanceTo(otherPlayer.position,camera.position)>=40?otherPlayer.visible=false:otherPlayer.visible=true;
         if(camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=0&&camera.position.y<=1){
           camera.position.x+=(.05);
         }else if(camera.position.x<=-2&&camera.position.z>=9.5&&camera.position.x>=-7.1&&camera.position.z<=14.3&&camera.position.y>=1){
@@ -545,6 +548,8 @@
         keyIsUp && stopShake();
         document.querySelector("#rounds").querySelector("#counter").textContent = shotsLeft;
         document.querySelector("#rounds").querySelector("#magcount").textContent = (magsLeft < 0 ? 0 : magsLeft);
+        document.querySelector(".player1").querySelector(".score").textContent = score1;
+        document.querySelector(".player2").querySelector(".score").textContent = score2;
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
@@ -638,9 +643,77 @@
         gametime.disconnect();
         location.replace("/");
       }
+      function bot() {
+        let deathCooldown = false;
+        start();
+        otherPlayer.position.set(0, -1, 46);
+        otherPlayer.rotation.set(0, 0, 0);
+        gametime.on("endPlayerWalk", function(player) {});
+        gametime.run("syncCountdown", [gametime.user.position==1?2:1]);
+        otherPlayer.maxshot = 6;
+        let sync = setInterval(() => {
+          if (didStart) {
+            let wr = true;
+            let wo = true;
+            let wi = true;
+            let dw = true;
+            setInterval(() => {
+              dw&&(()=>{let b = mixer1.clipAction(characterAnimations[0]);b.play(),dw=false})();
+              otherPlayer.translateZ(-.03);
+              wr&&otherPlayer.translateY(.002);
+              wo&&otherPlayer.rotateY(.01);
+              wi&&otherPlayer.rotateY(-.02);
+            }, 60);
+            setTimeout(() => { wr = false }, 7500);
+            setTimeout(() => { wo = false }, 2000);
+            setTimeout(() => { wi = false }, 1000);
+            setTimeout(() => { setInterval(() => { otherPlayer.lookAt(camera.position), otherPlayer.rotateY(Math.PI), (deathCooldown||(distanceTo(otherPlayer.position,camera.position)<=15&&gametime.run("hit", [gametime.user.position]))) }, ((String(Math.floor(Math.random()*4)+1)+"000")-0)) }, 8000);
+            gametime.on("hit", function(player) {
+              if (player != gametime.user.position) {
+                if (otherPlayer.maxshot <= 0) {
+                  return gametime.run("eleminate", [gametime.user.position==1?2:1])
+                }
+                otherPlayer.maxshot--;
+              }
+            });
+            gametime.on("eleminate", function(player) {
+              document.querySelector("#death3").play();
+              if (player != gametime.user.position) {
+                score1++;
+                scene.remove(otherPlayer);
+                switchToDeath(otherPlayer);
+                otherPlayer.position.set(q==1?-20:20, 0, 20);
+                otherPlayer.rotation.set(0, q==1?-Math.PI/2+.5:Math.PI/2-.5, 0);
+                return;
+              }
+              score2++;
+              let q = Math.floor(Math.random()*2);
+              otherPlayer.position.set(q==1?-20:20, 0, 20);
+              otherPlayer.rotation.set(0, q==1?-Math.PI/2+.5:Math.PI/2-.5, 0);
+              deathCooldown = true;
+              setTimeout(() => {
+                deathCooldown = false;
+              }, 10000);
+              switchToDeath(camera);
+              let t = 5;
+              let spawnPoint = respawnPoints[Math.floor(Math.random() * respawnPoints.length)];
+              swal({
+                title: "You died!",
+                text: "You will respawn in " + t + " seconds..."
+              });
+              let i = setInterval(() => {
+                t <= 0 ? (clearInterval(i), respawn(spawnPoint), gametime.run("respawn", [gametime.user.position + "," + spawnPoint.join(",")])) : t--;
+                document.querySelector(".swal-text").textContent = "You will respawn in " + t + " seconds...";
+              }, 1000);
+            });
+            clearInterval(sync);
+          }
+        });
+      }
       let options = document.createElement("div");
       options.innerHTML = `
       <a onclick="getLink()" style="text-decoration:underline">Share Link</a><br>
+      <a onclick="bot()" style="text-decoration:underline">Start bot</a><br>
       <a onclick="cancelSearch()" style="text-decoration:underline">Stop Search</a>
       `;
       swal({
