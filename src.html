@@ -95,7 +95,7 @@
         top: 50px;
         border: 2px solid #333;
         box-shadow: 0px 0px 10px 7px #25750a;
-        z-index: 9999;
+        z-index: 99999;
       }
       body {
         top: 0px;
@@ -201,7 +201,7 @@
         top: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        z-index: 99999;
+        z-index: 999999;
       }
       .loader-1 {
         width: 8vmax;
@@ -304,8 +304,10 @@
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
     <audio id="gunsound-rifle" src="sounds/guns/default_rifle.mp3"></audio>
-    <audio id="reload-pistol-easy" src="sounds/reloads/easy-reload.mp3"></audio>
-    <audio id="reload-pistol-full" src="sounds/reloads/full-reload.mp3"></audio>
+    <audio id="reload-pistol-easy" src="sounds/reloads/pistol/easy-reload.mp3"></audio>
+    <audio id="reload-pistol-full" src="sounds/reloads/pistol/full-reload.mp3"></audio>
+    <audio id="reload-rifle-easy" src="sounds/reloads/rifle/easy-reload.mp3"></audio>
+    <audio id="reload-rifle-full" src="sounds/reloads/rifle/full-reload.mp3"></audio>
     <script src="https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js"></script>
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
@@ -326,28 +328,34 @@
       <img class="radar" src="images/radar.png" width="10%" />
       <img id="scope" src="images/scope.png" width="100%" height="100%" style="position:absolute;visibility:hidden;margin:0;padding:0;left:0;top:0;right:0;bottom:0;z-index:9999" />
       <!-- <div id="radar-obj"></div> -->
-      <span id="rounds"><img src="images/guns/pistol.png" width="100%" style="margin-top:10px" /><br style="margin-top:25px"><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+      <span id="rounds"><img src="images/guns/rifle.png" width="100%" style="margin-top:10px" /><br style="margin-top:25px"><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
     </div>
     <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
     <script type="module">
       import * as CANNON from 'https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js';
       window.CANNON = CANNON;
     </script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS@master/gametime-socket.js"></script> -->
     <script>
       connectedUsers = 0;
       score1 = 0;
       score2 = 0;
       setScore = 10;
+      primaryRounds = 36;
+      secondaryRounds = 10;
+      gunMeleeRotationY = 0;
       gunsounds = {
         pistol: document.getElementById("gunsound-pistol"),
         rifle: document.getElementById("gunsound-rifle")
       };
       reloadsounds = {
         easy: {
-          pistol: document.getElementById("reload-pistol-easy")
+          pistol: document.getElementById("reload-pistol-easy"),
+          rifle: document.getElementById("reload-rifle-easy")
         },
         full: {
-          pistol: document.getElementById("reload-pistol-full")
+          pistol: document.getElementById("reload-pistol-full"),
+          rifle: document.getElementById("reload-rifle-full")
         }
       };
       const scene = new THREE.Scene();
@@ -363,7 +371,7 @@
       otherPlayer = new THREE.Mesh();
       otherLooker = new THREE.Mesh();
       looker = new THREE.Mesh();
-      melee = new THREE.Mesh();
+      melee = false;
       gunAnimations = [];
       shotsLeft = 10;
       magsLeft = 3;
@@ -388,6 +396,8 @@
         document.querySelector(".health").style.width = "100%";
         document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #25750a";
         shotsLeft = 10;
+        primaryRounds = 36;
+        secondaryRounds = 10;
         magsLeft = 3;
         gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         gametime.run("endPlayerWalk", [gametime.user.position]);
@@ -574,15 +584,15 @@
         intersection!=null?(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #ff4444"):(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #25750a");
         walkAxisYLocked && (camera.position.y = defaultY);
         // document.querySelector("#radar-obj").style.top = (distanceTo(camera.position, otherPlayer.position) * 30) + "px";
-        if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05)) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2)) }
+        if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2)) }
         let delta = clock.getDelta();
         if (typeof mixer != "undefined") mixer.update(delta);
-        if (typeof mixer1 != "undefined") mixer1.update(delta);
-        if (typeof mixer2 != "undefined") mixer2.update(delta);
+        if (typeof mixer1 != "undefined") mixer1.update(delta+.04);
+        if (typeof mixer2 != "undefined") mixer2.update(delta+.04);
         if (typeof mixer3 != "undefined") mixer3.update(delta);
         follower.position.copy(camera.position);
         keyIsUp && stopShake();
-        document.querySelector("#rounds").querySelector("#counter").textContent = shotsLeft;
+        document.querySelector("#rounds").querySelector("#counter").textContent = (currentWeapon=="rifle"?primaryRounds:secondaryRounds);
         document.querySelector("#rounds").querySelector("#magcount").textContent = (magsLeft < 0 ? 0 : magsLeft);
         document.querySelector(".player1").querySelector(".score").textContent = score1;
         document.querySelector(".player2").querySelector(".score").textContent = score2;
@@ -591,6 +601,7 @@
       }
       camera.rotation.order = "YXZ";
       document.addEventListener("mousemove", function(e) {
+        if (!controls.isLocked) { return e.preventDefault() }
         setTimeout(() => {
           let intersections = raycaster.intersectObjects([otherPlayer]);
           (intersection = intersections[0] || null);
@@ -613,9 +624,6 @@
         window.primaryGun = gun.scene;
         gunAnimations = gun.animations;
         scene.add(gun.scene);
-        (new THREE.GLTFLoader).load("models/weapons/melee/pistol.glb", (melee) => {
-          window.melee = melee.scene;
-        });
       }),Gun2:(new THREE.GLTFLoader).load("models/weapons/pistol.glb", (t) => {
         mixer3 = new THREE.AnimationMixer(t.scene);
         secondGunAnimations = t.animations;
@@ -871,7 +879,7 @@
         }
       });
       const controls = new PointerLockControls(camera, renderer.domElement);
-      controls.isLocked = true;
+      controls.isLocked = false;
       controls.pointerSpeed = 2;
       isWalkingForward = false;
       isWalkingBackward = false;
@@ -928,32 +936,32 @@
       isReloading = false;
       canFire = true;
       function reload() {
-        if (magsLeft <= 0 || shotsLeft >= 10) {
+        if (magsLeft <= 0 || (currentWeapon=="rifle"?primaryRounds:secondaryRounds) >= (currentWeapon=="rifle"?36:10)) {
           return;
         }
         isZoomed && zoomOut(10);
         canFire = false;
         isReloading = true;
-        if (shotsLeft <= 0) {
+        if ((currentWeapon=="rifle"?primaryRounds:secondaryRounds) <= 0) {
           let a = (currentWeapon == "rifle" ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[4]);
           a.play();
           a.setLoop(THREE.LoopOnce);
           a.reset();
-          document.body.appendChild(reloadsounds.full.pistol.cloneNode()).play();
+          document.body.appendChild((currentWeapon=="rifle"?reloadsounds.full.rifle:reloadsounds.full.pistol).cloneNode()).play();
         } else {
           let a = (currentWeapon == "rifle" ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[3]);
           a.play();
           a.setLoop(THREE.LoopOnce);
           a.reset();
-          document.body.appendChild(reloadsounds.easy.pistol.cloneNode()).play();
+          document.body.appendChild((currentWeapon=="rifle"?reloadsounds.easy.rifle:reloadsounds.easy.pistol).cloneNode()).play();
         }
-        setTimeout(() => { shotsLeft = 10 }, 1000);
+        setTimeout(() => { (currentWeapon=="rifle"?primaryRounds=36:secondaryRounds=10) }, 1000);
         magsLeft--;
         canFire = true;
         isReloading = false;
       }
       function fire(rounds = 1) {
-        if (!canFire || magsLeft < 0 || shotsLeft <= 0) {
+        if (!canFire || magsLeft < 0 || (currentWeapon=="rifle"?primaryRounds:secondaryRounds) <= 0) {
           return;
         }
         if (currentWeapon == "rifle") {
@@ -965,7 +973,7 @@
         let f = setInterval(() => {
           i++;
           if (i > rounds) {
-            if (shotsLeft <= 0) {
+            if ((currentWeapon=="rifle"?primaryRounds:secondaryRounds) <= 0) {
               reload();
             }
             return clearInterval(f);
@@ -982,7 +990,7 @@
           }
           let j = camera.clone();
           isZoomed||(j.rotateY(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100),j.rotateX(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100));
-          shotsLeft--;
+          (currentWeapon=="rifle"?primaryRounds--:secondaryRounds--);
           let a = (currentWeapon == "rifle" ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[2]);
           a.play();
           a.setLoop(THREE.LoopOnce);
@@ -1046,20 +1054,30 @@
         if (e.key == "y" && !e.repeat) {
           currentWeapon == "pistol" ? currentWeapon = "rifle" : currentWeapon = "pistol";
           currentWeapon == "pistol" ? (scene.remove(gun), gun = secondGun, scene.add(gun)) : (scene.remove(gun), gun = primaryGun, scene.add(gun));
+          currentWeapon == "pistol" ? (document.querySelector("#rounds").querySelector("img").src = "images/guns/pistol.png") : (document.querySelector("#rounds").querySelector("img").src = "images/guns/rifle.png");
+          isZoomed && zoomOut(10);
         }
         if (e.key == "b" && !e.repeat) {
           document.querySelector("#punch").play();
           document.querySelector("#punch").currentTime = .1;
-          let v = gun;
-          scene.remove(gun);
-          gun = melee;
+          melee = true;
+          gunMeleeRotationY += .1;
           scene.add(gun);
           distanceTo(otherPlayer.position, gun.position) <= 3 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
-          setTimeout(() => {
-            scene.remove(gun);
-            gun = v;
-            scene.add(gun);
-          }, 500);
+          let g = setInterval(() => {
+            if (gunMeleeRotationY <= 1) {
+              return gunMeleeRotationY += .1;
+            }
+            clearInterval(g);
+            let l = setInterval(() => {
+              if (gunMeleeRotationY >= 0) {
+                return gunMeleeRotationY += -.1;
+              }
+              melee = false;
+              gunMeleeRotationY = 0;
+              clearInterval(l);
+            });
+          });
           isZoomed && zoomOut(10);
         }
       });
