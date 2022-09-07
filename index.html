@@ -79,6 +79,7 @@
       }
     </style>
     <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -100,6 +101,7 @@
       <button class="button" onclick="desktopOptions()">CUSTOM OPTIONS</button>
     </div>
     <script>
+      Notiflix.Notify.init({clickToClose:true,showOnlyTheLastOne:true,timeout:100000000,info:{shadow:true,background:"#333",textColor:"#25750a",notiflixIconColor:"#25750a"}});
       tippy("[data-tippy-content]");
       // tippy("button")[0].show();
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
@@ -123,10 +125,11 @@
         lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved"));
       }
       function findLobby() {
-        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?document.querySelector(".dialog-content").innerHTML+='<div class="lobby">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Vertex"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>":setDialog("open",{title:"Choose a map",content:'<div class="lobby">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Vertex"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {}),e=!0}),(e=>{}))}})();
+        Notiflix.Notify.info("Loading lobbies...");
+        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?(document.querySelector("#NotiflixNotifyWrap").children[0].click(),document.querySelector(".dialog-content").innerHTML+='<div class="lobby">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Vertex"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"):(document.querySelector("#NotiflixNotifyWrap").children[0].click(),setDialog("open",{title:"Choose a map",content:'<div class="lobby">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Vertex"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {})),e=!0}),(e=>{}))}})();
       }
       function chooseRandom() {
-        location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
+        location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").children[0].click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
       }
       function desktopOptions() {
         if (!navigator.userAgent.includes("Electron")) { return alert("This feature is only available for FPS Desktop") }
