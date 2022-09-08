@@ -302,6 +302,7 @@
     <audio id="game-over" src="sounds/game_over.mp3"></audio>
     <audio id="warthog" src="sounds/warthog.mp3" loop></audio>
     <audio id="punch" src="sounds/punch.mp3"></audio>
+    <audio id="slayer" src="sounds/slayer.mp3"></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
@@ -428,6 +429,11 @@
         magsLeft = 3;
         gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         gametime.run("endPlayerWalk", [gametime.user.position]);
+        controls.isLocked = true;
+        walkAxisYLocked = true;
+        scene.add(gun);
+        scene.add(myPlayer);
+        document.querySelector(".ui").style.visibility = "visible";
       }
       function error(code) {
         if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
@@ -437,14 +443,22 @@
           if (score1 >= setScore && gametime.user.position == 1 || score2 >= setScore && gametime.user.position == 2) {
             swal({
               title: "Game over",
-              text: "You win!"
+              text: "You win!",
+              closeOnEsc: false,
+              closeOnEnterKey: false,
+              closeOnSpaceKey: false,
+              closeOnClickOutside: false
             }).then(() => {
               location.replace("/");
             });
           } else {
             swal({
               title: "Game over",
-              text: "You lose..."
+              text: "You lose...",
+              closeOnEsc: false,
+              closeOnEnterKey: false,
+              closeOnSpaceKey: false,
+              closeOnClickOutside: false
             }).then(() => {
               location.replace("/");
             });
@@ -507,7 +521,11 @@
         let spawnPoint = respawnPoints[Math.floor(Math.random() * respawnPoints.length)];
         swal({
           title: "You died!",
-          text: "You will respawn in " + t + " seconds..."
+          text: "You will respawn in " + t + " seconds...",
+          closeOnEsc: false,
+          closeOnEnterKey: false,
+          closeOnSpaceKey: false,
+          closeOnClickOutside: false
         });
         let i = setInterval(() => {
           t <= 0 ? (clearInterval(i), respawn(spawnPoint), gametime.run("respawn", [gametime.user.position + "," + spawnPoint.join(",")])) : t--;
@@ -591,6 +609,7 @@
       raycastTargets = [otherPlayer];
       center = new THREE.Vector2(0,0);
       function animate() {
+        primaryRounds<=0?primaryRounds=0:(secondaryRounds<=0&&(secondaryRounds=0));
         myPlayer.position.copy(camera.position);
         myPlayer.rotation.y = camera.rotation.y;
         myPlayer.translateY(-1.15);
@@ -836,8 +855,20 @@
               let spawnPoint = respawnPoints[Math.floor(Math.random() * respawnPoints.length)];
               swal({
                 title: "You died!",
-                text: "You will respawn in " + t + " seconds..."
+                text: "You will respawn in " + t + " seconds...",
+                closeOnEsc: false,
+                closeOnEnterKey: false,
+                closeOnSpaceKey: false,
+                closeOnClickOutside: false,
+                button: false
               });
+              walkAxisYLocked = false;
+              camera.position.set(0,30,0);
+              camera.rotation.set(-Math.PI/2,0,Math.PI/2);
+              controls.isLocked = false;
+              scene.remove(gun);
+              scene.remove(myPlayer);
+              document.querySelector(".ui").style.visibility = "hidden";
               let i = setInterval(() => {
                 t <= 0 ? (clearInterval(i), respawn(spawnPoint), gametime.run("respawn", [gametime.user.position + "," + spawnPoint.join(",")])) : t--;
                 document.querySelector(".swal-text").textContent = "You will respawn in " + t + " seconds...";
@@ -857,7 +888,11 @@
         title: "Searching for players",
         text: "Please wait... Game will start automatically",
         button: false,
-        content: options
+        content: options,
+        closeOnEsc: false,
+        closeOnEnterKey: false,
+        closeOnSpaceKey: false,
+        closeOnClickOutside: false
       });
       let searchingEngine = setInterval(() => {
         if (connectedUsers >= 2) {
@@ -901,26 +936,69 @@
         swal({
           title: "Starting game",
           button: false,
-          text: "Setting player positions..."
+          text: "Setting player positions...",
+          closeOnEsc: false,
+          closeOnEnterKey: false,
+          closeOnSpaceKey: false,
+          closeOnClickOutside: false
         });
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Double checking stats..."),1000);
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Adding player events..."),2000);
-        setTimeout(()=>(document.querySelector(".swal-text").textContent="Cleaning up..."),3000);
-        setTimeout(()=>(document.querySelector(".swal-text").textContent="Starting game..."),5000);
+        setTimeout(()=>(document.querySelector(".swal-text").textContent="Cleaning up..."),2500);
+        setTimeout(()=>{
+          let img = document.createElement("img");
+          img.src = "images/layout.png";
+          img.style.width = "55%";
+          swal({
+          title: "HOW TO PLAY:",
+          text: `
+          ( \u1431 ): Walk forward
+          ( \u142f ): Walk backward
+          ( \u1438 ): Walk left
+          ( \u1433 ): Walk right
+          ( SPACE ): Jump
+          ( B ): Melee
+          ( F ): Shoot
+          ( R ): Reload
+          ( T ): Interact
+          ( Y ): Switch Weapon
+          ( ESC ): Cancel
+          ( CURSOR ): Look around
+
+          THE GAME WILL START AUTOMATICALLY.
+          `,
+          content: img,
+          closeOnEsc: false,
+          closeOnEnterKey: false,
+          closeOnSpaceKey: false,
+          button: false,
+          closeOnClickOutside: false
+        });
+        },3000);
+        setTimeout(()=>document.querySelector("#slayer").play(),8000);
         setTimeout(()=>{
           swal({
             title: "Get ready",
             button: false,
-            text: "Waiting for other players"
+            text: "Waiting for other players",
+            closeOnEsc: false,
+            closeOnEnterKey: false,
+            closeOnSpaceKey: false,
+            closeOnClickOutside: false
           });
           gametime.run("syncCountdown", [gametime.user.position]);
+          document.querySelector("#countdown").play();
           let sync = setInterval(() => {
             if (countdown) {
               setTimeout(() => {
                 swal({
                   title: "3",
                   button: false,
-                  text: "Starting"
+                  text: "Starting",
+                  closeOnEsc: false,
+                  closeOnEnterKey: false,
+                  closeOnSpaceKey: false,
+                  closeOnClickOutside: false
                 });
                 setTimeout(()=>(document.querySelector(".swal-title").textContent="2"),1000);
                 setTimeout(()=>(document.querySelector(".swal-title").textContent="1"),2000);
@@ -933,7 +1011,7 @@
               clearInterval(sync);
             }
           });
-        },6000);
+        },10000);
       }
       setInterval(() => {
         if (!didStart) {
@@ -1078,6 +1156,7 @@
       }
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
       document.addEventListener("keydown", (e) => {
+        if (!controls.isLocked) { return }
         keyIsUp = false;
         if (e.key == "ArrowUp") {
           !e.repeat && shake(1000000000);
@@ -1091,7 +1170,7 @@
           if (intersection != null) {
             lockIntersection = true;
           }
-          let a = mixer.clipAction(gunAnimations[1]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
           a.play();
         }
         if (e.key == "ArrowDown") {
@@ -1134,7 +1213,7 @@
           melee = true;
           gunMeleeRotationY += .1;
           scene.add(gun);
-          distanceTo(otherPlayer.position, gun.position) <= 3 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
+          distanceTo(otherPlayer.position, gun.position) <= 5 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
           let g = setInterval(() => {
             if (gunMeleeRotationY <= 1) {
               return gunMeleeRotationY += .1;
@@ -1163,7 +1242,7 @@
         if (e.key.startsWith("Arrow")) {
           lockIntersection = false;
           gametime.run("endPlayerWalk", [gametime.user.position]);
-          let a = mixer.clipAction(gunAnimations[1]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
           a.stop();
           let b = mixer2.clipAction(myCharacterAnimations[0]);
           b.stop();
