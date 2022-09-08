@@ -5,7 +5,7 @@ A modern multiplayer FPS game in your browser.
 Welcome to FPS5! Scroll down to see more information about the game.
 
 ### What is FPS5?
-FPS5 is a modern FPS web game based of of Halo 4 and Halo infinite, but with just a hint of FPS feel.
+FPS5 is a modern FPS web game based off of Halo 4 and Halo infinite, but with just a hint of FPS feel.
 <br>
 FPS5 was built with pure JavaScript, and also supports multiplayer. _[See more about how it was made](./)_
 
