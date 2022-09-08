@@ -1,4 +1,4 @@
-# F-P-S
+# F-P-S<img width="2.5%" style="margin-left:-20px" src="https://user-images.githubusercontent.com/88283567/189241057-7e416f3e-46a9-494e-9b79-a5455e2bf518.png">
 A modern multiplayer FPS game in your browser.
 
 ## FPS5 Documentation
