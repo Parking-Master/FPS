@@ -89,6 +89,16 @@ The G17 9mm Pistol is the standard pistol that shoots 9mm x 9mm rounds.
 <br>
 - <b>Overall</b>: 2/5
 <img align="center" width="20%" alt="Default" src="/images/guns/pistol.png"/>
+<h4 align="center">HK-G28 Sniper Rifle</h5>
+The HK-G28 is a fast and easy weapon to use, but not very mobile. It uses green-tip .50 Cal armor piercing incendiary rounds that can cause 1/2 damage up to 300 yards away.
+<br>
+<br>
+- <b>Damage</b>: 3/6
+<br>
+- <b>Accuracy</b>: 65/100
+<br>
+- <b>Overall</b>: 4/5
+<img align="center" width="20%" alt="Default" src="/images/guns/sniper.png"/>
 
 ###### <i>Note: More weapons may be coming soon</i>
 
@@ -101,6 +111,19 @@ The G17 9mm Pistol is the standard pistol that shoots 9mm x 9mm rounds.
 <img width="1437" alt="Walking" src="https://user-images.githubusercontent.com/88283567/188952104-46c0a862-6b54-44e6-9f33-3d44517423b1.png">
 <img width="1437" alt="Sky view" src="https://user-images.githubusercontent.com/88283567/188952111-6215e04d-b7af-4079-bd32-35bfbdc63d3f.png">
 
+### How to play
+> ( ᐱ ): Walk forward<br>
+> ( ᐯ ): Walk backward<br>
+> ( ᐸ ): Walk left<br>
+> ( ᐳ ): Walk right<br>
+> ( " " ): Jump<br>
+> ( B ): Melee<br>
+> ( F ): Shoot<br>
+> ( R ): Reload<br>
+> ( T ): Interact<br>
+> ( Y ): Switch Weapon<br>
+> ( ESC ): Cancel<br>
+> ( CURSOR ): Look around<br>
 
 ## Support & Contribution
 If you enjoyed the project / repository, please help out by submitting feature requests or report bugs in the "Issues" section.
@@ -115,8 +138,12 @@ MIT
 
 - ["Weapon Concept ACE-35R"](https://clara.io/view/21c110f9-e28e-4eae-af01-f9572e8f121e) - <small>_by Json Shoumar_<br>Licensed under Creative Commons Attribution-NonCommercial-ShareAlike (https://creativecommons.org/licenses/by/3.0/).</small>
 
+- ["HK-G28 Sniper Rifle"](https://sketchfab.com/3d-models/hk-g28-sniper-rifle-997840668e1e4c1384c7220563323085) - <small>_by trolosqlfod_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).</small>
+
 - ["G17 9mm Pistol"](https://clara.io/view/945c9bb5-3ecf-4e52-8801-66020bc6c506) - <small>_by HageTag_<br>Licensed under Creative Commons Attribution-NonCommercial-ShareAlike (https://creativecommons.org/licenses/by/3.0/).</small>
 
 - ["Halo Infinite Master Chief"](https://sketchfab.com/3d-models/9mm-pistol-30222f9a59104426ba526a6b20cd7532) - <small>_by bensimulator2_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 - ["FPS Pistol Animations"](https://sketchfab.com/3d-models/fps-pistol-animations-0d7a343dcb6f401197a73c91aee93f6d) - <small>_by Cransh_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+Did we forget to include something? [Report](https://github.com/Parking-Master/FPS/issues/new)
