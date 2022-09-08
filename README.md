@@ -59,12 +59,12 @@ Maps, Characters, & Weapons are all listed here.
 
 ###### <i>Note: More maps may be coming soon</i>
 ### Characters (Original Halo 4 characters)
-<h4 align="center">Mark VI [GEN2]</h5>
-The MJOLNIR Powered Assault Armor/Mark VI was the third major version of the MJOLNIR Powered Assault Armor. The last mainline MJOLNIR GEN1 suit to be widely issued,<sup>[3]</sup> the Mark VI was issued to the few surviving Spartan-II supersoldiers in October 2552, replacing the Mark V. Shortly after the end of the Human-Covenant War, it was replaced by the Mark VII<sup>[4]</sup> and MJOLNIR [GEN2]. The Mark VI could still be requisitioned by Spartan-IV personnel as late as October 2558, albeit upgraded to function with the GEN2 suite.<sup>[3][5]</sup> In early 2559, in the midst of the Created conflict, the Mark VI armor has been upgraded to the GEN3 platform.<sup>[6][7]</sup>
-<img align="center" width="100%" alt="Default" src="/models/character/default.png">
+<h4 align="center">Mark VI</h5>
+The original Halo armor from all halo series (4 to be specific). The Mark-VI default armor is a GEN2 model from the original Mark-V (Halo: CE Armor)
+<p align="center"><img width="40%" alt="Default" src="/images/characters/mark-vi.png"></p>
 <h4 align="center">FOTUS</h5>
-FOTUS-class Mjolnir is a variant of the MJOLNIR Powered Assault Armor [GEN2] manufactured by 343 Industries.<sub>[2]</sub> The helmet has a Torque-node component used to distract nearby predators, the base of the node detects levels of gravity-trough scaturiency. The helmet also features extended awareness conduits (ALK-03) which heightens mobility around senior operatives and moving-equipment personnel. The visor has lodged-tracking component 793-VF for improved survivability and maintenance. The chest has 90-RZ java-fuel monitoring software which evaluates current sustainability levels.<sub>[1][Note 1]</sub>
-<img align="center" width="100%" alt="Default" src="/models/character/fotus.png">
+The F.O.T.U.S. Armor (Fist Of The Unicorns) is a metafictional joke character originated Halo 4 multiplayer. The spike on its helmet was based from "Unicorn" in the name.
+<p align="center"><img width="40%" alt="Default" src="/images/characters/fotus.png"></p>
 
 ###### <i>Note: More characters may be coming soon</i>
 
