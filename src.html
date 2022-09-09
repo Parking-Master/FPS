@@ -445,7 +445,11 @@
         primaryGun = weapons[fixedLoadout[0]].scene;
         secondGun = weapons[fixedLoadout[1]].scene;
         currentWeaponPosition = "primary";
+        loadout = fixedLoadout;
         currentWeapon = fixedLoadout[0];
+        document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
+        currentWeapon = loadout[1];
+        document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
         gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         gametime.run("endPlayerWalk", [gametime.user.position]);
         controls.isLocked = true;
@@ -453,6 +457,9 @@
         scene.add(gun);
         scene.add(myPlayer);
         document.querySelector(".ui").style.visibility = "visible";
+        for (let i = 0; i < 3; i++) {
+          document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
+        }
       }
       function error(code) {
         if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
@@ -671,11 +678,10 @@
         // document.querySelector("#radar-obj").style.top = (distanceTo(camera.position, otherPlayer.position) * 30) + "px";
         if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2)) }
         let delta = clock.getDelta();
-        if (typeof mixer != "undefined") mixer.update(delta);
         if (typeof mixer1 != "undefined") mixer1.update(delta+.03);
         if (typeof mixer2 != "undefined") mixer2.update(delta+.03);
-        if (typeof mixer3 != "undefined") mixer3.update(delta);
-        for(let i=0;i<mixers.length;i++){mixers[i].update(delta)}
+        if (typeof mixer4 != "undefined") mixer3.update(delta);
+        mixers.length>0&&(()=>{for(let i=0;i<mixers.length;i++){mixers[i].update(delta)}})();
         follower.position.copy(camera.position);
         keyIsUp && stopShake();
         document.querySelector("#rounds").querySelector("#counter").textContent = (currentWeaponPosition=="primary"?primaryRounds:secondaryRounds);
@@ -721,15 +727,15 @@
         map.scene.position.y = -310;
         animate();
       }),Gun:(new THREE.GLTFLoader).load("models/weapons/"+loadout[0]+".glb", (gun) => {
-        mixer = new THREE.AnimationMixer(gun.scene);
-        window.gun = gun.scene;
-        window.primaryGun = gun.scene;
-        gunAnimations = gun.animations;
-        scene.add(gun.scene);
+        window.gun = weapons[loadout[0]].scene;
+        window.primaryGun = weapons[loadout[0]].scene;
+        gunAnimations = weapons[loadout[0]].animations;
+        scene.add(weapons[loadout[0]].scene);
       }),Gun2:(new THREE.GLTFLoader).load("models/weapons/"+loadout[1]+".glb", (t) => {
-        mixer3 = new THREE.AnimationMixer(t.scene);
-        secondGunAnimations = t.animations;
-        window.secondGun = t.scene;
+        secondGunAnimations = weapons[loadout[1]].scene.animations;
+        window.secondGun = weapons[loadout[1]].scene;
+        mixer3 = mixers[weaponDefs.indexOf(loadout[1])];
+        secondGunAnimations=gunsAnimations[weaponDefs.indexOf(loadout[1])];
       })};
       let lpman = setInterval(() => {
         loadingProgress >= 99 && clearInterval(lpman);
@@ -1123,13 +1129,13 @@
         canFire = false;
         isReloading = true;
         if ((currentWeaponPosition=="primary"?primaryRounds:secondaryRounds) <= 0) {
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][4]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[4]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][4]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[4]);
           a.play();
           a.setLoop(THREE.LoopOnce);
           a.reset();
           document.body.appendChild(reloadsounds.full[currentWeapon].cloneNode()).play();
         } else {
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][3]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[3]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][3]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[3]);
           a.play();
           a.setLoop(THREE.LoopOnce);
           a.reset();
@@ -1166,7 +1172,7 @@
           let j = camera.clone();
           isZoomed||(j.rotateY(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100),j.rotateX(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100));
           (currentWeaponPosition=="primary"?primaryRounds--:secondaryRounds--);
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][2]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[2]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][2]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[2]);
           a.play();
           a.setLoop(THREE.LoopOnce);
           a.reset();
@@ -1198,7 +1204,7 @@
           if (intersection != null) {
             lockIntersection = true;
           }
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
           a.play();
         }
         if (e.key == "ArrowDown") {
@@ -1271,7 +1277,7 @@
         if (e.key.startsWith("Arrow")) {
           lockIntersection = false;
           gametime.run("endPlayerWalk", [gametime.user.position]);
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixer : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
           a.stop();
           let b = mixer2.clipAction(myCharacterAnimations[0]);
           b.stop();
