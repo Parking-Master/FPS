@@ -99,6 +99,16 @@ The HK-G28 is a fast and easy weapon to use, but not very mobile. It uses green-
 <br>
 - <b>Overall</b>: 4/5
 <img align="center" width="20%" alt="Default" src="/images/guns/sniper.png"/>
+<h4 align="center">M16 A2 Assault Rifle</h5>
+The M16 A2 Assault variant is a weak weapon with a full auto feature which makes it more powerful. Accuracy is low on full auto mode.
+<br>
+<br>
+- <b>Damage</b>: 1/6
+<br>
+- <b>Accuracy</b>: 35/100
+<br>
+- <b>Overall</b>: 3/5
+<img align="center" width="20%" alt="Default" src="/images/guns/assault.png"/>
 
 ###### <i>Note: More weapons may be coming soon</i>
 
