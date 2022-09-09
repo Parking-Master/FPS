@@ -406,6 +406,7 @@
       respawnPoints = [
         [0, 0, 8]
       ];
+      ordinances = [];
       altNames = {
         "rifle": "Concept 35R",
         "pistol": "9mm G17",
@@ -476,18 +477,25 @@
       gametime.make("respawn");
       gametime.make("selectCharacter");
       gametime.make("playerJump");
+      gametime.make("pickupWeapon");
       gametime.make("shot");
       gametime.make("connect");
       gametime.make("syncCountdown");
       countdown = false;
+      gametime.on("pickupWeapon", function(e) {
+        ordinances[e].position.y=10000;
+        scene.remove(ordinances[e]);
+      });
       gametime.on("syncCountdown", function(d) {
         d != gametime.user.position && (countdown = true);
       });
-      gametime.on("shot", function(player) {
+      gametime.on("shot", function(data) {
+        let player = data.split(",")[1];
+        let wpn = data.split(",")[0];
         if (player == gametime.user.position) {
           return;
         }
-        document.body.appendChild(gunsounds.pistol.cloneNode()).play();
+        document.body.appendChild(gunsounds[wpn].cloneNode()).play();
       });
       gametime.on("connect", function() {
         connectedUsers++;
@@ -1083,8 +1091,8 @@
           zoomOutFunction();
         }
       }
-      function pickupWeapon(e){scene.remove(gun),gun=weapons[e].scene,primaryGun=gun,scene.add(gun),currentWeapon=e,loadout[0]=e;for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}
-      function createWeapon(s,n){(new THREE.GLTFLoader).load("models/weapons/ordinance-stands/"+s+".glb",(e=>{scene.add(e.scene),e.scene.scale.set(.3,.3,.3),e.scene.position.set(n.x,n.y-.7,n.z),setInterval((()=>{distanceTo(e.scene.position,camera.position)<=2?(showText("Hold [T] to pick up "+altNames[s]),document.onkeydown=(l)=>{l.key=="t"&&(pickupWeapon(s),scene.remove(e.scene),e.scene.position.y=10000)}):(hideText(),document.onkeydown=null)}))}))}
+      function pickupWeapon(e){scene.remove(gun),gun=weapons[e].scene,primaryGun=gun,scene.add(gun),currentWeapon=e,loadout[0]=e;for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));gametime.run("pickupWeapon",[e])}
+      function createWeapon(s,n){(new THREE.GLTFLoader).load("models/weapons/ordinance-stands/"+s+".glb",(e=>{scene.add(e.scene),ordinances[s]=e.scene,e.scene.scale.set(.3,.3,.3),e.scene.position.set(n.x,n.y-.7,n.z),setInterval((()=>{distanceTo(e.scene.position,camera.position)<=2?(showText("Hold [T] to pick up "+altNames[s]),document.onkeydown=(l)=>{l.key=="t"&&(pickupWeapon(s),scene.remove(e.scene),e.scene.position.y=10000)}):(hideText(),document.onkeydown=null)}))}))}
       isReloading = false;
       canFire = true;
       function reload() {
@@ -1148,7 +1156,7 @@
           (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100)})();
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
           Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/smoke.png"),transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
-          gametime.run("shot", [gametime.user.position]);
+          gametime.run("shot", [currentWeapon+","+gametime.user.position]);
           if (intersection != null) {
             for(let i=0;i<addedDamage;i++){gametime.run("hit",[gametime.user.position==1?2:1])}
           }
