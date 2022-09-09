@@ -303,7 +303,7 @@
     <audio id="ambience" src="sounds/ambience.mp3" autoplay loop volume="1"></audio>
     <audio id="gunsound-burst" src="sounds/guns/default_rifle.mp3"></audio>
     <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
-    <audio id="gunsound-fullauto" src="sounds/guns/ar-15.mp3"></audio>
+    <audio id="gunsound-assault" src="sounds/guns/ar-15.mp3"></audio>
     <audio id="gunsound-sniper" src="sounds/guns/hk-g28.mp3"></audio>
     <audio id="gunsound-rocket" src="sounds/guns/spnkr.mp3"></audio>
     <audio id="countdown" src="sounds/countdown.mp3"></audio>
@@ -330,6 +330,8 @@
     <audio id="reload-rifle-full" src="sounds/reloads/rifle/full-reload.mp3"></audio>
     <audio id="reload-sniper-easy" src="sounds/reloads/sniper/easy-reload.mp3"></audio>
     <audio id="reload-sniper-full" src="sounds/reloads/sniper/full-reload.mp3"></audio>
+    <audio id="reload-assault-easy" src="sounds/reloads/assault/easy-reload.mp3"></audio>
+    <audio id="reload-assault-full" src="sounds/reloads/assault/full-reload.mp3"></audio>
     <script src="https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js"></script>
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
@@ -376,22 +378,31 @@
       primaryRounds = 36;
       secondaryRounds = 10;
       gunMeleeRotationY = 0;
+      fullAutoFiring = false;
+      setInterval(() => {
+        if (fullAutoFiring) {
+          fire(1, 1);
+        }
+      }, 60);
       currentWeaponPosition = "primary";
       gunsounds = {
         pistol: document.getElementById("gunsound-pistol"),
         sniper: document.getElementById("gunsound-sniper"),
-        rifle: document.getElementById("gunsound-rifle")
+        rifle: document.getElementById("gunsound-rifle"),
+        assault: document.getElementById("gunsound-assault")
       };
       reloadsounds = {
         easy: {
           pistol: document.getElementById("reload-pistol-easy"),
           rifle: document.getElementById("reload-rifle-easy"),
-          sniper: document.getElementById("reload-sniper-easy")
+          sniper: document.getElementById("reload-sniper-easy"),
+          assault: document.getElementById("reload-assault-easy")
         },
         full: {
           pistol: document.getElementById("reload-pistol-full"),
           rifle: document.getElementById("reload-rifle-full"),
-          sniper: document.getElementById("reload-sniper-full")
+          sniper: document.getElementById("reload-sniper-full"),
+          assault: document.getElementById("reload-assault-full")
         }
       };
       const scene = new THREE.Scene();
@@ -424,7 +435,8 @@
       altNames = {
         "rifle": "Concept 35R",
         "pistol": "9mm G17",
-        "sniper": "HK-G28"
+        "sniper": "HK-G28",
+        "assault": "M16 A2",
       }
       otherSelectedCharacter = "mark-vi";
       lockIntersection = false;
@@ -676,7 +688,7 @@
         intersection!=null?(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #ff4444"):(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #25750a");
         walkAxisYLocked && (camera.position.y = defaultY);
         // document.querySelector("#radar-obj").style.top = (distanceTo(camera.position, otherPlayer.position) * 30) + "px";
-        if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2)) }
+        if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2),(currentWeapon=="assault"&&(gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.1)),gun.translateY(-.86),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1)))) }
         let delta = clock.getDelta();
         if (typeof mixer1 != "undefined") mixer1.update(delta+.03);
         if (typeof mixer2 != "undefined") mixer2.update(delta+.03);
@@ -702,14 +714,17 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      loadout = ["rifle", "pistol"];
+      fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
+      loadout = fixedLoadout;
+      document.querySelector("#rounds").querySelector("img").src = "images/guns/" + fixedLoadout[0] + ".png";
       currentWeapon = loadout[0];
       weapons = {
         "rifle": {},
         "pistol": {},
-        "sniper": {}
+        "sniper": {},
+        "assault": {}
       };
-      weaponDefs = ["rifle", "pistol", "sniper"];
+      weaponDefs = ["rifle", "pistol", "sniper", "assault"];
       mixers = [];
       gunsAnimations = [];
       loadingProgress=0;
@@ -1118,13 +1133,13 @@
       function pickupWeapon(e){scene.remove(gun),gun=weapons[e].scene,(currentWeaponPosition=="primary"?primaryGun=gun:secondGun=gun),scene.add(gun),currentWeapon=e,(currentWeaponPosition=="primary"?loadout[0]=e:loadout[1]=e);for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));gametime.run("pickupWeapon",[e])}
       function createWeapon(s,n){(new THREE.GLTFLoader).load("models/weapons/ordinance-stands/"+s+".glb",(e=>{scene.add(e.scene),ordinances[s]=e.scene,e.scene.scale.set(.3,.3,.3),e.scene.position.set(n.x,n.y-.7,n.z),setInterval((()=>{distanceTo(e.scene.position,camera.position)<=2?(showText("Hold [T] to pick up "+altNames[s]),document.onkeydown=(l)=>{l.key=="t"&&(pickupWeapon(s),scene.remove(e.scene),e.scene.position.y=10000)}):(hideText(),document.onkeydown=null)}))}))}
       isReloading = false;
-      fixedLoadout = ["rifle", "pistol"];
       canFire = true;
       function reload() {
         if (magsLeft <= 0 || (currentWeaponPosition=="primary"?primaryRounds:secondaryRounds) >= (currentWeaponPosition=="primary"?36:10)) {
           return;
         }
         currentWeapon=="sniper"&&(gun.getObjectByName("Mag_1").visible=false);
+        currentWeapon=="assault"&&(gun.getObjectByName("magazine_m16a2_0").visible=false);
         isZoomed && zoomOut(10);
         canFire = false;
         isReloading = true;
@@ -1141,7 +1156,7 @@
           a.reset();
           document.body.appendChild(reloadsounds.easy[currentWeapon].cloneNode()).play();
         }
-        setTimeout(() => { isReloading = false; (currentWeaponPosition=="primary"?primaryRounds=36:secondaryRounds=10), currentWeapon=="sniper"&&(gun.getObjectByName("Mag_1").visible=true) }, 1000);
+        setTimeout(() => { isReloading = false; (currentWeaponPosition=="primary"?primaryRounds=36:secondaryRounds=10), currentWeapon=="sniper"&&(gun.getObjectByName("Mag_1").visible=true); currentWeapon=="assault"&&(gun.getObjectByName("magazine_m16a2_0").visible=true); }, 1000);
         magsLeft--;
         canFire = true;
       }
@@ -1172,7 +1187,7 @@
           let j = camera.clone();
           isZoomed||(j.rotateY(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100),j.rotateX(Math.floor(Math.random()*2)==1?-Math.random()/100:Math.random()/100));
           (currentWeaponPosition=="primary"?primaryRounds--:secondaryRounds--);
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][2]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[2]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][2]):((currentWeapon == "rifle" || currentWeapon == "sniper" || currentWeapon == "assault") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[2]);
           a.play();
           a.setLoop(THREE.LoopOnce);
           a.reset();
@@ -1204,7 +1219,7 @@
           if (intersection != null) {
             lockIntersection = true;
           }
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper" || currentWeapon == "assault") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
           a.play();
         }
         if (e.key == "ArrowDown") {
@@ -1226,6 +1241,8 @@
             fire(1);
           } else if (currentWeapon == "sniper") {
             fire(1, 7);
+          } else if (currentWeapon == "assault") {
+            fullAutoFiring = true;
           }
         }
         if (e.key == "r" && !e.repeat && !isReloading) {
@@ -1277,7 +1294,7 @@
         if (e.key.startsWith("Arrow")) {
           lockIntersection = false;
           gametime.run("endPlayerWalk", [gametime.user.position]);
-          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
+          let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper" || currentWeapon == "assault") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
           a.stop();
           let b = mixer2.clipAction(myCharacterAnimations[0]);
           b.stop();
@@ -1295,13 +1312,16 @@
           stopShake();
           isWalkingRight = false;
         }
+        if (e.key == "f") {
+          fullAutoFiring = false;
+        }
       });
       (() => { let loader=new THREE.TextureLoader;loader.load("images/clouds1.png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";sky.rotation.y=-.2,scene.add(d),d.position.set(0,0,0)})); })();
       gameControl.on("connect", (controller) => {
         (()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(!dl&&walk("left"),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(!dl&&walk("right"),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{})).before("right0",(()=>{walk("backward")})).after("right0",(()=>{})),controller.on("left0",(()=>{})).before("left0",(()=>{walk("forward")})).after("left0",(()=>{})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"f"}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}))})(),controller.on('up0',()=>{camera.rotation.y+=(.1),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{}).after('up0',()=>{}),controller.on('down0',()=>{camera.rotation.y+=(-.1),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{}).after('down0',()=>{}),controller.on('left1',()=>{camera.rotation.x+=(.1),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{}).after('left1',()=>{}),controller.on('right1',()=>{camera.rotation.x+=(-.1),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{}).after('right1',()=>{}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:" "}))}).after('button0',()=>{});
       });
       createWeapon("sniper",{x:0,y:0,z:20});
-      createWeapon("pistol",{x:-18,y:0,z:16.3});
+      createWeapon("assault",{x:-18,y:0,z:16.3});
       createWeapon("pistol",{x:18,y:0,z:16.3});
       setInterval(()=>{for(let i=0;i<document.querySelectorAll("a").length;i++){document.querySelectorAll("a")[i].addEventListener("click",()=>{document.querySelector("#click").currentTime=0,document.querySelector("#click").play()})}},500);
       setInterval(()=>{for(let i=0;i<document.querySelectorAll("button").length;i++){document.querySelectorAll("button")[i].addEventListener("click",()=>{document.querySelector("#click").currentTime=0,document.querySelector("#click").play()})}},500);

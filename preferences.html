@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      background: #444;
+      font-family: Arial, Helvetica, sans-serif;
+      width: 100vw;
+      overflow: hidden !important;
+    }
+    .weapon {
+      position: relative;
+      box-shadow: 0 5px 10px #25750a;
+      cursor: pointer;
+      transition: transform 1s, box-shadow 1s;
+      background: #333;
+      width: 50%;
+    }
+    .weapon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 #000;
+      z-index: 100;
+    }
+    .weapon:hover + .center {
+      z-index: 101;
+    }
+    .holder {
+      position: relative;
+      display: inline-block;
+      text-align: center;
+      left: 0;
+      margin: 10px;
+      margin-right: 2.5%;
+      margin-left: -10px;
+    }
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 30px;
+      font-weight: 600;
+    }
+    .container {
+      position: relative;
+      left: 50%;
+      width: 1500px;
+      margin-left: -650px;
+      top: 0;
+    }
+    h1 {
+      position: relative;
+      font-size: 50px;
+      color: #333;
+      text-align: center;
+      text-shadow: 2px 2px #25750a;
+    }
+  </style>
+  <body>
+    <h1>Primary Weapon</h1>
+    <div class="container">
+      <div class="holder" onclick="setLoadout('rifle')"><img class="weapon rifle" src="images/guns/rifle.png" /><div class="center">ACE-35R Rifle</div></div>
+      <div class="holder" onclick="setLoadout('assault')"><img class="weapon assault" src="images/guns/assault.png" /><div class="center">M16 A2 Rifle</div></div>
+    </div>
+    <h1>Secondary Weapon</h1>
+    <div class="container">
+      <div class="holder" onclick="setLoadout('rifle')"><img class="weapon pistol" src="images/guns/pistol.png" /><div class="center">G17 9mm Pistol</div></div>
+      <div class="holder" onclick="setLoadout('assault')"><img class="weapon assault" src="images/guns/assault.png" /><div class="center">COMING SOON...</div></div>
+    </div>
+  </body>
+</html> 
