@@ -21,7 +21,7 @@
         position: absolute;
         background: #444;
         width: 75px;
-        height: 30px;
+        height: 45px;
         padding: 5px;
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
@@ -339,9 +339,11 @@
     <div id="container"></div>
     <div class="ui">
       <div class="scoreboard">
-        <span class="player1">A: <span class="score">0</span></span>
+        <span class="player1">A - <span class="score">0</span></span>
         <hr style="margin:0">
-        <span class="player2">B: <span class="score">0</span></span>
+        <span class="player2">B - <span class="score">0</span></span>
+        <hr style="margin:0">
+        <div id="time"><span id="minutes">5</span>:<span id="seconds">00</span></div>
       </div>
       <div class="health-wrapper">
         <div class="health"></div>
@@ -375,6 +377,7 @@
       score1 = 0;
       score2 = 0;
       setScore = 10;
+      setTime = 5;
       primaryRounds = 36;
       secondaryRounds = 10;
       gunMeleeRotationY = 0;
@@ -476,6 +479,22 @@
       function error(code) {
         if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
       }
+      function startCountdown(time) {
+        let seconds = 0;
+        let minutes = time;
+        setInterval(() => {
+          seconds <= 0 ? (minutes--, seconds = 59, document.querySelector("#time").querySelector("#seconds").textContent = (seconds<10?"0"+seconds.toString():seconds.toString())) : (seconds--, document.querySelector("#time").querySelector("#seconds").textContent = (seconds<10?"0"+seconds.toString():seconds.toString()));
+          document.querySelector("#time").querySelector("#minutes").textContent = minutes;
+        }, 950);
+        setTimeout(() => {
+          if (ascore > bscore) {
+            ascore = setScore;
+          } else if (bscore > ascore) {
+            bscore = setScore;
+          }
+          GameOver();
+        }, (minutes * 60) * 1000);
+      }
       function GameOver() {
         if (score1 >= setScore || score2 >= setScore) {
           if (score1 >= setScore && gametime.user.position == 1 || score2 >= setScore && gametime.user.position == 2) {
@@ -527,12 +546,14 @@
         d != gametime.user.position && (countdown = true);
       });
       gametime.on("shot", function(data) {
-        let player = data.split(",")[1];
+        let player = data.split(",")[4];
         let wpn = data.split(",")[0];
+        let epos = {x:data.split(",")[1]-0,y:data.split(",")[2]-0,z:data.split(",")[3]-0};
         if (player == gametime.user.position) {
           return;
         }
         document.body.appendChild(gunsounds[wpn].cloneNode()).play();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
       });
       gametime.on("connect", function() {
         connectedUsers++;
@@ -581,7 +602,7 @@
         if (player != gametime.user.position) {
           return;
         }
-        health += -20;
+        health += -10;
         if (health <= 0) {
           gametime.run("eleminate", [gametime.user.position]);
         }
@@ -619,6 +640,8 @@
         }
         otherPlayer.rotation.order = "YXZ";
         otherPlayer.rotation.y = pos.split(",")[1];
+        otherPlayer.getObjectByName("neck_02_071").rotation.z = pos.split(",")[0];
+        otherPlayer.getObjectByName("9mm_pistolglb").rotation.x = pos.split(",")[0]-1;
       });
       gametime.on("selectCharacter", function(data) {
         let character = data.split(",")[0];
@@ -840,7 +863,7 @@
             setTimeout(() => { wr = false }, 7500);
             setTimeout(() => { wo = false }, 2000);
             setTimeout(() => { wi = false }, 1000);
-            setTimeout(() => { setInterval(() => { otherPlayer.lookAt(camera.position), otherPlayer.rotateY(Math.PI), (deathCooldown||(distanceTo(otherPlayer.position,camera.position)<=20&&(document.body.appendChild(gunsounds.pistol.cloneNode()).play(),(Math.floor(Math.random()*2)==1&&gametime.run("hit", [gametime.user.position]))))) }, ((String(Math.floor(Math.random()*4)+1)+"000")-0)) }, 8000);
+            setTimeout(() => { setInterval(() => { otherPlayer.lookAt(camera.position), otherPlayer.rotateY(Math.PI), (deathCooldown||(distanceTo(otherPlayer.position,camera.position)<=20&&(document.body.appendChild(gunsounds.pistol.cloneNode()).play(),(Math.floor(Math.random()*2)==1&&gametime.run("hit",[gametime.user.position]))))) }, ((String(Math.floor(Math.random()*4)+1)+"000")-0)) }, 8000);
             gametime.on("hit", function(player) {
               if (player != gametime.user.position) {
                 if (otherPlayer.maxshot <= 0) {
@@ -849,7 +872,7 @@
                 otherPlayer.maxshot--;
                 return;
               }
-              health += -20;
+              health += -10;
               if (health <= 0) {
                 gametime.run("eleminate", [gametime.user.position]);
               }
@@ -980,6 +1003,7 @@
       didStart = false;
       function start() {
         controls.isLocked = false;
+        startCountdown(setTime);
         swal({
           title: "Starting game",
           button: false,
@@ -1194,11 +1218,12 @@
           if (rounds > 1) {
             setTimeout(() => a.stop(), 100);
           }
-          (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100)})();
+          let epos={};
+          (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100),epos=e.position})();
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
           Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/smoke.png"),transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
-          gametime.run("shot", [currentWeapon+","+gametime.user.position]);
-          if (intersection != null && intersection.index) {
+          gametime.run("shot", [currentWeapon+","+epos.x+","+epos.y+","+epos.z+","+gametime.user.position]);
+          if (intersection != null) {
             for(let i=0;i<addedDamage;i++){gametime.run("hit",[gametime.user.position==1?2:1])}
           }
         }, 50);
@@ -1240,7 +1265,7 @@
           } else if (currentWeapon == "pistol") {
             fire(1);
           } else if (currentWeapon == "sniper") {
-            fire(1, 7);
+            fire(1, 10);
           } else if (currentWeapon == "assault") {
             fullAutoFiring = true;
           }

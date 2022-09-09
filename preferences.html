@@ -20,10 +20,14 @@
       background: #333;
       width: 50%;
     }
-    .weapon:hover {
+    .weapon:hover:not(.focus) {
       transform: scale(1.1);
       box-shadow: 0 0 #000;
       z-index: 100;
+    }
+    .focus {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 5px #fff;
     }
     .weapon:hover + .center {
       z-index: 101;
@@ -63,14 +67,24 @@
   </style>
   <body>
     <h1>Primary Weapon</h1>
-    <div class="container">
-      <div class="holder" onclick="setLoadout('rifle')"><img class="weapon rifle" src="images/guns/rifle.png" /><div class="center">ACE-35R Rifle</div></div>
-      <div class="holder" onclick="setLoadout('assault')"><img class="weapon assault" src="images/guns/assault.png" /><div class="center">M16 A2 Rifle</div></div>
+    <div class="container first">
+      <div class="holder" tabindex="0" onclick="setPLoadout('rifle')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.first img').length;i++){document.querySelectorAll('.first img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.first img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon rifle" src="images/guns/rifle.png" /><div class="center">ACE-35R Rifle</div></div>
+      <div class="holder" tabindex="0" onclick="setPLoadout('assault')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.first img').length;i++){document.querySelectorAll('.first img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.first img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon assault" src="images/guns/assault.png" /><div class="center">M16 A2 Rifle</div></div>
     </div>
     <h1>Secondary Weapon</h1>
-    <div class="container">
-      <div class="holder" onclick="setLoadout('rifle')"><img class="weapon pistol" src="images/guns/pistol.png" /><div class="center">G17 9mm Pistol</div></div>
-      <div class="holder" onclick="setLoadout('assault')"><img class="weapon assault" src="images/guns/assault.png" /><div class="center">COMING SOON...</div></div>
+    <div class="container second">
+      <div class="holder" tabindex="0" onclick="setSLoadout('pistol')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.second img').length;i++){document.querySelectorAll('.second img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.second img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon pistol" src="images/guns/pistol.png" /><div class="center">G17 9mm Pistol</div></div>
+      <div class="holder" tabindex="0" onclick="setSLoadout('assault')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.second img').length;i++){document.querySelectorAll('.second img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.second img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon assault" src="images/guns/assault.png" /><div class="center">COMING SOON...</div></div>
     </div>
+    <script>
+      function setPLoadout(w) {
+        localStorage.setItem("prefsLoadout", w+","+(localStorage["prefsLoadout"]||"null,pistol").split(",")[1]);
+      }
+      function setSLoadout(w) {
+        localStorage.setItem("prefsLoadout", (localStorage["prefsLoadout"]||"rifle,null").split(",")[0]+","+w);
+      }
+      document.querySelector(".weapon."+(localStorage["prefsLoadout"].split(",")[0]||"rifle")).classList.add("focus");
+      document.querySelector(".weapon."+(localStorage["prefsLoadout"].split(",")[1]||"pistol")).classList.add("focus");
+    </script>
   </body>
-</html> 
+</html>
