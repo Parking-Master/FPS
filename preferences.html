@@ -4,87 +4,134 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+      body {
+        background: #444;
+        font-family: Arial, Helvetica, sans-serif;
+        width: 100vw;
+        overflow: hidden !important;
+      }
+      .weapon {
+        position: relative;
+        box-shadow: 0 5px 10px #25750a;
+        cursor: pointer;
+        transition: transform 1s, box-shadow 1s;
+        background: #333;
+        width: 50%;
+      }
+      .weapon:hover:not(.focus) {
+        transform: scale(1.1);
+        box-shadow: 0 0 #000;
+        z-index: 100;
+      }
+      .focus {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 5px #fff;
+      }
+      .weapon:hover + .center {
+        z-index: 101;
+      }
+      .holder {
+        position: relative;
+        display: inline-block;
+        text-align: center;
+        left: 0;
+        margin: 10px;
+        margin-right: 2.5%;
+        margin-left: -10px;
+      }
+      .center {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 30px;
+        font-weight: 600;
+      }
+      .container {
+        position: relative;
+        left: 50%;
+        width: 1500px;
+        margin-left: -650px;
+        top: 0;
+      }
+      h1 {
+        position: relative;
+        font-size: 50px;
+        color: #333;
+        text-align: center;
+        text-shadow: 2px 2px #25750a;
+      }
+      iframe {
+        position: absolute;
+        width: 75%;
+        height: 100%;
+        margin: 0;
+        border: none;
+        outline: none;
+        z-index: 100;
+      }
+      canvas {
+        position: absolute;
+        top: -50px !important;
+        left: 35% !important;
+        width: 100% !important;
+        transform: scale(1) !important;
+        z-index: -100;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/EastDesire/jscolor@latest/jscolor.min.js"></script>
   </head>
-  <style>
-    body {
-      background: #444;
-      font-family: Arial, Helvetica, sans-serif;
-      width: 100vw;
-      overflow: hidden !important;
-    }
-    .weapon {
-      position: relative;
-      box-shadow: 0 5px 10px #25750a;
-      cursor: pointer;
-      transition: transform 1s, box-shadow 1s;
-      background: #333;
-      width: 50%;
-    }
-    .weapon:hover:not(.focus) {
-      transform: scale(1.1);
-      box-shadow: 0 0 #000;
-      z-index: 100;
-    }
-    .focus {
-      transform: scale(1.1);
-      box-shadow: 0 0 0 5px #fff;
-    }
-    .weapon:hover + .center {
-      z-index: 101;
-    }
-    .holder {
-      position: relative;
-      display: inline-block;
-      text-align: center;
-      left: 0;
-      margin: 10px;
-      margin-right: 2.5%;
-      margin-left: -10px;
-    }
-    .center {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      color: #fff;
-      font-size: 30px;
-      font-weight: 600;
-    }
-    .container {
-      position: relative;
-      left: 50%;
-      width: 1500px;
-      margin-left: -650px;
-      top: 0;
-    }
-    h1 {
-      position: relative;
-      font-size: 50px;
-      color: #333;
-      text-align: center;
-      text-shadow: 2px 2px #25750a;
-    }
-  </style>
   <body>
-    <h1>Primary Weapon</h1>
-    <div class="container first">
-      <div class="holder" tabindex="0" onclick="setPLoadout('rifle')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.first img').length;i++){document.querySelectorAll('.first img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.first img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon rifle" src="images/guns/rifle.png" /><div class="center">ACE-35R Rifle</div></div>
-      <div class="holder" tabindex="0" onclick="setPLoadout('assault')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.first img').length;i++){document.querySelectorAll('.first img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.first img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon assault" src="images/guns/assault.png" /><div class="center">M16 A2 Rifle</div></div>
-    </div>
-    <h1>Secondary Weapon</h1>
-    <div class="container second">
-      <div class="holder" tabindex="0" onclick="setSLoadout('pistol')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.second img').length;i++){document.querySelectorAll('.second img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.second img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon pistol" src="images/guns/pistol.png" /><div class="center">G17 9mm Pistol</div></div>
-      <div class="holder" tabindex="0" onclick="setSLoadout('assault')"><img onclick="(()=>{for(let i=0;i<document.querySelectorAll('.second img').length;i++){document.querySelectorAll('.second img')[i].classList.toString().indexOf('focus')>-1&&document.querySelectorAll('.second img')[i].classList.toggle('focus')}})();this.classList.toggle('focus')" class="weapon assault" src="images/guns/assault.png" /><div class="center">COMING SOON...</div></div>
-    </div>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/js/libs/fflate.min.js"></script>
+    <iframe src="loadout.html"></iframe>
+    <input id="color-value" value="#fff" type="text" data-jscolor="{}" style="position:absolute;z-index:99999;cursor:pointer;left:80%;width:170px;border:none">
+    <select id="type-value" value="Mark VI" type="drop" style="position:absolute;z-index:99999;cursor:pointer;left:80%;margin-top:25px;width:212px;background:#fff;border:none" onchange="changeCharacter(this.value)">
+      <option id="Mark VI">Mark VI</option>
+      <option id="FOTUS">FOTUS</option>
+    </select>
     <script>
-      function setPLoadout(w) {
-        localStorage.setItem("prefsLoadout", w+","+(localStorage["prefsLoadout"]||"null,pistol").split(",")[1]);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1 ,1000);
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+      scene.add(camera);
+      function animate() {
+        requestAnimationFrame(animate);
+        typeof character != "undefined" && changeColor(document.querySelector("#color-value").value);
+        renderer.render(scene, camera);
       }
-      function setSLoadout(w) {
-        localStorage.setItem("prefsLoadout", (localStorage["prefsLoadout"]||"rifle,null").split(",")[0]+","+w);
+      light = new THREE.DirectionalLight(0xffffff, 4), light.position.set(10,20,10), scene.add(light);
+      (new THREE.GLTFLoader).load("models/characters/"+(localStorage["character"]||"mark-vi")+".glb", (e) => {
+        character = e.scene;
+        scene.add(character);
+        character.position.copy(camera.position),character.rotation.copy(camera.rotation),character.updateMatrix(),character.translateZ(-5);
+        character.rotation.set(0,Math.PI,0),camera.rotation.set(0,0,0),character.position.set(0,0,0),camera.position.set(0,2,3);
+      });
+      animate();
+      window.addEventListener("mousemove", (e) => {
+        character.rotation.y = (e.clientX/400);
+      });
+      document.querySelector("#color-value").value = localStorage["prefsArmorColor"] || "#ffffff";
+      function changeColor(value) {
+        localStorage.setItem("prefsArmorColor", value);
+        character.getObjectByName("Object_7").material.color.setRGB(new THREE.Color(localStorage["prefsArmorColor"]).r,new THREE.Color(localStorage["prefsArmorColor"]).g,new THREE.Color(localStorage["prefsArmorColor"]).b);
+        (localStorage["character"]=="fotus"?character.getObjectByName("fotus_helmet_masterstl"):character.getObjectByName("Object_10")).material.color.setRGB(new THREE.Color(localStorage["prefsArmorColor"]).r,new THREE.Color(localStorage["prefsArmorColor"]).g,new THREE.Color(localStorage["prefsArmorColor"]).b);
       }
-      document.querySelector(".weapon."+(localStorage["prefsLoadout"].split(",")[0]||"rifle")).classList.add("focus");
-      document.querySelector(".weapon."+(localStorage["prefsLoadout"].split(",")[1]||"pistol")).classList.add("focus");
+      function changeCharacter(value) {
+        localStorage["character"] = value.toLowerCase().replace(/ /gi, "-");
+        (new THREE.GLTFLoader).load("models/characters/"+(localStorage["character"]||"mark-vi")+".glb", (e) => {
+          scene.remove(character);
+          character = e.scene;
+          scene.add(character);
+          character.position.copy(camera.position),character.rotation.copy(camera.rotation),character.updateMatrix(),character.translateZ(-5);
+          character.rotation.set(0,Math.PI,0),camera.rotation.set(0,0,0),character.position.set(0,0,0),camera.position.set(0,2,3);
+        });
+      }
     </script>
   </body>
 </html>

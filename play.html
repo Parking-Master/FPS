@@ -64,7 +64,8 @@
       text-shadow: 2px 2px #25750a;
     }
   </style>
-  <body>
+  <body style="display:none">
+    <script>location.replace(location.href.replace('play','src')+'&character='+(localStorage["character"]||"mark-vi"))</script>
     <h1>VS</h1>
     <div class="container">
       <div class="holder" onclick="location.replace(location.href.replace('play','src')+'&character=mark-vi')"><img class="character mark-vi" src="images/characters/mark-vi.png" /><div class="center">Mark VI</div></div>

@@ -324,6 +324,7 @@
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
     <audio id="gunsound-rifle" src="sounds/guns/default_rifle.mp3"></audio>
+    <audio id="gunsound-uzi" src="sounds/guns/uzi.mp3"></audio>
     <audio id="reload-pistol-easy" src="sounds/reloads/pistol/easy-reload.mp3"></audio>
     <audio id="reload-pistol-full" src="sounds/reloads/pistol/full-reload.mp3"></audio>
     <audio id="reload-rifle-easy" src="sounds/reloads/rifle/easy-reload.mp3"></audio>
@@ -332,6 +333,8 @@
     <audio id="reload-sniper-full" src="sounds/reloads/sniper/full-reload.mp3"></audio>
     <audio id="reload-assault-easy" src="sounds/reloads/assault/easy-reload.mp3"></audio>
     <audio id="reload-assault-full" src="sounds/reloads/assault/full-reload.mp3"></audio>
+    <audio id="reload-uzi-easy" src="sounds/reloads/uzi/easy-reload.mp3"></audio>
+    <audio id="reload-uzi-full" src="sounds/reloads/uzi/full-reload.mp3"></audio>
     <script src="https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js"></script>
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
@@ -383,33 +386,41 @@
       gunMeleeRotationY = 0;
       fullAutoFiring = false;
       setInterval(() => {
-        if (fullAutoFiring) {
+        if (fullAutoFiring && currentWeapon == "assault") {
           fire(1, 1);
         }
       }, 60);
+      setInterval(() => {
+        if (fullAutoFiring && currentWeapon == "uzi") {
+          fire(1, 1);
+        }
+      }, 20);
       currentWeaponPosition = "primary";
       gunsounds = {
         pistol: document.getElementById("gunsound-pistol"),
         sniper: document.getElementById("gunsound-sniper"),
         rifle: document.getElementById("gunsound-rifle"),
-        assault: document.getElementById("gunsound-assault")
+        assault: document.getElementById("gunsound-assault"),
+        uzi: document.getElementById("gunsound-uzi")
       };
       reloadsounds = {
         easy: {
           pistol: document.getElementById("reload-pistol-easy"),
           rifle: document.getElementById("reload-rifle-easy"),
           sniper: document.getElementById("reload-sniper-easy"),
-          assault: document.getElementById("reload-assault-easy")
+          assault: document.getElementById("reload-assault-easy"),
+          uzi: document.getElementById("reload-uzi-easy")
         },
         full: {
           pistol: document.getElementById("reload-pistol-full"),
           rifle: document.getElementById("reload-rifle-full"),
           sniper: document.getElementById("reload-sniper-full"),
-          assault: document.getElementById("reload-assault-full")
+          assault: document.getElementById("reload-assault-full"),
+          uzi: document.getElementById("reload-uzi-full")
         }
       };
       const scene = new THREE.Scene();
-      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer;renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
+      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
       function isTouchDevice(){return!!window.matchMedia("(pointer: coarse)").matches}
       isTouchDevice()?(()=>{const{Euler:e,EventDispatcher:t,Vector3:n}=THREE;var o;o=!1;var i=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent),c=document.body.clientWidth/2,r=(document.body.clientHeight,window.innerHeight),s=function(t,s){o=!!i,void 0===s&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),s=document.body),this.domElement=s,this.isLocked=!1;var m,u,d,a=this,h={type:"change"},v={type:"lock"},l={type:"unlock"},E=new e(0,0,0,"YXZ"),p=Math.PI/2,k=Math.PI/3.8,L=Math.PI/9,f=new n,y=0,M=0;function x(){}function P(e){u=e.touches[0].clientY,m=e.touches[0].clientX,y=m-c,M=u-(r-100),E.setFromQuaternion(t.quaternion),E.y=.005*y,E.x=.005*M,E.x=Math.max(-p,Math.min(L,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h),console.log(M)}function w(e){}function g(e){if(!1!==a.isLocked){var n=e.movementX||e.mozMovementX||e.webkitMovementX||0,o=e.movementY||e.mozMovementY||e.webkitMovementY||0;E.setFromQuaternion(t.quaternion),E.y-=.002*n,E.x-=.002*o,E.x=Math.max(-p,Math.min(p,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h)}}function b(){document.pointerLockElement===a.domElement?(a.dispatchEvent(v),a.isLocked=!0):(a.dispatchEvent(l),a.isLocked=!1)}function F(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){document.addEventListener("mousemove",g,!1),document.addEventListener("touchstart",x,!1),document.addEventListener("touchmove",P,!1),document.addEventListener("pointerlockchange",b,!1),document.addEventListener("pointerlockerror",F,!1)},this.disconnect=function(){document.removeEventListener("mousemove",g,!1),document.removeEventListener("touchend",w,!1),document.removeEventListener("touchmove",onTouchmove,!1),document.removeEventListener("pointerlockchange",b,!1),document.removeEventListener("pointerlockerror",F,!1)},this.dispose=function(){this.disconnect()},this.getObject=function(){return t},this.getDirection=(d=new n(0,0,-1),function(e){return e.copy(d).applyQuaternion(t.quaternion)}),this.moveForward=function(e){f.setFromMatrixColumn(t.matrix,0),f.crossVectors(t.up,f),t.position.addScaledVector(f,e)},this.moveRight=function(e){f.setFromMatrixColumn(t.matrix,0),t.position.addScaledVector(f,e)},this.lock=1==o?function(){a.isLocked=!0,this.connect()}:function(){this.domElement.requestPointerLock()},this.unlock=function(){document.exitPointerLock()},this.connect()};(s.prototype=Object.create(t.prototype)).constructor=s,window.PointerLockControls=s})():(()=>{const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}window.PointerLockControls=PointerLockControls})();
       scene.add(camera);
@@ -434,13 +445,18 @@
       respawnPoints = [
         [0, 0, 8]
       ];
+      textures = {
+        "spark": (new THREE.TextureLoader).load("images/textures/spark.png"),
+        "smoke": (new THREE.TextureLoader).load("images/textures/smoke.png")
+      };
       ordinances = [];
       altNames = {
         "rifle": "Concept 35R",
         "pistol": "9mm G17",
         "sniper": "HK-G28",
         "assault": "M16 A2",
-      }
+        "uzi": "UZI"
+      };
       otherSelectedCharacter = "mark-vi";
       lockIntersection = false;
       function respawn(position) {
@@ -553,7 +569,7 @@
           return;
         }
         document.body.appendChild(gunsounds[wpn].cloneNode()).play();
-        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
       });
       gametime.on("connect", function() {
         connectedUsers++;
@@ -650,7 +666,7 @@
           return;
         }
         otherSelectedCharacter = character;
-        createCharacter();
+        createCharacter(data.split(",")[2]);
       });
       gametime.on("endPlayerWalk", function(player) {
         if (player == gametime.user.positon) {
@@ -670,7 +686,7 @@
       });
       gametime.onconnect = function() {
         gametime.run("connect");
-        gametime.run("selectCharacter", [(new URLSearchParams(location.search).get("character")||"mark-vi")+","+gametime.user.position]);
+        gametime.run("selectCharacter", [(new URLSearchParams(location.search).get("character")||"mark-vi")+","+gametime.user.position+","+(localStorage["prefsArmorColor"]||"#fff")]);
       };
       /* End Gametime.js event variables */
       let raycaster = new THREE.Raycaster();
@@ -704,14 +720,12 @@
           !(camera.position.z.toFixed(0)<=8&&camera.position.x>=-2&&camera.position.x<=2)&&(defaultY=.7);
         }
         lockIntersection ? (raycastTargets = [], intersection = true) : raycastTargets[0] = otherPlayer;
-        camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
-        let intersections = raycaster.intersectObjects(raycastTargets);
-        !lockIntersection && (intersection = intersections[0] || null);
         looker.position.copy(camera.position),looker.rotation.copy(camera.rotation),looker.updateMatrix(),looker.translateZ(-2);
         intersection!=null?(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #ff4444"):(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #25750a");
         walkAxisYLocked && (camera.position.y = defaultY);
         // document.querySelector("#radar-obj").style.top = (distanceTo(camera.position, otherPlayer.position) * 30) + "px";
         if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2),(currentWeapon=="assault"&&(gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.1)),gun.translateY(-.86),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1)))) }
+        if (gunLocked && currentWeapon == "uzi" && isZoomed) { (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.115)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1),(currentWeapon=="assault"&&(gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.1)),gun.translateY(-.86),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1)))) }
         let delta = clock.getDelta();
         if (typeof mixer1 != "undefined") mixer1.update(delta+.03);
         if (typeof mixer2 != "undefined") mixer2.update(delta+.03);
@@ -737,7 +751,7 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
+      fixedLoadout = (localStorage["prefsLoadout"] || "uzi,pistol").split(",");
       loadout = fixedLoadout;
       document.querySelector("#rounds").querySelector("img").src = "images/guns/" + fixedLoadout[0] + ".png";
       currentWeapon = loadout[0];
@@ -745,9 +759,10 @@
         "rifle": {},
         "pistol": {},
         "sniper": {},
-        "assault": {}
+        "assault": {},
+        "uzi": {}
       };
-      weaponDefs = ["rifle", "pistol", "sniper", "assault"];
+      weaponDefs = ["rifle", "pistol", "sniper", "assault", "uzi"];
       mixers = [];
       gunsAnimations = [];
       loadingProgress=0;
@@ -780,7 +795,7 @@
         document.querySelector("#progress").style.width = String(loadingProgress) + "%";
       });
       characterWasCreated = false;
-      function createCharacter() {
+      function createCharacter(armorColor) {
         if (characterWasCreated) {
           return;
         }
@@ -788,6 +803,7 @@
         (new THREE.GLTFLoader).load("models/characters/first.glb", (character) => {
           myPlayer = character.scene;
           scene.add(myPlayer);
+          myPlayer.getObjectByName("Object_7").material.color.setRGB(new THREE.Color(armorColor).r,new THREE.Color(armorColor).g,new THREE.Color(armorColor).b);
           mixer2 = new THREE.AnimationMixer(myPlayer);
           myCharacterAnimations = character.animations;
         });
@@ -795,6 +811,8 @@
           mixer1 = new THREE.AnimationMixer(character.scene);
           window.character = character.scene;
           character.scene.scale.set(.5,.5,.5);
+          character.scene.getObjectByName("Object_7").material.color.setRGB(new THREE.Color(armorColor).r,new THREE.Color(armorColor).g,new THREE.Color(armorColor).b);
+          (localStorage["character"]=="fotus"?character.scene.getObjectByName("fotus_helmet_masterstl"):character.scene.getObjectByName("Object_10")).material.color.setRGB(new THREE.Color(armorColor).r,new THREE.Color(armorColor).g,new THREE.Color(armorColor).b);
           otherPlayer = character.scene;
           characterAnimations = character.animations;
           scene.add(character.scene);
@@ -831,6 +849,11 @@
           document.querySelector(".loader").remove();
         });
       }
+      setInterval(() => {
+        camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
+        let intersections = raycaster.intersectObjects(raycastTargets);
+        !lockIntersection && (intersection = intersections[0] || null);
+      }, 200);
       function getLink() {
         alert(location.href.replace("src.html","play.html"));
       }
@@ -1219,9 +1242,9 @@
             setTimeout(() => a.stop(), 100);
           }
           let epos={};
-          (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100),epos=e.position})();
+          (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100),epos=e.position})();
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.01,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
-          Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/smoke.png"),transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
+          Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
           gametime.run("shot", [currentWeapon+","+epos.x+","+epos.y+","+epos.z+","+gametime.user.position]);
           if (intersection != null) {
             for(let i=0;i<addedDamage;i++){gametime.run("hit",[gametime.user.position==1?2:1])}
@@ -1266,7 +1289,7 @@
             fire(1);
           } else if (currentWeapon == "sniper") {
             fire(1, 10);
-          } else if (currentWeapon == "assault") {
+          } else if (currentWeapon == "assault" || currentWeapon == "uzi") {
             fullAutoFiring = true;
           }
         }
@@ -1290,7 +1313,7 @@
           melee = true;
           gunMeleeRotationY += .1;
           scene.add(gun);
-          distanceTo(otherPlayer.position, gun.position) <= 5 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
+          distanceTo(otherPlayer.position, gun.position) <= 3 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
           let g = setInterval(() => {
             if (gunMeleeRotationY <= 1) {
               return gunMeleeRotationY += .1;
