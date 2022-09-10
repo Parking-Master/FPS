@@ -156,4 +156,6 @@ MIT
 
 - ["FPS Pistol Animations"](https://sketchfab.com/3d-models/fps-pistol-animations-0d7a343dcb6f401197a73c91aee93f6d) - <small>_by Cransh_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
+- ["UZI"](https://sketchfab.com/3d-models/uzi-fde60adc8aff4c61b6a8bea1f9e0743f) - <small>_by creationwasteland_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
 Did we forget to include something? [Report](https://github.com/Parking-Master/FPS/issues/new)
