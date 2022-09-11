@@ -335,7 +335,7 @@
     <audio id="reload-assault-full" src="sounds/reloads/assault/full-reload.mp3"></audio>
     <audio id="reload-uzi-easy" src="sounds/reloads/uzi/easy-reload.mp3"></audio>
     <audio id="reload-uzi-full" src="sounds/reloads/uzi/full-reload.mp3"></audio>
-    <script src="https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js"></script>
+    <!-- <script src="https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js"></script> -->
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
     </script>
@@ -362,10 +362,10 @@
       <img id="hiteffect" src="images/hit.png" width="100%" height="100%" style="margin:0;padding:0;opacity:0" />
     </div>
     <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
-    <script type="module">
+    <!-- <script type="module">
       import * as CANNON from 'https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js';
       window.CANNON = CANNON;
-    </script>
+    </script> -->
     <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS@master/gametime-socket.js"></script> -->
     <script>
       function showText(e) {
@@ -419,6 +419,7 @@
           uzi: document.getElementById("reload-uzi-full")
         }
       };
+      healthUpgradeTimeout = 1;
       animated = false;
       const scene = new THREE.Scene();
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
@@ -445,7 +446,8 @@
       defaultY = .7;
       health = 100;
       respawnPoints = [
-        [0, 0, 8]
+        [0, 0, 8],
+        [0, -1, 46]
       ];
       textures = {
         "spark": (new THREE.TextureLoader).load("images/textures/spark.png"),
@@ -460,6 +462,7 @@
         "assault": "M16 A2",
         "uzi": "UZI"
       };
+      isJumping = false;
       otherSelectedCharacter = "mark-vi";
       lockIntersection = false;
       function respawn(position) {
@@ -622,6 +625,8 @@
           return;
         }
         health += -1;
+        clearTimeout(healthUpgradeTimeout);
+        healthUpgradeTimeout = setTimeout(() => { health = 100 }, 5000);
         if (health <= 0) {
           gametime.run("eleminate", [gametime.user.position]);
         }
@@ -858,7 +863,7 @@
         camera.updateMatrixWorld(), raycaster.setFromCamera(center, camera);
         let intersections = raycaster.intersectObjects(raycastTargets);
         !lockIntersection && (intersection = intersections[0] || null);
-      }, 200);
+      }, 250);
       function getLink() {
         alert(location.href.replace("src.html","play.html"));
       }
@@ -901,6 +906,8 @@
                 return;
               }
               health += -1;
+              clearTimeout(healthUpgradeTimeout);
+              healthUpgradeTimeout = setTimeout(() => { health = 100 }, 5000);
               if (health <= 0) {
                 gametime.run("eleminate", [gametime.user.position]);
               }
@@ -950,7 +957,7 @@
               }, 10000);
               switchToDeath(camera);
               let t = 5;
-              let spawnPoint = respawnPoints[Math.floor(Math.random() * respawnPoints.length)];
+              let spawnPoint = (distanceTo({x:respawnPoints[0][0],y:respawnPoints[0][1],z:respawnPoints[0][2]},otherPlayer.position)<=20)?respawnPoints[1]:respawnPoints[0];
               swal({
                 title: "You died!",
                 text: "You will respawn in " + t + " seconds...",
@@ -1269,7 +1276,7 @@
           }
         }, 50);
         /rifle|pistol|sniper/gi.test(currentWeapon)&&(canFire=false);
-        setTimeout(()=>{/rifle|pistol|sniper/gi.test(currentWeapon)&&(canFire=true)},400);
+        setTimeout(()=>{/rifle|pistol|sniper/gi.test(currentWeapon)&&(canFire=true)},currentWeapon=="pistol"?150:300);
       }
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
       document.addEventListener("keydown", (e) => {
@@ -1316,8 +1323,8 @@
         if (e.key == "r" && !e.repeat && !isReloading) {
           reload();
         }
-        if (e.key == " " && !e.repeat) {
-          (()=>{walkAxisYLocked=false;let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(camera.position.y<=defaultY){return(clearInterval(h),walkAxisYLocked=true)}(t+=.05);camera.position.y+=-t},25)})())}(t+=-.05);camera.position.y+=t},25)})();
+        if (e.key == " " && !isJumping) {
+          (()=>{isJumping=true;walkAxisYLocked=false;let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(camera.position.y<=defaultY){return(isJumping=false,clearInterval(h),walkAxisYLocked=true)}(t+=.05);camera.position.y+=-t},25)})())}(t+=-.05);camera.position.y+=t},25)})();
           gametime.run("playerJump", [defaultY+","+gametime.user.position]);
         }
         if (e.key == "y" && !e.repeat) {
