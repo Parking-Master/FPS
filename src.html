@@ -740,7 +740,7 @@
         if (typeof mixer1 != "undefined") mixer1.update(delta+.03);
         if (typeof mixer2 != "undefined") mixer2.update(delta+.03);
         if (typeof mixer4 != "undefined") mixer3.update(delta);
-        mixers.length>0&&(()=>{for(let i=0;i<mixers.length;i++){typeof mixers[i].update!="undefined"&&mixers[i].update(delta)}})();
+        mixers.length>0&&(()=>{for(let i=0;i<mixers.length;i++){typeof mixers[i]!="undefined"&&mixers[i].update(delta)}})();
         follower.position.copy(camera.position);
         keyIsUp && stopShake();
         document.querySelector("#rounds").querySelector("#counter").textContent = (currentWeaponPosition=="primary"?primaryRounds:secondaryRounds);
