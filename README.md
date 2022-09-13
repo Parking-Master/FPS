@@ -1,4 +1,4 @@
-# F-P-S<img width="2.5%" style="margin-left:-20px" src="https://user-images.githubusercontent.com/88283567/189241057-7e416f3e-46a9-494e-9b79-a5455e2bf518.png">
+# F-P-S<img width="2.5%" style="margin-left:-20px" src="https://user-images.githubusercontent.com/88283567/189241057-7e416f3e-46a9-494e-9b79-a5455e2bf518.png" style="filter:grayscale(100%)">
 A modern multiplayer FPS game in your browser.
 
 ## FPS5 Documentation
@@ -25,7 +25,7 @@ FPS5 is available publicly at [www.fps5.ml](https://www.fps5.ml)
 <br>
 _Note: This game may be a little buggy because it was just released._ If you encounter
 <br>
-any bugs, please report it in the "Issues" section (mark as bug) or contact support at fps5@mail.com.
+any bugs, please [report it](https://github.com/Parking-Master/FPS/issues/new) in the "Issues" section (mark as bug) or contact support at fps5@mail.com.
 
 ### How it works
 FPS5 uses Gametime.js for multiplayer functions, and Gametime.js uses Pubnub which is server-side.
@@ -109,6 +109,16 @@ The M16 A2 Assault variant is a weak weapon with a full auto feature which makes
 <br>
 - <b>Overall</b>: 3/5
 <img align="center" width="20%" alt="Default" src="/images/guns/assault.png"/>
+<h4 align="center">Fully-Automatic UZI</h5>
+The UZI is a like a very weak pistol which also has a full auto feature which makes it more powerful. Accuracy is low on full auto mode, and damage is very low.
+<br>
+<br>
+- <b>Damage</b>: 1/6
+<br>
+- <b>Accuracy</b>: 5/100
+<br>
+- <b>Overall</b>: 1/5
+<img align="center" width="20%" alt="Default" src="/images/guns/uzi.png"/>
 
 ###### <i>Note: More weapons may be coming soon</i>
 
