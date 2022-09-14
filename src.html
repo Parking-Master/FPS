@@ -597,12 +597,14 @@
         setTimeout(() => { r = false }, 1000);
         document.querySelector("#death3").play();
         if (player != gametime.user.position) {
-          gametime.user.position == 1 && !r ? (score1++, r = true) : (score2++, r = true);
           GameOver();
           scene.remove(otherPlayer);
           switchToDeath(otherPlayer);
+          otherPlayer.position.y = 1000000;
+          gametime.user.position == 1 && !r ? (score1++, r = true) : (score2++, r = true);
           return;
         }
+        camera.position.y = 1000000;
         gametime.user.position == 1 && !r ? (score2++, r = true) : (score1++, r = true);
         switchToDeath(camera);
         let t = 5;
@@ -1340,10 +1342,10 @@
           melee = true;
           gunMeleeRotationY += .1;
           scene.add(gun);
-          distanceTo(otherPlayer.position, gun.position) <= 3 && (() => { for (let i = 0; i < 4; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
+          distanceTo(otherPlayer.position, gun.position) <= 3 && (() => { for (let i = 0; i < 50; i++) { gametime.run("hit", [gametime.user.position == 2 ? 1 : 2]); } })();
           let g = setInterval(() => {
             if (gunMeleeRotationY <= 1) {
-              return gunMeleeRotationY += .1;
+              return gunMeleeRotationY += .05;
             }
             clearInterval(g);
             let l = setInterval(() => {
