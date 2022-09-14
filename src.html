@@ -325,6 +325,7 @@
     <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
     <audio id="gunsound-rifle" src="sounds/guns/default_rifle.mp3"></audio>
     <audio id="gunsound-uzi" src="sounds/guns/uzi.mp3"></audio>
+    <audio id="gunsound-shotgun" src="sounds/guns/shotgun.mp3"></audio>
     <audio id="reload-pistol-easy" src="sounds/reloads/pistol/easy-reload.mp3"></audio>
     <audio id="reload-pistol-full" src="sounds/reloads/pistol/full-reload.mp3"></audio>
     <audio id="reload-rifle-easy" src="sounds/reloads/rifle/easy-reload.mp3"></audio>
@@ -335,6 +336,8 @@
     <audio id="reload-assault-full" src="sounds/reloads/assault/full-reload.mp3"></audio>
     <audio id="reload-uzi-easy" src="sounds/reloads/uzi/easy-reload.mp3"></audio>
     <audio id="reload-uzi-full" src="sounds/reloads/uzi/full-reload.mp3"></audio>
+    <audio id="reload-shotgun-easy" src="sounds/reloads/shotgun/easy-reload.mp3"></audio>
+    <audio id="reload-shotgun-full" src="sounds/reloads/shotgun/full-reload.mp3"></audio>
     <!-- <script src="https://unpkg.com/cannon-es@0.19.0/dist/cannon-es.js"></script> -->
     <script>
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
@@ -403,7 +406,8 @@
         sniper: document.getElementById("gunsound-sniper"),
         rifle: document.getElementById("gunsound-rifle"),
         assault: document.getElementById("gunsound-assault"),
-        uzi: document.getElementById("gunsound-uzi")
+        uzi: document.getElementById("gunsound-uzi"),
+        shotgun: document.getElementById("gunsound-shotgun")
       };
       reloadsounds = {
         easy: {
@@ -411,14 +415,16 @@
           rifle: document.getElementById("reload-rifle-easy"),
           sniper: document.getElementById("reload-sniper-easy"),
           assault: document.getElementById("reload-assault-easy"),
-          uzi: document.getElementById("reload-uzi-easy")
+          uzi: document.getElementById("reload-uzi-easy"),
+          shotgun: document.getElementById("reload-shotgun-easy")
         },
         full: {
           pistol: document.getElementById("reload-pistol-full"),
           rifle: document.getElementById("reload-rifle-full"),
           sniper: document.getElementById("reload-sniper-full"),
           assault: document.getElementById("reload-assault-full"),
-          uzi: document.getElementById("reload-uzi-full")
+          uzi: document.getElementById("reload-uzi-full"),
+          shotgun: document.getElementById("reload-shotgun-full")
         }
       };
       healthUpgradeTimeout = 1;
@@ -462,7 +468,8 @@
         "pistol": "9mm G17",
         "sniper": "HK-G28",
         "assault": "M16 A2",
-        "uzi": "UZI"
+        "uzi": "UZI",
+        "shotgun": "Remington 870"
       };
       isJumping = false;
       otherSelectedCharacter = "mark-vi";
@@ -747,6 +754,7 @@
         // document.querySelector("#radar-obj").style.top = (distanceTo(camera.position, otherPlayer.position) * 30) + "px";
         if (gunLocked) { !isZoomed ? (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) : (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.255)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.2),(currentWeapon=="assault"&&(gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.1)),gun.translateY(-.86),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1)))) }
         if (gunLocked && currentWeapon == "uzi" && isZoomed) { (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.115)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1),(currentWeapon=="assault"&&(gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.1)),gun.translateY(-.86),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1)))) }
+        if (gunLocked && currentWeapon == "shotgun" && isZoomed) { (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) }
         let delta = clock.getDelta();
         if (typeof mixer1 != "undefined") mixer1.update(delta+.03);
         if (typeof mixer2 != "undefined") mixer2.update(delta+.03);
@@ -772,7 +780,7 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      fixedLoadout = (localStorage["prefsLoadout"] || "uzi,pistol").split(",");
+      fixedLoadout = (localStorage["prefsLoadout"] || "shotgun,pistol").split(",");
       loadout = fixedLoadout;
       document.querySelector("#rounds").querySelector("img").src = "images/guns/" + fixedLoadout[0] + ".png";
       currentWeapon = loadout[0];
@@ -781,9 +789,10 @@
         "pistol": {},
         "sniper": {},
         "assault": {},
-        "uzi": {}
+        "uzi": {},
+        "shotgun": {}
       };
-      weaponDefs = ["rifle", "pistol", "sniper", "assault", "uzi"];
+      weaponDefs = ["rifle", "pistol", "sniper", "assault", "uzi", "shotgun"];
       mixers = [];
       gunsAnimations = [];
       loadingProgress=0;
@@ -1353,6 +1362,8 @@
             !e.repeat && fire(1, 100);
           } else if (currentWeapon == "assault" || currentWeapon == "uzi") {
             fullAutoFiring = true;
+          } else if (currentWeapon == "shotgun") {
+            fire(1, 36);
           }
         }
         if (e.key == "r" && !e.repeat && !isReloading) {
