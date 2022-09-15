@@ -461,7 +461,9 @@
       textures = {
         "spark": (new THREE.TextureLoader).load("images/textures/spark.png"),
         "smoke": (new THREE.TextureLoader).load("images/textures/smoke.png"),
-        "flame": (new THREE.TextureLoader).load("images/textures/flame.png")
+        "flame": (new THREE.TextureLoader).load("images/textures/flame.png"),
+        "hole": (new THREE.TextureLoader).load("images/textures/bullethole.png"),
+        "scratch": (new THREE.TextureLoader).load("images/textures/scratch.png")
       };
       ordinances = [];
       altNames = {
@@ -1019,10 +1021,17 @@
           }
         });
       }
+      function freePlay() {
+        scene.remove(otherPlayer);
+        didStart = true;
+        controls.isLocked = true;
+        swal.close();
+      }
       let options = document.createElement("div");
       options.innerHTML = `
       <a onclick="getLink()" style="text-decoration:underline">Share Link</a><br>
       <a onclick="bot()" style="text-decoration:underline">Start bot</a><br>
+      <a onclick="freePlay()" style="text-decoration:underline">Free play</a><br>
       <a onclick="cancelSearch()" style="text-decoration:underline">Stop Search</a>
       `;
       swal({
@@ -1328,8 +1337,9 @@
           currentMap!="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1.25);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e&&x!=follower&&x!=myPlayer))&&(x instanceof THREE.Mesh&&x.isObject3D&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100),epos=e.position})();
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.6,20),new THREE.MeshBasicMaterial({map:textures["flame"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateX(.2),e.translateZ(-1.5),e.rotateY(1),scene.add(e),e.material.opacity=.75,setTimeout(()=>scene.remove(e),50)})();
           // (()=>{let o=new THREE.DirectionalLight(13418153,1);o.position.copy(gun.position),o.rotation.copy(gun.rotation),o.updateMatrix(),scene.add(o),o.scale.set(.01,.1,.1),setTimeout((()=>scene.remove(o)),150),light.shadowCameraLeft=-3e3,o.shadowCameraRight=3e3,o.shadowCameraTop=3500,o.shadowCameraBottom=-3e3,o.lookAt(camera.position)})();
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({color:0x000000,map:(new THREE.TextureLoader).load("images/textures/spark.png"),transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
-          currentPerformance > 50 && Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity+=-.025}));setTimeout((()=>clearInterval(t)),1e3)})();
+          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:.04),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
+          currentPerformance > 50 && Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.025)}));setTimeout((()=>clearInterval(t)),5000)})();
+          /sniper|shotgun/gi.test(currentWeapon)&&(new THREE.GLTFLoader).load("models/muzzle_flash.glb",(e)=>{e=e.scene;e.position.copy(camera.position),e.scale.set(.6,.6,.6),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1.5),e.rotateY(.6),scene.add(e),setTimeout(()=>scene.remove(e),50)});
           gametime.run("shot", [currentWeapon+","+epos.x+","+epos.y+","+epos.z+","+gametime.user.position]);
           if (intersection != null) {
             for(let i=0;i<addedDamage;i++){gametime.run("hit",[gametime.user.position==1?2:1])}
@@ -1419,6 +1429,7 @@
             });
           });
           isZoomed && zoomOut(10);
+          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.06,20),new THREE.MeshBasicMaterial({map:textures["scratch"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&distanceTo(x.position,camera.position)<=16.75&&scene.add(e),clearInterval(f))}),e.translateZ(-.05)});setTimeout(()=>scene.remove(e),5000)})();
         }
       });
       document.addEventListener("keyup", (e) => {
