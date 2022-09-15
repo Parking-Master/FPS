@@ -93,6 +93,37 @@
         box-shadow: none !important;
         outline: none !important;
       }
+      *:not(canvas) {
+        z-index: 9999 !important;
+      }
+      footer {
+        position: absolute;
+        width: 100%;
+        height: 25px;
+        padding: 5px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #25750a;
+      }
+      button {
+        background: #333;
+        border: none !important;
+        border-radius: 0;
+        color: #25750a;
+        padding: 5px;
+        border-bottom-left-radius: 12px;
+      }
+      textarea {
+        background: #333;
+        border: none;
+        outline: 2px solid #ff4444;
+        width: 100%;
+        height: 200px;
+        resize: none !important;
+        white-space: pre-wrap;
+        padding-left: 0;
+      }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/EastDesire/jscolor@latest/jscolor.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -107,6 +138,10 @@
       <option id="Mark VI">Mark VI</option>
       <option id="FOTUS">FOTUS</option>
     </select>
+    <footer>
+      <button onclick="performance(false)">Performance</button>
+      <button onclick="bot()">Custom Bot</button>
+    </footer>
     <script>
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1 ,1000);
@@ -114,7 +149,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
       scene.add(camera);
-      function performance() {
+      function performance(redirect) {
         let container = document.createElement("div");
         let slider = document.createElement("input");
         let sliderAmount = document.createElement("span");
@@ -134,12 +169,164 @@
         }).then((e) => {
           clearInterval(g);
           localStorage.setItem("performance", document.querySelector(".swal-content").querySelector("input").value);
-          location.replace(decodeURIComponent(atob(new URLSearchParams(location.search).get("r")))+"#ignore");
+          redirect ? location.replace(decodeURIComponent(atob(new URLSearchParams(location.search).get("r")))+"#ignore") : swal.close();
+        });
+      }
+      botFunctions = {
+        "script": function() {
+          let box = document.createElement("textarea");
+          box.value = `
+          // bot's character model: \`otherPlayer\`
+          let deathCooldown = false;
+          start();
+          otherPlayer.position.set(0, -1, 46);
+          otherPlayer.rotation.set(0, 0, 0);
+          gametime.on("endPlayerWalk", function(player) {});
+          gametime.run("syncCountdown", [gametime.user.position==1?2:1]);
+          otherPlayer.maxshot = 6;
+          let sync = setInterval(() => {
+            if (didStart) {
+              let wr = true;
+              let wo = true;
+              let wi = true;
+              let dw = true;
+              setInterval(() => {
+                dw&&(()=>{let b = mixer1.clipAction(characterAnimations[0]);b.play(),dw=false})();
+                otherPlayer.translateZ(-.03);
+                wr&&otherPlayer.translateY(.002);
+                wo&&otherPlayer.rotateY(.01);
+                wi&&otherPlayer.rotateY(-.02);
+              }, 60);
+              setTimeout(() => { wr = false }, 7500);
+              setTimeout(() => { wo = false }, 2000);
+              setTimeout(() => { wi = false }, 1000);
+              setTimeout(() => { setInterval(() => { otherPlayer.lookAt(camera.position), otherPlayer.rotateY(Math.PI), (deathCooldown||(distanceTo(otherPlayer.position,camera.position)<=20&&(document.body.appendChild(gunsounds.pistol.cloneNode()).play(),(Math.floor(Math.random()*2)==1&&((e)=>{for(let i=0;i<e;i++){gametime.run("hit",[gametime.user.position])}})(5))))) }, 500) }, 8000);
+              let cd;
+              setInterval(()=>{otherPlayer.position.y=defaultY},1000);
+              gametime.on("hit", function(player) {
+                cd = true;
+                if (!cd) {
+                  return;
+                }
+                if (player != gametime.user.position) {
+                  if (otherPlayer.maxshot <= 0) {
+                    cd && (gametime.run("eleminate", [gametime.user.position==1?2:1]), cd = false, setTimeout(() => { cd = true }, 1000));
+                    return;
+                  }
+                  otherPlayer.maxshot--;
+                  return;
+                }
+                health += -1;
+                clearTimeout(healthUpgradeTimeout);
+                healthUpgradeTimeout = setTimeout(() => { health = 100 }, 5000);
+                if (health <= 0) {
+                  gametime.run("eleminate", [gametime.user.position]);
+                }
+                if (health <= 50) {
+                  document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #ff4444";
+                } else {
+                  document.querySelector(".health-wrapper").style.boxShadow = "0px 0px 10px 7px #25750a";
+                }
+                document.querySelector(".health").style.width = health + "%";
+                let n = setInterval(() => {
+                  if (document.querySelector("#hiteffect").style.opacity >= 1) {
+                    return clearInterval(n), (() => {
+                      let n = setInterval(() => {
+                        if (document.querySelector("#hiteffect").style.opacity <= 0) {
+                          return clearInterval(n);
+                        }
+                        document.querySelector("#hiteffect").style.opacity = String((document.querySelector("#hiteffect").style.opacity-0) - .1);
+                      });
+                    })();
+                  }
+                  document.querySelector("#hiteffect").style.opacity = String((document.querySelector("#hiteffect").style.opacity-0) + .1);
+                });
+              });
+              let r = false;
+              gametime.on("eleminate", function(player) {
+                setTimeout(() => { r = false }, 1000);
+                let q = Math.floor(Math.random()*2);
+                document.querySelector("#death3").play();
+                if (player != gametime.user.position) {
+                  !r && (score1++, r=true);
+                  GameOver();
+                  scene.remove(otherPlayer);
+                  switchToDeath(otherPlayer);
+                  otherPlayer.position.set((q==1?-20:20), 0, 20);
+                  otherPlayer.rotation.set(0, (q==1?-Math.PI/2+.5:Math.PI/2-.5), 0);
+                  setTimeout(() => { scene.add(otherPlayer) }, 2000);
+                  return;
+                }
+                !r && (score2++, r=true);
+                GameOver();
+                otherPlayer.position.set(q==1?-20:20, 0, 20);
+                otherPlayer.rotation.set(0, q==1?-Math.PI/2+.5:Math.PI/2-.5, 0);
+                otherPlayer.maxshot = 6;
+                deathCooldown = true;
+                setTimeout(() => {
+                  deathCooldown = false;
+                }, 10000);
+                switchToDeath(camera);
+                let t = 5;
+                let spawnPoint = (distanceTo({x:respawnPoints[0][0],y:respawnPoints[0][1],z:respawnPoints[0][2]},otherPlayer.position)<=20)?respawnPoints[1]:respawnPoints[0];
+                swal({
+                  title: "You died!",
+                  text: "You will respawn in " + t + " seconds...",
+                  closeOnEsc: false,
+                  closeOnEnterKey: false,
+                  closeOnSpaceKey: false,
+                  closeOnClickOutside: false,
+                  button: false
+                });
+                walkAxisYLocked = false;
+                camera.position.set(0,30,0);
+                camera.rotation.set(-Math.PI/2,0,Math.PI/2);
+                controls.isLocked = false;
+                scene.remove(gun);
+                scene.remove(myPlayer);
+                document.querySelector(".ui").style.visibility = "hidden";
+                let i = setInterval(() => {
+                  t <= 0 ? (clearInterval(i), respawn(spawnPoint), gametime.run("respawn", [gametime.user.position + "," + spawnPoint.join(",")])) : t--;
+                  document.querySelector(".swal-text").textContent = "You will respawn in " + t + " seconds...";
+                }, 1000);
+              });
+              clearInterval(sync);
+            }
+          });
+          `;
+          swal({
+            text: "Custom JavaScript code that your bot uses",
+            content: box,
+            buttons: ["Save"]
+          });
+        }
+      };
+      function bot() {
+        let container = document.createElement("div");
+        container.innerHTML = `
+        <button onclick="botFunctions['script']()">Custom script</button>
+        <button onclick="botFunctions['appearance']()">Bot Appearance</button>
+        <button onclick="botFunctions['difficulty']()">Bot difficulty</button>
+        <button onclick="botFunctions['invetory']()">Bot invetory</button>
+        `;
+        let g = setInterval(() => { sliderAmount.textContent = (((slider.value-0)+250)*7.5).toFixed(0) + " MB" }, 100);
+        swal({
+          title: "Customize bot",
+          text: "Customize everything about your bot",
+          content: container,
+          closeOnEsc: false,
+          closeOnEnterKey: false,
+          closeOnSpaceKey: false,
+          closeOnClickOutside: false
+        }).then((e) => {
+          clearInterval(g);
+          localStorage.setItem("performance", document.querySelector(".swal-content").querySelector("input").value);
+          redirect ? location.replace(decodeURIComponent(atob(new URLSearchParams(location.search).get("r")))+"#ignore") : swal.close();
         });
       }
       window.onload = () => {
         if (location.hash == "#memory") {
-          performance();
+          performance(true);
         }
       };
       function animate() {
@@ -174,6 +361,7 @@
           character.rotation.set(0,Math.PI,0),camera.rotation.set(0,0,0),character.position.set(0,0,0),camera.position.set(0,2,3);
         });
       }
+      function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
     </script>
   </body>
 </html>
