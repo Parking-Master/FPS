@@ -80,8 +80,22 @@
         transform: scale(1) !important;
         z-index: -100;
       }
+      .swal-modal {
+        background: #444;
+        box-shadow: 0px 0px 10px 5px #ff4444;
+      }
+      .swal-modal * {
+        color: #ff4444;
+      }
+      .swal-button {
+        background: #ff4444 !important;
+        color: #333 !important;
+        box-shadow: none !important;
+        outline: none !important;
+      }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/EastDesire/jscolor@latest/jscolor.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
   <body>
     <script src="https://threejs.org/build/three.min.js"></script>
@@ -100,6 +114,34 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
       scene.add(camera);
+      function performance() {
+        let container = document.createElement("div");
+        let slider = document.createElement("input");
+        let sliderAmount = document.createElement("span");
+        container.appendChild(slider);
+        container.appendChild(sliderAmount);
+        slider.type = "range";
+        slider.value = localStorage["performance"] || 100;
+        let g = setInterval(() => { sliderAmount.textContent = (((slider.value-0)+250)*7.5).toFixed(0) + " MB" }, 100);
+        swal({
+          title: "Performance",
+          text: "Set the amount of performance the game takes.",
+          content: container,
+          closeOnEsc: false,
+          closeOnEnterKey: false,
+          closeOnSpaceKey: false,
+          closeOnClickOutside: false
+        }).then((e) => {
+          clearInterval(g);
+          localStorage.setItem("performance", document.querySelector(".swal-content").querySelector("input").value);
+          location.replace(decodeURIComponent(atob(new URLSearchParams(location.search).get("r")))+"#ignore");
+        });
+      }
+      window.onload = () => {
+        if (location.hash == "#memory") {
+          performance();
+        }
+      };
       function animate() {
         requestAnimationFrame(animate);
         typeof character != "undefined" && changeColor(document.querySelector("#color-value").value);
