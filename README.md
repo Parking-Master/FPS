@@ -145,6 +145,8 @@ The UZI is a like a very weak pistol which also has a full auto feature which ma
 > ( ESC ): Cancel<br>
 > ( CURSOR ): Look around<br>
 
+_(Official documentation at Documentation.md)_
+
 ## Support & Contribution
 If you enjoyed the project / repository, please help out by submitting feature requests or report bugs in the "Issues" section.
 
