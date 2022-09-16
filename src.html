@@ -352,7 +352,7 @@
         <hr style="margin:0">
         <span class="player2">B - <span class="score">0</span></span>
         <hr style="margin:0">
-        <div id="time"><span id="minutes">5</span>:<span id="seconds">00</span></div>
+        <div id="time"><span id="minutes">0</span>:<span id="seconds">00</span></div>
       </div>
       <div class="health-wrapper">
         <div class="health"></div>
@@ -387,7 +387,7 @@
       score1 = 0;
       score2 = 0;
       setScore = 10;
-      setTime = 5;
+      setTime = 10;
       primaryRounds = 36;
       secondaryRounds = 10;
       gunMeleeRotationY = 0;
@@ -534,6 +534,7 @@
       }
       function GameOver() {
         if (score1 >= setScore || score2 >= setScore) {
+          document.querySelector("#game-over").play();
           if (score1 >= setScore && gametime.user.position == 1 || score2 >= setScore && gametime.user.position == 2) {
             swal({
               title: "Game over",
@@ -1340,14 +1341,14 @@
           currentMap!="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1.25);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e&&x!=follower&&x!=myPlayer))&&(x instanceof THREE.Mesh&&x.isObject3D&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),100),epos=e.position})();
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.6,20),new THREE.MeshBasicMaterial({map:textures["flame"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateX(.2),e.translateZ(-1.5),e.rotateY(1),scene.add(e),e.material.opacity=.75,setTimeout(()=>scene.remove(e),50)})();
           // (()=>{let o=new THREE.DirectionalLight(13418153,1);o.position.copy(gun.position),o.rotation.copy(gun.rotation),o.updateMatrix(),scene.add(o),o.scale.set(.01,.1,.1),setTimeout((()=>scene.remove(o)),150),light.shadowCameraLeft=-3e3,o.shadowCameraRight=3e3,o.shadowCameraTop=3500,o.shadowCameraBottom=-3e3,o.lookAt(camera.position)})();
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:.04),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
+          let hitSoundPlay = false;
+          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:.04),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-2);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),(x.name.includes("Container")&&!hitSoundPlay&&(hitSoundPlay=true,(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(e.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;console.log(u);g.play()})()),setTimeout(()=>{hitSoundPlay=false},100)),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),20000)})();
           currentPerformance > 50 && Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.025)}));setTimeout((()=>clearInterval(t)),5000)})();
           /sniper|shotgun/gi.test(currentWeapon)&&(new THREE.GLTFLoader).load("models/muzzle_flash.glb",(e)=>{e=e.scene;e.position.copy(camera.position),e.scale.set(.6,.6,.6),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-1.5),e.rotateY(.6),scene.add(e),setTimeout(()=>scene.remove(e),50)});
           gametime.run("shot", [currentWeapon+","+epos.x+","+epos.y+","+epos.z+","+gametime.user.position]);
           if (intersection != null) {
             for(let i=0;i<addedDamage;i++){gametime.run("hit",[gametime.user.position==1?2:1])}
           }
-          (document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode()).play();
         }, 50);
         /rifle|pistol|sniper/gi.test(currentWeapon)&&(canFire=false);
         setTimeout(()=>{/rifle|pistol|sniper/gi.test(currentWeapon)&&(canFire=true)},currentWeapon=="pistol"?150:300);
@@ -1433,7 +1434,7 @@
             });
           });
           isZoomed && zoomOut(10);
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.06,20),new THREE.MeshBasicMaterial({map:textures["scratch"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&intersection.object.name.includes("Container")&&scene.add(e),clearInterval(f))}),e.translateZ(-.05)});setTimeout(()=>scene.remove(e),5000)})();
+          currentMap=="CARGO"&&intersection!=null&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.06,20),new THREE.MeshBasicMaterial({map:textures["scratch"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&intersection.object.name.includes("Container")&&scene.add(e),clearInterval(f))}),e.translateZ(-.05)});setTimeout(()=>scene.remove(e),5000)})();
         }
       });
       document.addEventListener("keyup", (e) => {
@@ -1488,7 +1489,7 @@
           alert("Error: An error occurred and the timeout was triggered. You will return to the main menu.");
           location.replace("/");
         }
-      }, 20000);
+      }, 60000);
     </script>
   </body>
 </html>
