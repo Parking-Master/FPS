@@ -180,6 +180,8 @@ MIT
 
 - ["UZI"](https://sketchfab.com/3d-models/uzi-fde60adc8aff4c61b6a8bea1f9e0743f) - <small>_by creationwasteland_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
+- ["M16 A2 Rifle"](https://sketchfab.com/3d-models/m16-a2-rifle-20c4bb925ca349c6b33aca176b8affba) - <small>_by Luchador_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
 - ["Remington 870"](https://sketchfab.com/3d-models/remington-870-police-magnum-12-gauge-shotgun-eea11de7e9d24b6683962b8388c319eb) - <small>_by 8sianDude_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 - ["Veld Fire"](https://hdrihaven.com/hdri/?h=veld_fire) - <small>_by Greg Zaal_<br>Licensed under CC0 ("No Rights Reserved") (https://creativecommons.org/share-your-work/public-domain/cc0/).
