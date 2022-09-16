@@ -591,7 +591,8 @@
           return;
         }
         document.body.appendChild(gunsounds[wpn].cloneNode()).play();
-        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
+        (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
+        /sniper|shotgun/gi.test(wpn)&&(new THREE.GLTFLoader).load("models/muzzle_flash.glb",(e)=>{e=e.scene;e.position.copy(otherPlayer.position),e.scale.set(.6,.6,.6),e.rotation.copy(otherPlayer.rotation),e.updateMatrix(),e.translateZ(-1.5),e.rotateY(.6),scene.add(e),setTimeout(()=>scene.remove(e),50)});
       });
       gametime.on("connect", function() {
         connectedUsers++;
