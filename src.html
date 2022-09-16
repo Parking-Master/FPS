@@ -690,7 +690,7 @@
         otherPlayer.rotation.order = "YXZ";
         otherPlayer.rotation.y = pos.split(",")[1];
         otherPlayer.getObjectByName("neck_02_071").rotation.z = pos.split(",")[0];
-        otherPlayer.getObjectByName("WeaponConceptACE35Rglb").rotation.x = pos.split(",")[0]-1;
+        // otherPlayer.getObjectByName("WeaponConceptACE35Rglb").rotation.x = pos.split(",")[0]-1;
       });
       gametime.on("selectCharacter", function(data) {
         let character = data.split(",")[0];
