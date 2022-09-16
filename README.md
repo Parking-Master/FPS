@@ -73,7 +73,7 @@ The F.O.T.U.S. Armor (Fist Of The Unicorns) is a metafictional joke character or
 The Weapon Concept ACE-35R ("Default Rifle") is a basic 3-round-burst and Semi-Automatic rifle that does average damage to all aiming positions. This rifle is most commonly used in close-quarters and medium-range combats.
 <br>
 <br>
-- <b>Damage</b>: 2/6
+- <b>Damage</b>: 30/100
 <br>
 - <b>Accuracy</b>: 40/100
 <br>
@@ -83,7 +83,7 @@ The Weapon Concept ACE-35R ("Default Rifle") is a basic 3-round-burst and Semi-A
 The G17 9mm Pistol is the standard pistol that shoots 9mm x 9mm rounds.
 <br>
 <br>
-- <b>Damage</b>: 1/6
+- <b>Damage</b>: 10/100
 <br>
 - <b>Accuracy</b>: 10/100
 <br>
@@ -93,7 +93,7 @@ The G17 9mm Pistol is the standard pistol that shoots 9mm x 9mm rounds.
 The HK-G28 is a fast and easy weapon to use, but not very mobile. It uses green-tip .50 Cal armor piercing incendiary rounds that can cause 1/2 damage up to 300 yards away.
 <br>
 <br>
-- <b>Damage</b>: 3/6
+- <b>Damage</b>: 50/100
 <br>
 - <b>Accuracy</b>: 65/100
 <br>
@@ -103,7 +103,7 @@ The HK-G28 is a fast and easy weapon to use, but not very mobile. It uses green-
 The M16 A2 Assault variant is a weak weapon with a full auto feature which makes it more powerful. Accuracy is low on full auto mode.
 <br>
 <br>
-- <b>Damage</b>: 1/6
+- <b>Damage</b>: 10/100
 <br>
 - <b>Accuracy</b>: 35/100
 <br>
@@ -113,12 +113,22 @@ The M16 A2 Assault variant is a weak weapon with a full auto feature which makes
 The UZI is a like a very weak pistol which also has a full auto feature which makes it more powerful. Accuracy is low on full auto mode, and damage is very low.
 <br>
 <br>
-- <b>Damage</b>: 1/6
+- <b>Damage</b>: 6/100
 <br>
 - <b>Accuracy</b>: 5/100
 <br>
 - <b>Overall</b>: 1/5
 <img align="center" width="20%" alt="Default" src="/images/guns/uzi.png"/>
+<h4 align="center">Remington 870 12 Guage Shotgun</h5>
+The Remington 870 is a high-powered 12 guage pump-action shotgun with low accuracy but high damage. It fires birdshot 12 guage shotgun shells.
+<br>
+<br>
+- <b>Damage</b>: 36/100
+<br>
+- <b>Accuracy</b>: 20/100
+<br>
+- <b>Overall</b>: 4/5
+<img align="center" width="20%" alt="Default" src="/images/guns/shotgun.png"/>
 
 ###### <i>Note: More weapons may be coming soon</i>
 
@@ -169,5 +179,9 @@ MIT
 - ["FPS Pistol Animations"](https://sketchfab.com/3d-models/fps-pistol-animations-0d7a343dcb6f401197a73c91aee93f6d) - <small>_by Cransh_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 - ["UZI"](https://sketchfab.com/3d-models/uzi-fde60adc8aff4c61b6a8bea1f9e0743f) - <small>_by creationwasteland_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+- ["Remington 870"](https://sketchfab.com/3d-models/remington-870-police-magnum-12-gauge-shotgun-eea11de7e9d24b6683962b8388c319eb) - <small>_by 8sianDude_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+- ["Veld Fire"](https://hdrihaven.com/hdri/?h=veld_fire) - <small>_by Greg Zaal_<br>Licensed under CC0 ("No Rights Reserved") (https://creativecommons.org/share-your-work/public-domain/cc0/).
 
 Did we forget to include something? [Report](https://github.com/Parking-Master/FPS/issues/new)
