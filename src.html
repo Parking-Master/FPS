@@ -690,7 +690,7 @@
         otherPlayer.rotation.order = "YXZ";
         otherPlayer.rotation.y = pos.split(",")[1];
         otherPlayer.getObjectByName("neck_02_071").rotation.z = pos.split(",")[0];
-        otherPlayer.getObjectByName("9mm_pistolglb").rotation.x = pos.split(",")[0]-1;
+        otherPlayer.getObjectByName("WeaponConceptACE35Rglb").rotation.x = pos.split(",")[0]-1;
       });
       gametime.on("selectCharacter", function(data) {
         let character = data.split(",")[0];
@@ -885,7 +885,7 @@
                     character.rotateX(Math.PI/2);
                     scene.remove(deadBody);
                     scene.add(character);
-                    character.getObjectByName("9mm_pistolglb").visible = false;
+                    character.getObjectByName("WeaponConceptACE35Rglb").visible = false;
                     // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/blood.png"),transparent:true}));e.position.set(character.position.x,character.position.y,character.position.z),e.rotation.x=-Math.PI/2,scene.add(e),setTimeout(()=>scene.remove(e),20000)})();
                   });
                 }, 2000);
