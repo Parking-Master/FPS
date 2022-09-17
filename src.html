@@ -597,6 +597,12 @@
         document.body.appendChild(gunsounds[wpn].cloneNode()).play();
         (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
         (new THREE.GLTFLoader).load("models/muzzle_flash.glb",(e)=>{e=e.scene;e.position.copy(otherPlayer.position),e.scale.set(.6,.6,.6),e.rotation.copy(otherPlayer.rotation),e.updateMatrix(),e.translateY(1.3),e.translateZ(-1),e.rotateY(.6),scene.add(e),setTimeout(()=>scene.remove(e),50)});
+        otherPlayer.getObjectByName("WeaponConceptACE35Rglb").rotation.x+=.04;
+        otherPlayer.getObjectByName("clavicle_r_039").rotation.y+=.1;
+        setTimeout(() => {
+          otherPlayer.getObjectByName("WeaponConceptACE35Rglb").rotation.x+=-.04;
+          otherPlayer.getObjectByName("clavicle_r_039").rotation.y+=-.1;
+        }, 50);
       });
       gametime.on("connect", function() {
         connectedUsers++;
