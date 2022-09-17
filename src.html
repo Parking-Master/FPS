@@ -365,7 +365,7 @@
       <img id="scope" src="images/scope.png" width="100%" height="100%" style="position:absolute;visibility:hidden;margin:0;padding:0;left:0;top:0;right:0;bottom:0;z-index:9999" />
       <img id="scope1" src="images/scope1.png" width="100%" height="100%" style="position:absolute;visibility:hidden;margin:0;padding:0;left:0;top:0;right:0;bottom:0;z-index:9999" />
       <!-- <div id="radar-obj"></div> -->
-      <span id="rounds"><img src="images/guns/rifle.png" width="100%" style="margin-top:10px" /><br style="margin-top:25px"><span id="counter">36</span> &minus; <span id="magcount">3</span></span>
+      <span id="rounds"><img src="images/guns/rifle.png" width="100%" style="margin-top:10px" /><br style="margin-top:25px"><span id="counter">36</span> &minus; <span id="magcount">3</span> &minus; <span id="grenadecount">2</span></span>
       <img id="hiteffect" src="images/hit.png" width="100%" height="100%" style="margin:0;padding:0;opacity:0" />
     </div>
     <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
@@ -389,6 +389,7 @@
       score2 = 0;
       setScore = 10;
       setTime = 10;
+      setGrenades = 2;
       primaryRounds = 36;
       secondaryRounds = 10;
       gunMeleeRotationY = 0;
@@ -498,6 +499,7 @@
         magsLeft = 3;
         primaryMagsLeft = 3;
         secondaryMagsLeft = 4;
+        grenadesLeft = setGrenades;
         primaryGun = weapons[fixedLoadout[0]].scene;
         secondGun = weapons[fixedLoadout[1]].scene;
         currentWeaponPosition = "primary";
@@ -564,6 +566,7 @@
           }
         }
       }
+      function throwGrenade(){"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),"CARGO"==currentMap&&(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&n instanceof THREE.Mesh&&(n.name.includes("Container")&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=2?gametime.run("eleminate",[gametime.user.position]):distanceTo(camera.position,e.position)<=2&&gametime.run("eleminate",[1==gametime.user.position?2:1]),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.1)}))}),2e3),clearInterval(t))})),a.translateZ(-.1),a.translateY(-.02)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
       /* Gametime.js event variables */
       gametime.set("key", "pub-c-74710794-cf40-43e3-ae10-d978cbdb8822", "sub-c-4da51a44-cbb3-11ec-924a-fed9c56767c0");
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
@@ -787,6 +790,7 @@
         follower.position.copy(camera.position);
         document.querySelector("#rounds").querySelector("#counter").textContent = (currentWeaponPosition=="primary"?primaryRounds:secondaryRounds);
         document.querySelector("#rounds").querySelector("#magcount").textContent = ((currentWeaponPosition=="primary"?primaryMagsLeft:secondaryMagsLeft) < 0 ? 0 : (currentWeaponPosition=="primary"?primaryMagsLeft:secondaryMagsLeft));
+        document.querySelector("#rounds").querySelector("#grenadecount").textContent = grenadesLeft;
         document.querySelector(".player1").querySelector(".score").textContent = score1;
         document.querySelector(".player2").querySelector(".score").textContent = score2;
         currentPerformance < 100 ? setTimeout(() => {
@@ -805,7 +809,7 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      fixedLoadout = (localStorage["prefsLoadout"] || "shotgun,pistol").split(",");
+      fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
       loadout = fixedLoadout;
       document.querySelector("#rounds").querySelector("img").src = "images/guns/" + fixedLoadout[0] + ".png";
       currentWeapon = loadout[0];
@@ -1417,7 +1421,10 @@
             });
           });
           isZoomed && zoomOut(10);
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.06,20),new THREE.MeshBasicMaterial({map:textures["scratch"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&distanceTo(e.position,gun.position)<=1&&scene.add(e),clearInterval(f))}),e.translateZ(-.01)});setTimeout(()=>scene.remove(e),10000)})();
+          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.1,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&distanceTo(e.position,gun.position)<=1&&scene.add(e),setTimeout(()=>{let f=setInterval(()=>{e.material.opacity<=0?(clearInterval(f),scene.remove(e)):(e.scale.set(e.scale.x+.1,e.scale.y+.1,e.scale.z+.1),e.material.opacity+=-.2)})},50),clearInterval(f))}),e.translateZ(-.01)})})();
+        }
+        if (e.key == "p" && !e.repeat) {
+          throwGrenade();
         }
       });
       document.addEventListener("keyup", (e) => {
