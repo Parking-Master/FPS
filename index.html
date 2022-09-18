@@ -100,6 +100,14 @@
     <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZQ6TMGVXJ"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-2ZQ6TMGVXJ");
+  </script>
   <body>
     <div class="wrapper">
       <script src="https://unpkg.com/@popperjs/core@2"></script>
@@ -111,7 +119,7 @@
       <br>
       <button class="button" onclick="findLobby()">FIND LOBBY</button>
       <br>
-      <button class="button" onclick='setDialog(`open`, { title: `Enter lobby name`, content: `<input onkeyup="window.createlobbytext=this.value" />` }, () => setDialog(`open`, { title: `Enter lobby name`, content: `<input onkeyup="window.createlobbytext=this.value" />` }, () => createLobby(createlobbytext)))'>CREATE LOBBY</button>
+      <button class="button" onclick='setDialog(`open`, { title: `Enter lobby name`, content: `Enter a name (2-10 characters):<input onkeyup="window.createlobbytext=this.value" /><br><a href="help.html#create-a-lobby">Need help?</a>` }, () => createLobby(createlobbytext))'>CREATE LOBBY</button>
       <br>
       <!-- <button class="button" onclick="chooseMap(startLocalGame)">SPLITSCREEN</button>
       <br> -->
@@ -143,13 +151,14 @@
         if (name == "" || !name) { return; }
         let lobby = new Lobby();
         lobby.set("name", name);
-        lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved"), findLobby(name.toString()));
+        lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved"), findLobby(name.toString(), () => { document.querySelector(".dialog-content").innerHTML += '<div class="lobby" id="'+btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(name.toString())+("&map="+(els[0]||"Cargo"))+'\')" style="border:2px solid #25750a">'+(name.toString().trim()==""?("(blank space)"):name.toString().trim())+'</a>" : '+(new Date).toString().split(" ").splice(1).reverse().splice(4).reverse().join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>", location.hash = btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"") }));
       }
-      function findLobby() {
+      function findLobby(l, addlobby = null) {
         Notiflix.Notify.info("Loading lobbies...");
-        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?(document.querySelector("#NotiflixNotifyWrap").children[0].click(),document.querySelector(".dialog-content").innerHTML+='<div class="lobby" id="'+btoa(encodeURIComponent(n.name))+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"):(document.querySelector("#NotiflixNotifyWrap").children[0].click(),setDialog("open",{title:"Choose a map",content:'<div class="lobby" id="'+btoa(encodeURIComponent(n.name))+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {})),e=!0}),(e=>{}))}})();
+        let islobbyadded=false;
+        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?(document.querySelector("#NotiflixNotifyWrap").children[0].click(),(!!addlobby&&!islobbyadded&&(islobbyadded=true,addlobby())),document.querySelector(".dialog-content").innerHTML+='<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"):(document.querySelector("#NotiflixNotifyWrap").children[0].click(),setDialog("open",{title:"Choose a map",content:'<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {})),e=!0}),(e=>{}))}})();
       }
-      function chooseRandom() {
+      function  hooseRandom() {
         location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").children[0].click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
       }
       function desktopOptions() {

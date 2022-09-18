@@ -106,6 +106,14 @@
     <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   </head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZQ6TMGVXJ"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-2ZQ6TMGVXJ");
+  </script>
   <body>
     <h1 class="page-title">FPS Help</h1>
     <div class="wrapper">
@@ -149,7 +157,7 @@
       4. Choose a lobby that someone has already made (or skip to [To create a lobby]() to make your own).<br>
       5. Wait for player(s) to join. The game will start automatically.<br>
       
-      <h4>To create a lobby</h4>
+      <h4 id="create-a-lobby">To create a lobby</h4>
       1. Head over to www.fps5.ml<br>
       2. Click "CREATE LOBBY"<br>
       3. Enter your lobby name.<br>
