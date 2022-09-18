@@ -293,6 +293,7 @@
       <h2 style="font-size:20px;text-align:center;position:absolute;margin-top:100px;color:#25750a">LOADING<br><div class="progress-bar"><div id="progress"></div></div></h2>
     </div>
     <audio id="explosion" src="sounds/explosion.mp3" volume="1" current-time=".1"></audio>
+    <audio id="grenade_explosion" src="sounds/grenade_explosion.mp3" volume="1" current-time=".1"></audio>
     <audio id="death1" src="sounds/death1.mp3" volume="1" current-time="0"></audio>
     <audio id="death2" src="sounds/death2.mp3" volume="1" current-time="0"></audio>
     <audio id="death3" src="sounds/death3.mp3" volume="1" current-time="0"></audio>
@@ -564,9 +565,11 @@
               location.replace("/");
             });
           }
+          return true;
         }
+        return false;
       }
-      function throwGrenade(){"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),"CARGO"==currentMap&&(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&n instanceof THREE.Mesh&&(n.name.includes("Container")&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=2?gametime.run("eleminate",[gametime.user.position]):distanceTo(camera.position,e.position)<=2&&gametime.run("eleminate",[1==gametime.user.position?2:1]),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.1)}))}),2e3),clearInterval(t))})),a.translateZ(-.1),a.translateY(-.02)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
+      function throwGrenade(){let b=0;"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),"CARGO"==currentMap&&(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&n instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(n.name.includes("Container")&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));let g=document.querySelector("#grenade_explosion").cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(4,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(a.position),e.rotation.copy(a.rotation),e.updateMatrix(),scene.add(e),e.lookAt(camera.position),e.translateY(1);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.005)}));setTimeout((()=>clearInterval(t)),10000)})(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=2?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1,setTimeout(()=>{document.querySelector("#hiteffect").style.opacity=0},1000)):distanceTo(camera.position,e.position)<=2&&gametime.run("eleminate",[1==gametime.user.position?2:1]),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.1)}))}),2e3),clearInterval(t))})),b+=.001,a.translateZ(-.1),a.position.y+=(-b)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
       /* Gametime.js event variables */
       gametime.set("key", "pub-c-74710794-cf40-43e3-ae10-d978cbdb8822", "sub-c-4da51a44-cbb3-11ec-924a-fed9c56767c0");
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
@@ -783,8 +786,8 @@
         if (gunLocked && currentWeapon == "uzi" && isZoomed) { (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.115)),gun.translateY(-.84),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1),(currentWeapon=="assault"&&(gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),(currentWeapon=="rifle"?(scene.children.indexOf(gun)>-1&&scene.remove(gun)):gun.translateX(-.1)),gun.translateY(-.86),gun.scale.set(.1,.1,.1),gun.rotateX(-.025),gun.rotateY(-.05),gun.rotateZ(-.1)))) }
         if (gunLocked && currentWeapon == "shotgun" && isZoomed) { (gun.position.copy(camera.position),gun.rotation.copy(camera.rotation),gun.updateMatrix(),gun.translateX(.1),gun.translateY(-.85),gun.scale.set(.1,.1,.1),gun.rotateY(-.05),(melee&&gun.rotateY(gunMeleeRotationY),gun.translateZ(gunMeleeRotationY/25),gun.translateX(-(gunMeleeRotationY/100)))) }
         let delta = clock.getDelta();
-        if (typeof mixer1 != "undefined") mixer1.update(delta+.03);
-        if (typeof mixer2 != "undefined") mixer2.update(delta+.03);
+        if (typeof mixer1 != "undefined") mixer1.update(delta+.02);
+        if (typeof mixer2 != "undefined") mixer2.update(delta+.02);
         if (typeof mixer4 != "undefined") mixer3.update(delta);
         mixers.length>0&&(()=>{for(let i=0;i<mixers.length;i++){typeof mixers[i]!="undefined"&&mixers[i].update(delta)}})();
         follower.position.copy(camera.position);
@@ -888,6 +891,14 @@
                 deadBody.position.copy(otherPlayer.position);
                 deadBody.rotation.copy(otherPlayer.rotation);
                 deadBody.updateMatrix();
+                let h = setInterval(() => {
+                  map.traverse(x => {
+                    if (collision(deadBody, x)) {
+                      return clearInterval(h);
+                    }
+                    deadBody.position.y += -.01;
+                  });
+                });
                 scene.add(deadBody);
                 setTimeout(() => {
                   (new THREE.GLTFLoader).load("models/characters/" + otherSelectedCharacter + ".glb", (e) => {
@@ -1004,7 +1015,9 @@
                 return;
               }
               !r && (score2++, r=true);
-              GameOver();
+              if (GameOver()) {
+                return;
+              }
               otherPlayer.position.set(q==1?-20:20, 0, 20);
               otherPlayer.rotation.set(0, q==1?-Math.PI/2+.5:Math.PI/2-.5, 0);
               otherPlayer.maxshot = 6;
