@@ -269,13 +269,17 @@
       }
       #weapontext {
         position: absolute;
-        left: 50px;
-        color: #ff4444;
+        left: 50%;
+        color: #333;
+        text-shadow: 0 2px #ff4444;
         font-size: 20px;
         font-weight: 600;
         font-family: monospace, Arial;
         z-index: 9999;
         bottom: 50px;
+        width: 1000px;
+        margin-left: -500px;
+        text-align: center;
       }
       a:active {
         border: 2px solid currentColor;
@@ -375,7 +379,7 @@
       <img id="scope1" src="images/scope1.png" width="100%" height="100%" style="position:absolute;visibility:hidden;margin:0;padding:0;left:0;top:0;right:0;bottom:0;z-index:9999" />
       <!-- <div id="radar-obj"></div> -->
       <span id="rounds"><img src="images/guns/rifle.png" width="100%" style="margin-top:10px" /><br style="margin-top:25px"><span id="counter">36</span> &minus; <span id="magcount">3</span> &minus; <span id="grenadecount">2</span></span>
-      <img id="hiteffect" src="images/hit.png" width="100%" height="100%" style="margin:0;padding:0;opacity:0" />
+      <img id="hiteffect" src="images/hit.png" width="100%" height="100%" style="margin:0;padding:0;opacity:0;width:100vw;height:100vw" />
     </div>
     <p id="weapontext" style="display:none">Hold [T] to pick up <span class="weapon-name"></span></p>
     <!-- <script type="module">
@@ -384,6 +388,18 @@
     </script> -->
     <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS@master/gametime-socket.js"></script> -->
     <script>
+      defaultKeys = "f,b,r, ,t,p,y,i,z";
+      keyControls = {
+        "shoot": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[0],
+        "punch": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[1],
+        "reload": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[2],
+        "jump": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[3],
+        "interact": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[4],
+        "throwGrenade": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[5],
+        "switchWeapon": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[6],
+        "zoomIn": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[7],
+        "zoomOut": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[8]
+      };
       function showText(e) {
         document.querySelector("#weapontext").textContent = e;
         document.querySelector("#weapontext").style.display = "block";
@@ -404,6 +420,7 @@
       gunMeleeRotationY = 0;
       fullAutoFiring = false;
       currentPerformance = (localStorage["performance"] || "100") - 0;
+      // currentPerformance > 90 ? window.devicePixelRatio = 2 : (currentPerformance > 60 ? window.devicePixelRatio = 1 : (currentPerformance > 20 ? window.devicePixelRatio = .5 : void(0)));
       currentMap = (new URLSearchParams(location.search).get("map") || "haven").toUpperCase();
       setInterval(() => {
         if (fullAutoFiring && currentWeapon == "assault") {
@@ -445,7 +462,7 @@
       healthUpgradeTimeout = 1;
       animated = false;
       const scene = new THREE.Scene();
-      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement);
+      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement),renderer.setPixelRatio(window.devicePixelRatio-.5);
       function isTouchDevice(){return!!window.matchMedia("(pointer: coarse)").matches}
       isTouchDevice()?(()=>{const{Euler:e,EventDispatcher:t,Vector3:n}=THREE;var o;o=!1;var i=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent),c=document.body.clientWidth/2,r=(document.body.clientHeight,window.innerHeight),s=function(t,s){o=!!i,void 0===s&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),s=document.body),this.domElement=s,this.isLocked=!1;var m,u,d,a=this,h={type:"change"},v={type:"lock"},l={type:"unlock"},E=new e(0,0,0,"YXZ"),p=Math.PI/2,k=Math.PI/3.8,L=Math.PI/9,f=new n,y=0,M=0;function x(){}function P(e){u=e.touches[0].clientY,m=e.touches[0].clientX,y=m-c,M=u-(r-100),E.setFromQuaternion(t.quaternion),E.y=.005*y,E.x=.005*M,E.x=Math.max(-p,Math.min(L,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h),console.log(M)}function w(e){}function g(e){if(!1!==a.isLocked){var n=e.movementX||e.mozMovementX||e.webkitMovementX||0,o=e.movementY||e.mozMovementY||e.webkitMovementY||0;E.setFromQuaternion(t.quaternion),E.y-=.002*n,E.x-=.002*o,E.x=Math.max(-p,Math.min(p,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h)}}function b(){document.pointerLockElement===a.domElement?(a.dispatchEvent(v),a.isLocked=!0):(a.dispatchEvent(l),a.isLocked=!1)}function F(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){document.addEventListener("mousemove",g,!1),document.addEventListener("touchstart",x,!1),document.addEventListener("touchmove",P,!1),document.addEventListener("pointerlockchange",b,!1),document.addEventListener("pointerlockerror",F,!1)},this.disconnect=function(){document.removeEventListener("mousemove",g,!1),document.removeEventListener("touchend",w,!1),document.removeEventListener("touchmove",onTouchmove,!1),document.removeEventListener("pointerlockchange",b,!1),document.removeEventListener("pointerlockerror",F,!1)},this.dispose=function(){this.disconnect()},this.getObject=function(){return t},this.getDirection=(d=new n(0,0,-1),function(e){return e.copy(d).applyQuaternion(t.quaternion)}),this.moveForward=function(e){f.setFromMatrixColumn(t.matrix,0),f.crossVectors(t.up,f),t.position.addScaledVector(f,e)},this.moveRight=function(e){f.setFromMatrixColumn(t.matrix,0),t.position.addScaledVector(f,e)},this.lock=1==o?function(){a.isLocked=!0,this.connect()}:function(){this.domElement.requestPointerLock()},this.unlock=function(){document.exitPointerLock()},this.connect()};(s.prototype=Object.create(t.prototype)).constructor=s,window.PointerLockControls=s})():(()=>{const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}window.PointerLockControls=PointerLockControls})();
       scene.add(camera);
@@ -846,6 +863,7 @@
         });
       }
       let manager=new THREE.LoadingManager;manager.onProgress=function(e,a,n){loadingProgress=(a/n*100).toFixed(0)};let Loaders={Map:new THREE.GLTFLoader(manager).load("models/maps/"+currentMap+"/scene.gltf", (map) => {
+        currentMap=="CARGO"&&(map.scene.getObjectByProperty("type","DirectionalLight").intensity=.4);
         window.map = map.scene;
         scene.add(map.scene);
         map.scene.scale.set(1.65, 1.65, 1.65);
@@ -934,8 +952,14 @@
         let intersections = raycaster.intersectObjects(raycastTargets);
         !lockIntersection && (intersection = intersections[0] || null);
       }, currentPerformance < 50 ? 500 : 250);
-      function getLink() {
-        alert(location.href.replace("src.html","play.html"));
+      function getLink(el) {
+        let t = el.textContent;
+        el.textContent = (location.href.replace("src.html","play.html"));
+        el.style.textDecoration = "none";
+        setTimeout(() => {
+          el.textContent = t;
+          el.style.textDecoration = "underline";
+        }, 2500);
       }
       function cancelSearch() {
         connectedUsers = 0;
@@ -1071,14 +1095,18 @@
       }
       let options = document.createElement("div");
       options.innerHTML = `
-      <a onclick="getLink()" style="text-decoration:underline">Share Link</a><br>
-      <a onclick="bot()" style="text-decoration:underline">Start bot</a><br>
-      <a onclick="freePlay()" style="text-decoration:underline">Free play</a><br>
-      <a onclick="cancelSearch()" style="text-decoration:underline">Stop Search</a>
+      <a href="" onclick="event.preventDefault(); alert('This dialog shows when there are not enough players to start. You can choose to wait for players, or start a bot(s) if you don\\'t want to wait.')">What is this?</a>
+      <details>
+        <summary>Menu</summary>
+        <a onclick="getLink(this)" style="text-decoration:underline">Share Link</a><br>
+        <a onclick="bot()" style="text-decoration:underline">Start bot</a><br>
+        <a onclick="freePlay()" style="text-decoration:underline">Free play</a><br>
+        <a onclick="cancelSearch()" style="text-decoration:underline">Stop Search</a>
+      </details>
       `;
       swal({
         title: "Searching for players",
-        text: "Please wait... Game will start automatically",
+        text: "Please wait... The game will start automatically",
         button: false,
         content: options,
         closeOnEsc: false,
@@ -1086,13 +1114,16 @@
         closeOnSpaceKey: false,
         closeOnClickOutside: false
       });
-      let searchingEngine = setInterval(() => {
-        if (connectedUsers >= 2 && document.querySelector(".loader") == null) {
-          setTimeout(() => {
-            start();
-          }, 1000);
-          clearInterval(searchingEngine);
-        }
+      let searchingEngine;
+      window.addEventListener("load", () => {
+        searchingEngine = setInterval(() => {
+          if (connectedUsers >= 2 && document.querySelector(".loader") == null) {
+            setTimeout(() => {
+              start();
+            }, 1000);
+            clearInterval(searchingEngine);
+          }
+        });
       });
       didStart = false;
       function start() {
@@ -1109,7 +1140,7 @@
         });
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Double checking stats..."),1000);
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Adding shadows and textures..."),2000);
-        currentPerformance > 50 && (renderer.shadowMap.enabled=!0,myPlayer.traverse((a=>{a.isObject3D&&(a.castShadow=!0,a.receiveShadow=!0,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),map.traverse((a=>{a.isObject3D&&(a.receiveShadow=!0,a.castShadow=!1,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),light.shadow.bias=-1e-5,light.shadow.mapSize.width=4096,light.shadow.mapSize.height=4096);
+        currentPerformance > 50 && (renderer.shadowMap.enabled=!0,gun.traverse((a=>{a.isObject3D&&(a.castShadow=!0,a.receiveShadow=!0,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),myPlayer.traverse((a=>{a.isObject3D&&(a.castShadow=!0,a.receiveShadow=!0,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),map.traverse((a=>{a.isObject3D&&(a.receiveShadow=!0,a.castShadow=!1,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),light.shadow.bias=-1e-4,light.shadow.mapSize.width=4096,light.shadow.mapSize.height=4096);
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Cleaning up..."),2500);
         setTimeout(()=>{
           let img = document.createElement("img");
@@ -1253,7 +1284,7 @@
           walk("right");
         }
       });
-      const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if("i"==o.key&&!o.repeat&&!isZoomed)zoomIn(10);if("z"==o.key&&!o.repeat&&isZoomed)zoomOut(10)}));
+      const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if(keyControls.zoomIn==o.key&&!o.repeat&&!isZoomed)zoomIn(10);if(keyControls.zoomOut==o.key&&!o.repeat&&isZoomed)zoomOut(10)}));
       function zoomIn(amount) {
         (currentWeapon=="rifle"&&(document.querySelector("#scope").style.visibility="visible"));
         (currentWeapon=="sniper"&&(amount=20,scene.remove(gun),document.querySelector("#scope1").style.visibility="visible"));
@@ -1284,24 +1315,29 @@
         (currentWeaponPosition=="primary"?primaryMagsLeft=3:secondaryMagsLeft=3);
       })()),scene.add(gun),currentWeapon=e,(currentWeaponPosition=="primary"?loadout[0]=e:loadout[1]=e);for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));gametime.run("pickupWeapon",[e])}
       isTouchingOrdinance = false;
-      function createWeapon(s, n) {
-        (new THREE.GLTFLoader).load("models/weapons/ordinance-stands/" + s + ".glb", (e) => {
-          scene.add(e.scene);
-          ordinances[s] = e.scene;
-          e.scene.scale.set(.3, .3, .3);
-          e.scene.position.set(n.x, n.y - .7, n.z);
+      function createWeapon(name, position) {
+        (new THREE.GLTFLoader).load("models/weapons/ordinance-stands/" + name + ".glb", (ordinance) => {
+          ordinance = ordinance.scene;
+          scene.add(ordinance);
+          ordinances[name] = ordinance;
+          ordinance.scale.set(.3, .3, .3);
+          ordinance.position.set(position.x, position.y - .7, position.z);
           setInterval(() => {
-            if (distanceTo(ordinances[s].position, camera.position) <= 2) {
+            if (collision(ordinance, myPlayer)) {
               isTouchingOrdinance = true;
-              showText("Hold [T] to pick up " + altNames[s]);
-              document.onkeydown = (z) => {
-                z.key=="t"&&(pickupWeapon(s),scene.remove(e.scene),e.scene.position.y=10000);
+              showText("Hold [T] to pick up " + altNames[name]);
+              document.onkeydown = (e) => {
+                if (e.key == keyControls.interact) {
+                  pickupWeapon(name);
+                  scene.remove(ordinance);
+                  ordinance.position.y=10000;
+                }
               };
-            } else {
-              isTouchingOrdinance=false;
-              document.onkeydown=null;
+            } else if (!collision(ordinance, myPlayer)) {
+              isTouchingOrdinance = false;
+              document.onkeydown = null;
             }
-          });
+          }, 500);
         });
       }
       isReloading = false;
@@ -1411,7 +1447,7 @@
         if (e.key == "ArrowRight") {
           isWalkingRight = true;
         }
-        if (e.key == "f") {
+        if (e.key == keyControls.shoot) {
           if (currentWeapon == "rifle") {
             !e.repeat && fire(3, 10);
           } else if (currentWeapon == "pistol") {
@@ -1424,14 +1460,14 @@
             fire(1, 36);
           }
         }
-        if (e.key == "r" && !e.repeat && !isReloading) {
+        if (e.key == keyControls.reload && !e.repeat && !isReloading) {
           reload();
         }
-        if (e.key == " " && !isJumping) {
-          (()=>{isJumping=true;walkAxisYLocked=false;let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(camera.position.y<=defaultY){return(isJumping=false,clearInterval(h),walkAxisYLocked=true)}(t+=.05);camera.position.y+=-t},25)})())}(t+=-.05);camera.position.y+=t},25)})();
+        if (e.key == keyControls.jump && !isJumping) {
+          (()=>{let waswalking=isWalkingForward||isWalkingBackward||isWalkingLeft||isWalkingRight;document.querySelector("#walking").pause();isJumping=true;walkAxisYLocked=false;let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(camera.position.y<=defaultY){return(isJumping=false,clearInterval(h),walkAxisYLocked=true,waswalking&&document.querySelector("#walking").play())}(t+=.05);camera.position.y+=-t},25)})())}(t+=-.05);camera.position.y+=t},25)})();
           gametime.run("playerJump", [defaultY+","+gametime.user.position]);
         }
-        if (e.key == "y" && !e.repeat) {
+        if (e.key == keyControls.switchWeapon && !e.repeat) {
           currentWeaponPosition == "secondary" ? currentWeaponPosition = "primary" : currentWeaponPosition = "secondary";
           let newWeapon = currentWeaponPosition;
           newWeapon == "primary" ? currentWeapon = loadout[0] : currentWeapon = loadout[1];
@@ -1441,7 +1477,7 @@
           gunIdle = false;
           currentWeaponPosition == "primary" ? (primaryRounds <= 0 && reload()) : (secondaryRounds <= 0 && reload());
         }
-        if (e.key == "b" && !e.repeat) {
+        if (e.key == keyControls.punch && !e.repeat) {
           document.querySelector("#punch").play();
           document.querySelector("#punch").currentTime = .1;
           melee = true;
@@ -1465,7 +1501,7 @@
           isZoomed && zoomOut(10);
           currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.1,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&distanceTo(e.position,gun.position)<=1&&scene.add(e),setTimeout(()=>{let f=setInterval(()=>{e.material.opacity<=0?(clearInterval(f),scene.remove(e)):(e.scale.set(e.scale.x+.1,e.scale.y+.1,e.scale.z+.1),e.material.opacity+=-.2)})},50),clearInterval(f))}),e.translateZ(-.01)})})();
         }
-        if (e.key == "p" && !e.repeat) {
+        if (e.key == keyControls.throwGrenade && !e.repeat) {
           throwGrenade();
         }
       });
@@ -1498,7 +1534,7 @@
         if (e.key == "ArrowRight") {
           isWalkingRight = false;
         }
-        if (e.key == "f") {
+        if (e.key == keyControls.shoot) {
           fullAutoFiring = false;
         }
       });
