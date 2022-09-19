@@ -534,7 +534,7 @@
         document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
         document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
         gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
-        for (let i = 0; i < 2; i++) { gametime.run("endPlayerWalk", [gametime.user.position]) }
+        for(let i=0;i<2;i++){gametime.run("endPlayerWalk",[camera.position.x+","+camera.position.y+","+camera.position.z+","+camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}
         controls.isLocked = true;
         walkAxisYLocked = true;
         scene.add(gun);
@@ -720,6 +720,7 @@
       gametime.on("playerJump", function(data) {
         let player = data.split(",")[1];
         let defaultY = data.split(",")[0];
+        console.log(defaultY);
         if (player == gametime.user.position) {
           return;
         }
@@ -743,21 +744,42 @@
         otherSelectedCharacter = character;
         createCharacter(data.split(",")[2]);
       });
-      gametime.on("endPlayerWalk", function(player) {
-        if (player == gametime.user.positon) {
+      gametime.on("endPlayerWalk", function(data) {
+        let player = data.split(",")[6];
+        if (player == gametime.user.position) {
           return;
         }
         let a = mixer1.clipAction(characterAnimations[0]);
         a.stop();
+        otherIsWalkingForward=false;
+        otherIsWalkingBackward=false;
+        otherIsWalkingLeft=false;
+        otherIsWalkingRight=false;
+        otherPlayer.position.set(data.split(",")[0]-0,data.split(",")[1]-1.25,data.split(",")[2]-0);
+        otherPlayer.rotation.y = data.split(",")[4]-0;
       });
       gametime.on("playerWalk", function(data) {
-        let player = data.split(",")[3];
+        let player = data.split(",")[7];
+        let e = data.split(",")[6];
         if (player == gametime.user.position) {
           return;
         }
         let a = mixer1.clipAction(characterAnimations[0]);
         a.play();
         otherPlayer.position.set(data.split(",")[0]-0,data.split(",")[1]-1.25,data.split(",")[2]-0);
+        otherPlayer.rotation.y = data.split(",")[4]-0;
+        if (e == "ArrowUp") {
+          otherIsWalkingForward = true;
+        }
+        if (e == "ArrowDown") {
+          otherIsWalkingBackward = true;
+        }
+        if (e == "ArrowLeft") {
+          otherIsWalkingLeft = true;
+        }
+        if (e == "ArrowRight") {
+          otherIsWalkingRight = true;
+        }
       });
       gametime.onconnect = function() {
         gametime.run("connect");
@@ -1284,6 +1306,24 @@
           walk("right");
         }
       });
+      otherIsWalkingForward=false;
+      otherIsWalkingBackward=false;
+      otherIsWalkingLeft=false;
+      otherIsWalkingRight=false;
+      setInterval(() => {
+        if (otherIsWalkingForward) {
+          otherPlayer.translateZ(-.01);
+        }
+        if (otherIsWalkingBackward) {
+          otherPlayer.translateZ(.01);
+        }
+        if (otherIsWalkingLeft) {
+          otherPlayer.translateX(-.01);
+        }
+        if (otherIsWalkingRight) {
+          otherPlayer.translateX(.01);
+        }
+      });
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if(keyControls.zoomIn==o.key&&!o.repeat&&!isZoomed)zoomIn(10);if(keyControls.zoomOut==o.key&&!o.repeat&&isZoomed)zoomOut(10)}));
       function zoomIn(amount) {
         (currentWeapon=="rifle"&&(document.querySelector("#scope").style.visibility="visible"));
@@ -1426,7 +1466,7 @@
         if (e.key == "ArrowUp") {
           isWalkingForward = true;
         }
-        e.key.startsWith("Arrow") && gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
+        e.key.startsWith("Arrow") && !e.repeat && gametime.run("playerWalk",[camera.position.x+","+camera.position.y+","+camera.position.z+","+camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+e.key+","+gametime.user.position]);
         if (e.key.startsWith("Arrow") && !e.repeat) {
           document.querySelector("#walking").play();
           keyThatStartedWalking = e.key;
@@ -1465,7 +1505,7 @@
         }
         if (e.key == keyControls.jump && !isJumping) {
           (()=>{let waswalking=isWalkingForward||isWalkingBackward||isWalkingLeft||isWalkingRight;document.querySelector("#walking").pause();isJumping=true;walkAxisYLocked=false;let t=.5;let h=setInterval(()=>{if(t<=0){return(clearInterval(h),(()=>{let t=0;let h=setInterval(()=>{if(camera.position.y<=defaultY){return(isJumping=false,clearInterval(h),walkAxisYLocked=true,waswalking&&document.querySelector("#walking").play())}(t+=.05);camera.position.y+=-t},25)})())}(t+=-.05);camera.position.y+=t},25)})();
-          gametime.run("playerJump", [defaultY+","+gametime.user.position]);
+          gametime.run("playerJump",[(defaultY-.7)+","+gametime.user.position]);
         }
         if (e.key == keyControls.switchWeapon && !e.repeat) {
           currentWeaponPosition == "secondary" ? currentWeaponPosition = "primary" : currentWeaponPosition = "secondary";
@@ -1517,7 +1557,7 @@
             document.querySelector("#walking").currentTime = 0;
             keyThatStartedWalking = null;
             lockIntersection = false;
-            gametime.run("endPlayerWalk", [gametime.user.position]);
+            for(let i=0;i<2;i++){gametime.run("endPlayerWalk",[camera.position.x+","+camera.position.y+","+camera.position.z+","+camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}
             let a = (currentWeapon!="rifle"&&currentWeapon!="pistol")?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][1]):((currentWeapon == "rifle" || currentWeapon == "sniper" || currentWeapon == "assault") ? mixers[weaponDefs.indexOf(currentWeapon)] : mixer3).clipAction((currentWeapon == "rifle" ? gunAnimations : secondGunAnimations)[1]);
             a.stop();
             let b = mixer2.clipAction(myCharacterAnimations[0]);
@@ -1541,7 +1581,7 @@
       (() => { let loader=new THREE.TextureLoader;loader.load("images/clouds"+(currentMap=="CARGO"?"2":"1")+".png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.sname="sky";sky.rotation.y=-.2,scene.add(d),d.position.set(0,0,0)})); })();
       gameControl.on("connect", (controller) => {
         window.controller = controller;
-        lookSensitivity=.01;lookAcc=0;lookMax=.1;(()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowLeft"})),e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight"})),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowDown"}))})).before("right0",(()=>{})).after("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}))})),controller.on("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowUp"}))})).before("left0",(()=>{})).after("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}))})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"f"}))}).after("button16",()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"f"}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}))})(),controller.on('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('up0',()=>{lookAcc=0}),controller.on('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('down0',()=>{lookAcc=0}),controller.on('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('left1',()=>{lookAcc=0}),controller.on('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('right1',()=>{lookAcc=0}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:" "}))}).after('button0',()=>{}),controller.on('button1',()=>{}).before('button1',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"b"}))}).after('button1',()=>{}),controller.on('button14',()=>{}).before('button14',()=>{isZoomed?document.dispatchEvent(new KeyboardEvent("keydown",{key:"z"})):document.dispatchEvent(new KeyboardEvent("keydown",{key:"i"}))}).after('button14',()=>{}),controller.on('button7',()=>{}).before('button7',()=>{isTouchingOrdinance?document.dispatchEvent(new KeyboardEvent("keydown",{key:"t"})):(!isReloading&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"r"})))}).after('button7',()=>{}),controller.on('button15',()=>{}).before('button15',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"p"}))}).after('button15',()=>{});
+        lookSensitivity=.003;lookAcc=0;lookMax=.1;(()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowLeft"})),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight"})),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowDown"}))})).before("right0",(()=>{})).after("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}))})),controller.on("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowUp"}))})).before("left0",(()=>{})).after("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}))})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"f"}))}).after("button16",()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"f"}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}))})(),controller.on('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('up0',()=>{lookAcc=0}),controller.on('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('down0',()=>{lookAcc=0}),controller.on('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('left1',()=>{lookAcc=0}),controller.on('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('right1',()=>{lookAcc=0}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:" "}))}).after('button0',()=>{}),controller.on('button1',()=>{}).before('button1',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"b"}))}).after('button1',()=>{}),controller.on('button14',()=>{}).before('button14',()=>{isZoomed?document.dispatchEvent(new KeyboardEvent("keydown",{key:"z"})):document.dispatchEvent(new KeyboardEvent("keydown",{key:"i"}))}).after('button14',()=>{}),controller.on('button7',()=>{}).before('button7',()=>{isTouchingOrdinance?document.dispatchEvent(new KeyboardEvent("keydown",{key:"t"})):(!isReloading&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"r"})))}).after('button7',()=>{}),controller.on('button15',()=>{}).before('button15',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"p"}))}).after('button15',()=>{});
       });
       createWeapon(currentMap=="CARGO"?"sniper":"sniper",{x:0,y:0,z:20});
       createWeapon("assault",{x:-18,y:0,z:16.3});
