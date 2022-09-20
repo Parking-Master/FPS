@@ -161,6 +161,30 @@
       	  transform: rotate(0deg);
       	}
       }
+      #login, #signup {
+        width: 75px;
+        height: 75px;
+        border-radius: 100%;
+        background: #333;
+        border: 3px solid #25750a;
+        color: #444;
+        text-shadow: 0 2px #25750a;
+        transition: border-color 1s, text-shadow 1s;
+      }
+      #login {
+        position: absolute;
+        left: 20px;
+        bottom: 20px;
+      }
+      #signup {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+      }
+      #login:hover, #signup:hover {
+        border-color: #ff4444;
+        text-shadow: 0 2px #ff4444;
+      }
     </style>
     <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
@@ -199,7 +223,11 @@
       <!-- <button class="button" onclick="chooseRandom()" data-disabled disabled>RANDOM MATCH</button> -->
       <!-- <br> -->
       <button class="button" onclick="desktopOptions()">OPTIONS</button>
+      <br>
+      <button class="button" onclick="location.assign('https://github.com/Parking-Master/FPS')">SUPPORT</button>
     </div>
+    <button onclick="location.assign('login.html')" id="login">LOG IN</button>
+    <button onclick="location.assign('signup.html')" id="signup">SIGN UP</button>
     <script>
       window.addEventListener("load", (e) => {
         if (document.readyState == "complete" || document.readyState == "interactive") {

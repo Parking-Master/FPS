@@ -595,8 +595,9 @@
       }
       function throwGrenade(){let b=0;"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),"CARGO"==currentMap&&(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&n instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(n.name.includes("Container")&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));let g=document.querySelector("#grenade_explosion").cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),e.translateY(2),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(4,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(a.position),e.rotation.copy(a.rotation),e.updateMatrix(),e.lookAt(camera.position),e.translateY(1);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.0025)}));setTimeout((()=>clearInterval(t)),10000)})(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1,setTimeout(()=>{document.querySelector("#hiteffect").style.opacity=0},1000)):(distanceTo(otherPlayer.position,e.position)<=4&&gametime.run("eleminate",[1==gametime.user.position?2:1])),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.05)}))}),2e3),clearInterval(t))})),b+=.001,a.translateZ(-.1),a.position.y+=(-b)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
       /* Gametime.js event variables */
-      gametime.set("key", "pub-c-74710794-cf40-43e3-ae10-d978cbdb8822", "sub-c-4da51a44-cbb3-11ec-924a-fed9c56767c0");
+      gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
+      gametime.make("leftGame");
       gametime.make("playerWalk");
       gametime.make("endPlayerWalk");
       gametime.make("playerRotate");
@@ -610,6 +611,17 @@
       gametime.make("connect");
       gametime.make("syncCountdown");
       countdown = false;
+      gametime.on("leftGame", function() {
+        swal({
+          icon: "error",
+          title: "Warning",
+          text: "One or more players have left the game session.\nYou will return to the main menu.",
+          button: "Return"
+        }).then(() => { gametime.disconnect(), location.assign("/") });
+      });
+      window.addEventListener("beforeunload", () => {
+        gametime.run("leftGame");
+      });
       gametime.on("pickupWeapon", function(e) {
         ordinances[e].position.y=10000;
         scene.remove(ordinances[e]);

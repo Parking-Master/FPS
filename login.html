@@ -9,6 +9,7 @@
     <style>
       body {
         font-family: Arial, Helvetica, sans-serif;
+        background: #444;
       }
       input {
         position: relative;
@@ -19,17 +20,36 @@
         margin-left: -25%;
         margin-bottom: 50px;
         outline: none !important;
-        border: 2px solid #333;
+        border: 2px solid #25750a;
+        background: #333;
+        color: #25750a;
+      }
+      .swal-modal {
+        background: #444;
+        box-shadow: 0px 0px 10px 5px #ff4444;
+      }
+      .swal-modal *, .swal-text {
+        color: #ff4444 !important;
+      }
+      .swal-button {
+        background: #ff4444 !important;
+        color: #333 !important;
+        box-shadow: none !important;
+        outline: none !important;
+      }
+      * {
+        color: #333;
       }
       h1 {
         text-align: center;
         color: #333;
+        text-shadow: 0 2px #25750a;
         margin-top: 100px;
       }
       button#submit {
         position: relative;
-        color: #eee;
-        background: #333;
+        color: #333;
+        background: #25750a;
         height: 30px;
         padding: 5px;
         display: inline-flex;
@@ -42,21 +62,22 @@
         left: 50%;
         margin-left: -25%;
         cursor: default;
+        transition: background 1s;
       }
       button#submit:hover {
-        background: #444;
+        background: #ff4444;
       }
       p {
         margin-bottom: 100px;
       }
       a {
-        color: #333;
+        color: #25750a;
       }
     </style>
   </head>
   <body>
-    <h1 style="position:relative;width:50%;display:inline-flex;align-items:center;text-align:center;justify-content:center;left:50%;margin-left:-25%;">Log in to continue&nbsp;<img src="favicon.ico" style="position:relative;width:4%;" /></h1>
-    <p style="text-align:center">or <a href="signup.html">Sign up</a></p>
+    <h1 style="position:relative;width:50%;display:inline-flex;align-items:center;text-align:center;justify-content:center;left:50%;margin-left:-25%;">Log in to&nbsp;<img src="favicon.ico" style="position:relative;width:4%;border-radius:100%;box-shadow:0 0 3.5px 2px #25750a" /></h1>
+    <p style="text-align:center;color:#333">or <a href="signup.html">Sign up</a></p>
     <label for="username" style="position:relative;left:50%;margin-left:-25%;">Username</label>
     <br>
     <input id="username" minlength="3" type="text" />
@@ -70,7 +91,7 @@
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       function logIn() {
         let user = Parse.User.logIn(document.getElementById("username").value, document.getElementById("password").value).then(function(user) {
-          simple.alert("Logged in. Redirecting...");
+          swal("Logged in. Redirecting...");
           localStorage.setItem("username", document.getElementById("username").value);
           localStorage.setItem("password", document.getElementById("password").value);
           setTimeout(() => {
@@ -78,7 +99,7 @@
           }, 1000);
         }).catch(function(error) {
           console.log(error);
-          simple.alert("Error: Failed to login. Check your password and try again.\n\nError Code: " + error.code + (error.code==101?" (Could not retrieve information)":""));
+          swal("Error: Failed to login. Check your password and try again.\n\nError Code: " + error.code + (error.code==101?" (Could not retrieve information)":""));
         });
       }
     </script>

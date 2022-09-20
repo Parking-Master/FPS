@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>Users associated with FPS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+	<style>
+	  td, th {
+	    color: #25750a;
+	  }
+	  * {
+	    overflow-x: hidden !important;
+	  }
+	  tr {
+	    cursor: pointer !important;
+	  }
+	</style>
+  </head>
+  <body>
+    <section class="ftco-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-6 text-center mb-5">
+            <h2 class="heading-section" style="color:#333;text-shadow:0 2px #25750a">All users</h2>
+          </div>
+        </div>
+        <div class="row" style="width:620px;position:relative;left:50%;margin-left:-310px;overflow-x:hidden!important">
+          <div class="col-md-12" style="overflow-x:hidden!important">
+            <div class="table-wrap">
+              <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Created</th>
+                    <th>Tier</th>
+                    <th>Picture</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+      function getMonthFromString(t){return new Date(Date.parse(t+" 1, 2012")).getMonth()+1}
+      Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
+      ids = 0;
+      function createTable(user) {
+    	ids++;
+        document.querySelector(".table").querySelector("tbody").innerHTML += `
+        <tr class="alert" role="alert" onclick="location.assign('user.html#'+'${encodeURIComponent(user.get("username"))}')">
+          <th scope="row">${ids}</th>
+          <td>${user.get("username")}</td>
+          <td>${getMonthFromString(user.get("createdAt").toString().split(" ").reverse().splice(4).reverse().join(" ").split(" ").splice(1).join(" ").split(" ")[0])}/${user.get("createdAt").toString().split(" ").reverse().splice(4).reverse().join(" ").split(" ").splice(1).join(" ").split(" ")[1]}/${user.get("createdAt").toString().split(" ").reverse().splice(4).reverse().join(" ").split(" ").splice(1).join(" ").split(" ")[2]}</td>
+          <td>${user.get("currentTier")}</td>
+          <td><img src="${user.get("profilePicture")}" style="width:5%;margin:0!important;padding:0" /></td>
+        </tr>
+        `;
+      }
+      new Parse.Query(Parse.Object.extend("User")).find("objectId").then((e=>{for(let t=0;t<e.length;t++){let r=new Parse.User;r.set("objectId",e[t].id),createTable(r)}}));
+    </script>
+  </body>
+</html>
+
