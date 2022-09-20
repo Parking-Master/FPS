@@ -533,7 +533,6 @@
         currentWeapon = fixedLoadout[0];
         document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
         document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
-        gametime.run("playerWalk", [camera.position.x+","+camera.position.y+","+camera.position.z+","+gametime.user.position]);
         for(let i=0;i<2;i++){gametime.run("endPlayerWalk",[camera.position.x+","+camera.position.y+","+camera.position.z+","+camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}
         controls.isLocked = true;
         walkAxisYLocked = true;
@@ -820,7 +819,7 @@
           !(camera.position.z.toFixed(0)<=8&&camera.position.x>=-2&&camera.position.x<=2)&&(defaultY=.7);
         }
         }else if(currentMap=="CARGO"){
-          map.traverse((i)=>{i.isMesh&&i.name.includes("Container")&&(collision(i,follower)&&stopMoving(false,i))});
+          map.traverse((i)=>{i.isMesh&&i.name.includes("Container")&&(collision(i,follower)&&stopMoving(true,i))});
           map.position.y = -308.5;
         }
         gunIdle = false;
@@ -942,8 +941,9 @@
                 deadBody.updateMatrix();
                 let h = setInterval(() => {
                   map.traverse(x => {
-                    if (collision(deadBody, x)) {
-                      return clearInterval(h);
+                    if (collision(deadBody, x) && x.isObject3D && x != deadBody && (!x.name.includes("Scene")&&!x.name.includes("scene"))) {
+                      console.log(x);
+                      return deadBody.position.y += (.4), deadBody.rotation.set(0, 0, 0), clearInterval(h);
                     }
                     deadBody.position.y += -.01;
                   });
@@ -959,6 +959,8 @@
                     character.rotateX(Math.PI/2);
                     scene.remove(deadBody);
                     scene.add(character);
+                    character.rotation.set(Math.PI/2, 0, 0);
+                    character.position.y += (1);
                     character.getObjectByName("WeaponConceptACE35Rglb").visible = false;
                     // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,20),new THREE.MeshBasicMaterial({map:(new THREE.TextureLoader).load("images/textures/blood.png"),transparent:true}));e.position.set(character.position.x,character.position.y,character.position.z),e.rotation.x=-Math.PI/2,scene.add(e),setTimeout(()=>scene.remove(e),20000)})();
                   });
@@ -1291,6 +1293,10 @@
           }
         }
         camera.position.x+=(.1);
+        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}));
+        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}));
+        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"}));
+        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"}));
       }
       setInterval(() => {
         if (isWalkingForward) {
