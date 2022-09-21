@@ -37,7 +37,7 @@
                     <th>ID</th>
                     <th>Username</th>
                     <th>Created</th>
-                    <th>Tier</th>
+                    <th>Points</th>
                     <th>Picture</th>
                   </tr>
                 </thead>
@@ -64,7 +64,7 @@
           <th scope="row">${ids}</th>
           <td>${user.get("username")}</td>
           <td>${getMonthFromString(user.get("createdAt").toString().split(" ").reverse().splice(4).reverse().join(" ").split(" ").splice(1).join(" ").split(" ")[0])}/${user.get("createdAt").toString().split(" ").reverse().splice(4).reverse().join(" ").split(" ").splice(1).join(" ").split(" ")[1]}/${user.get("createdAt").toString().split(" ").reverse().splice(4).reverse().join(" ").split(" ").splice(1).join(" ").split(" ")[2]}</td>
-          <td>${user.get("currentTier")}</td>
+          <td>${user.get("currentPoints").toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")}</td>
           <td><img src="${user.get("profilePicture")}" style="width:5%;margin:0!important;padding:0" /></td>
         </tr>
         `;

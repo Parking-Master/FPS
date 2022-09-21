@@ -7,13 +7,14 @@
     <style>
       html, body {
         font-family: Arial, Helvetica, sans-serif;
-        cursor: url(./cursors/cursor.png), default !important;
-        background-image: url(https://www.onlygfx.com/wp-content/uploads/2017/02/green-splatter-5.png), url(images/gun.png);
+        cursor: url(/cursors/cursor.png), default !important;
+        background-image: url(https://www.onlygfx.com/wp-content/uploads/2017/02/green-splatter-5.png), url(/images/gun.png);
         background-size: 50vw, 40vw;
         background-repeat: no-repeat;
         background-position: 0, 55vw;
         background-color: #444;
         user-select: none !important;
+        padding-bottom: 50px;
       }
       * {
         cursor: url(./cursors/cursor.png), default !important;
@@ -172,12 +173,12 @@
         transition: border-color 1s, text-shadow 1s;
       }
       #login {
-        position: absolute;
+        position: fixed;
         left: 20px;
         bottom: 20px;
       }
       #signup {
-        position: absolute;
+        position: fixed;
         right: 20px;
         bottom: 20px;
       }
@@ -203,6 +204,12 @@
         color: #444 !important;
         text-shadow: 2px 2px #25750a !important;
       }
+      h3 {
+        text-align: center;
+        color: #333;
+        text-shadow: 0 2px #25750a;
+      }
+      *{scrollbar-width:thin!important;scrollbar-color:#25750a #333!important}
     </style>
     <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
@@ -225,106 +232,38 @@
     <div class="wrapper">
       <script src="https://unpkg.com/@popperjs/core@2"></script>
       <script src="https://unpkg.com/tippy.js@6"></script>
-      <h1 class="page-title">F-P-S</h1>
-      <h2 class="page-text">Multiplayer shooter</h2>
+      <h1 class="page-title">User "<span id="username"></span>"</h1>
+      <h2 class="page-text">Tier, Points and other status details</h2>
       <br>
-      <button class="button" onclick="chooseMap()">CHOOSE MAP</button>
+      <h3>Current Points: <span id="points">0</span></h3>
+      <h3>Current Tier: <span id="tier">1</span></h3>
       <br>
-      <button class="button" onclick="findLobby()">FIND LOBBY</button>
+      <h2 class="page-text">About this player</h2>
+      <h3><i>No information available</i></h3>
       <br>
-      <button class="button" onclick='setDialog(`open`, { title: `Enter lobby name`, content: `Enter a name (2-10 characters):<input onkeyup="window.createlobbytext=this.value" /><br><a href="help.html#create-a-lobby">Need help?</a>` }, () => createLobby(createlobbytext))'>CREATE LOBBY</button>
-      <br>
-      <!-- <button class="button" onclick="chooseMap(startLocalGame)">SPLITSCREEN</button>
-      <br> -->
-      <button class="button" onclick="help()">HELP</button>
-      <br>
-      <!-- <button class="button" onclick="chooseRandom()" data-disabled disabled>RANDOM MATCH</button> -->
-      <!-- <br> -->
-      <button class="button" onclick="desktopOptions()">OPTIONS</button>
-      <br>
-      <button class="button" onclick="location.assign('https://github.com/Parking-Master/FPS')">SUPPORT</button>
+      <img id="profilepic" src="" style="position:relative;width:30%;left:50%;margin-left:-15%;background:#333;border:4px solid #25750a;border-left:4px solid #36861b;border-radius:4px;box-shadow:10px 10px 5px #333">
     </div>
     <button onclick="location.assign('login.html')" id="login">LOG IN</button>
     <button onclick="location.assign('signup.html')" id="signup">SIGN UP</button>
-    <div class="status">
-      <p>Current Points:&nbsp;<div class="currentPoints">0</div></p>
-      <p>Current Tier:&nbsp;<div class="currentTier">1</div></p>
-      <a href="users/" style="color:#25750a!important;text-shadow:none!important">See what you look like</a>
-    </div>
     <script>
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       window.addEventListener("load", (e) => {
         if (document.readyState == "complete" || document.readyState == "interactive") {
           setTimeout(() => document.querySelector(".loader").remove(), 400);
         }
-        if (new URLSearchParams(location.search).get("e")&&typeof (new URLSearchParams(location.search).get("e")-0)=="number"&&localStorage["username"]&&localStorage["password"]) {
-          pointsToAdd = new URLSearchParams(location.search).get("e")-0;
-          let user = Parse.User.logIn(localStorage["username"], localStorage["password"]).then(function(user) {
-            let currentPoints = user.get("currentPoints")-0;
-            user.set("currentPoints", currentPoints + pointsToAdd);
-            user.save().then((e) => { history.replaceState({},document.title,location.href.split("//").splice(1).join("//").includes("/")?"/":"?"), console.log(user.get("currentPoints")+" Points added to user "+user.get("username")) })
-          });
-        }
-        if (localStorage["username"]&&localStorage["password"]) {
-          pointsToAdd = new URLSearchParams(location.search).get("e")-0;
-          let user = Parse.User.logIn(localStorage["username"], localStorage["password"]).then(function(user) {
-            let currentPoints = user.get("currentPoints")-0;
-            let currentTier = currentPoints < 20 ? 1 : currentPoints < 50 ? 2 : currentPoints < 100 ? 3 : currentPoints < 200 ? 4 : currentPoints < 500 ? 5 : currentPoints > 500 && 6;
-            document.querySelector(".currentPoints").textContent = user.get("currentPoints").toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            document.querySelector(".currentTier").textContent = currentTier == 1 ? "1 (Rookie)" : currentTier == 2 ? "2 (Gunsmith)" : currentTier == 3 ? "3 (Expert)" : currentTier == 4 ? "4 (Intermediate)" : currentTier == 5 ? "5 (FPS Master)" : currentTier == 6 && "6 (Final Tier)";
-          });
-          document.querySelector("#login").textContent = "LOG OUT";
-          document.querySelector("#login").onclick = function() {
-            Parse.User.logOut();
-            localStorage.removeItem("username");
-            localStorage.removeItem("password");
-            location.reload(true);
-          }
-        } else {
-          document.querySelector(".status").remove();
-        }
+        document.querySelector("#username").textContent = location.hash.split("#").splice(1).join("#");
       });
-      Notiflix.Notify.init({clickToClose:true,showOnlyTheLastOne:true,timeout:100000000,info:{shadow:true,background:"#333",textColor:"#25750a",notiflixIconColor:"#25750a"}});
-      tippy("[data-tippy-content]");
-      // tippy("button")[0].show();
-      let Lobby = new Parse.Object.extend("Lobby");
-      !function(e,i){var t,n,l=(new Date).getTime();t=i.createElement("div"),n=i.createElement("div"),t.className="dialog-box",t.id="dialog-box-"+l,t.innerHTML='<h3 class="dialog-title">&nbsp;</h3><a class="dialog-minmax" title="Minimize">&ndash;</a><a class="dialog-close" title="Close">&times;</a><div class="dialog-content">&nbsp;</div><div class="dialog-action"></div>',n.className="dialog-box-overlay",i.body.appendChild(t),i.body.appendChild(n);var o=!1,a=i.getElementById("dialog-box-"+l),s=a.children[0],c=a.children[1],d=a.children[2],p=a.children[3],r=a.children[4],f=a.nextSibling;function h(){o?(a.className+=" minimize",c.innerHTML="+",c.title=s.innerHTML.replace(/<.*?>/g,""),o=!1):(a.className=a.className.replace(/(^| )minimize($| )/g,""),c.innerHTML="&ndash;",c.title="Minimize",o=!0)}e.setDialog=function(t,n,z){var l=null,m=0,g=0,v=0,x=0,u={title:s.innerHTML,content:p.innerHTML,width:300,height:150,top:!1,left:!1,buttons:{Next:function(){setDialog("close"),z()}},specialClass:"",fixed:!0,overlay:!1};for(var b in n)u[b]=(n[b],n[b]);if(a.className="dialog-box "+(u.fixed?"fixed-dialog-box ":"")+u.specialClass,a.style.visibility="open"==t?"visible":"hidden",a.style.opacity="open"==t?1:0,a.style.width=u.width+"px",a.style.height=u.height+"px",a.style.top=u.top?"0px":"50%",a.style.left=u.left?"0px":"50%",a.style.marginTop=u.top?u.top+"px":"-"+u.height/2+"px",a.style.marginLeft=u.left?u.left+"px":"-"+u.width/2+"px",s.innerHTML=u.title,p.innerHTML=u.content,r.innerHTML="",f.style.display="open"==t&&u.overlay?"block":"none",u.buttons)for(var y in u.buttons){var M=i.createElement("a");M.className="btn",M.innerHTML=y,M.onclick=u.buttons[y],r.appendChild(M)}else r.innerHTML="&nbsp;";s.onmousedown=function(){var e;return e=this.parentNode,v=m-(l=e).offsetLeft,x=g-l.offsetTop,!1},c.innerHTML="&ndash;",c.title="Minimize",c.onclick=h,d.onclick=function(){setDialog("close",{content:""})},i.onmousemove=function(t){m=i.all?e.event.clientX:t.pageX,g=i.all?e.event.clientY:t.pageY,null!==l&&(l.style.left=u.left?m-v-u.left+"px":m-v+l.offsetWidth/2+"px",l.style.top=u.top?g-x-u.top+"px":g-x+l.offsetHeight/2+"px")},i.onmouseup=function(){l=null},o="open"==t}}(window,document);
-      function chooseMap(csf = null) {
-        setDialog('open', { title: 'Choose a map', content: '<button class="button" onclick="selectMap(this)">Cargo</button><br><!--<button class="button" onclick="selectMap(this)">Vertex</button><br><button class="button" onclick="selectMap(this)">Apex</button><br><button class="button" onclick="selectMap(this)">Everest</button><br>--><button class="button" onclick="selectMap(this)">Haven</button><!--<br><button class="button" onclick="selectMap(this)">Harvest</button><br>-->' }, csf ? csf : findLobby);
-      }
-      function startLocalGame() {
-        location.assign("./play.html?splitscreen=true&map="+els[0]);
-      }
-      els = [];
-      function selectMap(map) {
-        !(els.indexOf(map.textContent) > -1) ? (els.push(map.textContent), map.style.outline = "2px solid #999") : (els.splice(els.indexOf(map.textContent)), map.style.outline = "none");
-      }
-      createlobbytext = "";
-      function createLobby(name) {
-        if (name == "" || !name) { return; }
-        let lobby = new Lobby();
-        lobby.set("name", name);
-        lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved"), findLobby(name.toString(), () => { document.querySelector(".dialog-content").innerHTML += '<div class="lobby" id="'+btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(name.toString())+("&map="+(els[0]||"Cargo"))+'\')" style="border:2px solid #25750a">'+(name.toString().trim()==""?("(blank space)"):name.toString().trim())+'</a>" : '+(new Date).toString().split(" ").splice(1).reverse().splice(4).reverse().join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>", location.hash = btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"") }));
-      }
-      function findLobby(l, addlobby = null) {
-        Notiflix.Notify.info("Loading lobbies...");
-        let islobbyadded=false;
-        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?(document.querySelector("#NotiflixNotifyWrap").children[0].click(),(!!addlobby&&!islobbyadded&&(islobbyadded=true,addlobby())),document.querySelector(".dialog-content").innerHTML+='<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"):(document.querySelector("#NotiflixNotifyWrap").children[0].click(),setDialog("open",{title:"Choose a map",content:'<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {})),e=!0}),(e=>{}))}})();
-      }
-      function chooseRandom() {
-        location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").children[0].click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
-      }
-      function desktopOptions() {
-        return location.assign("preferences.html");
-        console.log("#Electron:custom_options []");
-      }
-      function help() {
-        swal({
-          title: "Need help getting started?",
-          text: "FPS has a nice Documentation ready to go. You can look at it at bit.ly/FPSHelp, or www.fps5.ml/help.html",
-          buttons: ["Close", "Go"]
-        }).then(e => e && location.assign("help.html"));
-      }
+      new Parse.Query(Parse.Object.extend("User")).find("objectId").then((e=>{for(let t=0;t<e.length;t++){let r=new Parse.User;r.set("objectId",e[t].id)
+        let user = r;
+        console.log(user.get("username"))
+        if(user.get("username")==location.hash.split("#").splice(1).join("#")){
+        let currentPoints = user.get("currentPoints")-0;
+        let currentTier = currentPoints < 20 ? 1 : currentPoints < 50 ? 2 : currentPoints < 100 ? 3 : currentPoints < 200 ? 4 : currentPoints < 500 ? 5 : currentPoints > 500 && 6;
+        document.querySelector("#points").textContent = currentPoints.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        document.querySelector("#tier").textContent = currentTier == 1 ? "1 (Rookie)" : currentTier == 2 ? "2 (Gunsmith)" : currentTier == 3 ? "3 (Expert)" : currentTier == 4 ? "4 (Intermediate)" : currentTier == 5 ? "5 (FPS Master)" : currentTier == 6 && "6 (Final Tier)";
+        document.querySelector("#profilepic").src = user.get("profilePicture");
+        }
+      }}));
       window.addEventListener("load", () => { document.querySelector("head").innerHTML+="<style>.custom-anchor-tt{position:fixed;z-index:9999;display:none;background:#efefef;left:0;bottom:0;overflow:visible;padding:5px;font-size:18px;border-top-right-radius:5px;border-top:1px solid #999;border-right:1px solid #999;color:#999}a:hover+.custom-anchor-tt{display:block}</style>";for(let e=0;e<document.querySelectorAll("a").length;e++){let o=document.createElement("div");o.className="custom-anchor-tt",o.textContent=(document.querySelectorAll("a")[e].href.split("://")[0]=="http"?document.querySelectorAll("a")[e].href.substr(document.querySelectorAll("a")[e].href.indexOf("://")+3).replace(/(\/)$/g, ""):document.querySelectorAll("a")[e].href.replace(/(\/)$/g, ""));let r=document.querySelectorAll("a")[e].href;document.querySelectorAll("a")[e].addEventListener("click",(()=>location.href=r)),document.querySelectorAll("a")[e].removeAttribute("href"),function(){const e=arguments[0],o=arguments[1];e.parentNode.insertBefore(o,e.nextSibling)}(document.querySelectorAll("a")[e],o)} });
     </script>
   </body>
