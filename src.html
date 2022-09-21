@@ -803,7 +803,7 @@
       function animate() {
         animated = true;
         primaryRounds<=0?primaryRounds=0:(secondaryRounds<=0&&(secondaryRounds=0));
-        (currentWeapon=="primary"?primaryMagsLeft:secondaryMagsLeft)<=0&&(currentWeaponPosition=="primary"?primaryRounds:secondaryRounds)<=0&&!isReloading?showText("No ammo left. Press ["+keyControls.switchWeapon.toUpperCase+"] to switch weapon."):(!isTouchingOrdinance&&hideText());
+        (currentWeapon=="primary"?primaryMagsLeft:secondaryMagsLeft)<=0&&(currentWeaponPosition=="primary"?primaryRounds:secondaryRounds)<=0&&!isReloading?showText("No ammo left. Press ["+keyControls.switchWeapon.toUpperCase()+"] to switch weapon."):(!isTouchingOrdinance&&hideText());
         myPlayer.position.copy(camera.position);
         myPlayer.rotation.y = camera.rotation.y;
         myPlayer.translateY(-1.15);
