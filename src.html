@@ -325,7 +325,7 @@
     <audio id="countdown" src="sounds/countdown.mp3"></audio>
     <audio id="game-over" src="sounds/game_over.mp3"></audio>
     <audio id="time-warning" src="sounds/timewarning.mp3"></audio>
-    <audio id="warthog" src="sounds/warthog.mp3" loop></audio>
+    <audio id="warthog-sound" src="sounds/warthog.mp3" loop></audio>
     <audio id="punch" src="sounds/punch.mp3"></audio>
     <audio id="slayer" src="sounds/slayer.mp3"></audio>
     <audio id="click" src="sounds/click.mp3"></audio>
@@ -600,7 +600,7 @@
       }
       primaryRoundsDefault = primaryRounds;
       secondaryRoundsDefault = secondaryRounds;
-      function throwGrenade(){let b=0;"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),"CARGO"==currentMap&&(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&n instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(n.name.includes("Container")&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));let g=document.querySelector("#grenade_explosion").cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),e.translateY(2),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(4,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(a.position),e.rotation.copy(a.rotation),e.updateMatrix(),e.lookAt(camera.position),e.translateY(1);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.0025)}));setTimeout((()=>clearInterval(t)),10000)})(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1,setTimeout(()=>{document.querySelector("#hiteffect").style.opacity=0},1000)):(distanceTo(otherPlayer.position,e.position)<=4&&gametime.run("eleminate",[1==gametime.user.position?2:1])),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.05)}))}),2e3),clearInterval(t))})),b+=.001,a.translateZ(-.1),a.position.y+=(-b)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
+      function throwGrenade(){let b=0;"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),"CARGO"==currentMap&&(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&n instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&((n.name.includes("Container")||n.name.includes("Warthog"))&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));let g=document.querySelector("#grenade_explosion").cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),e.translateY(2),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(4,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(a.position),e.rotation.copy(a.rotation),e.updateMatrix(),e.lookAt(camera.position),e.translateY(1);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.0025)}));setTimeout((()=>clearInterval(t)),10000)})(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1,setTimeout(()=>{document.querySelector("#hiteffect").style.opacity=0},1000)):(distanceTo(otherPlayer.position,e.position)<=4&&gametime.run("eleminate",[1==gametime.user.position?2:1])),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.05)}))}),2e3),clearInterval(t))})),b+=.001,a.translateZ(-.1),a.position.y+=(-b)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
       /* Gametime.js event variables */
       gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
@@ -803,12 +803,20 @@
         gametime.run("connect");
         gametime.run("selectCharacter", [(new URLSearchParams(location.search).get("character")||"mark-vi")+","+gametime.user.position+","+(localStorage["prefsArmorColor"]||"#fff")]);
       };
+      warthogsToAdd = [];
+      function createWarthog(position, rotation) {
+        warthogsToAdd.push(position.concat(rotation));
+      }
+      createWarthog([-12, 0, 32], [0, Math.PI+.75, 0]);
+      createWarthog([-12, 0, 28], [0, Math.PI+.75, 0]);
+      warthogs=[];for(let i=0;i<warthogsToAdd.length;i++){(new THREE.GLTFLoader).load("models/vehicles/warthog.glb",(e)=>{warthogs.push(e.scene),e.scene.scale.set(2,2,2),e.scene.name="Warthog",e.scene.maxshot=100,map.add(e.scene),e.scene.position.set(warthogsToAdd[i][0],warthogsToAdd[i][1],warthogsToAdd[i][2]),e.scene.rotation.set(warthogsToAdd[i][3],warthogsToAdd[i][4],warthogsToAdd[i][5]),scene.add(e.scene)})}
       /* End Gametime.js event variables */
       let raycaster = new THREE.Raycaster();
       raycastTargets = [otherPlayer];
       center = new THREE.Vector2(0,0);
       function animate() {
         animated = true;
+        isInWarthog?(camera.position.copy(currentVehicle.position),camera.position.z+=.4,camera.position.y+=.5,walkAxisYLocked=false,canFire=false):void(0);
         primaryRounds<=0?primaryRounds=0:(secondaryRounds<=0&&(secondaryRounds=0));
         (currentWeaponPosition=="primary"?primaryMagsLeft:secondaryMagsLeft)<=0&&(currentWeaponPosition=="primary"?primaryRounds:secondaryRounds)<=0&&!isReloading?showText("No ammo left. Press ["+keyControls.switchWeapon.toUpperCase()+"] to switch weapon."):(!isTouchingOrdinance&&hideText());
         myPlayer.position.copy(camera.position);
@@ -838,7 +846,7 @@
           !(camera.position.z.toFixed(0)<=8&&camera.position.x>=-2&&camera.position.x<=2)&&(defaultY=.35);
         }
         }else if(currentMap=="CARGO"){
-          map.traverse((i)=>{i.isMesh&&i.name.includes("Container")&&(collision(i,follower)&&stopMoving(true,i))});
+          map.traverse((i)=>{i.isMesh&&(i.name.includes("Container")||i.name.includes("Warthog"))&&(collision(i,follower)&&stopMoving(true,i))});
           map.position.y = -308.5;
         }
         gunIdle = false;
@@ -925,6 +933,13 @@
         loadingProgress >= 99 && clearInterval(lpman);
         document.querySelector("#progress")!=null&&(document.querySelector("#progress").style.width = String(loadingProgress) + "%");
       });
+      isInWarthog = false;
+      vehicleAcc = 0;
+      currentVehicle = null;
+      function warthogEnterFunction(e, warthog) {
+        if(e.key=="t"){(isInWarthog=true,warthogMovements={},setInterval(()=>{if(warthogMovements["ArrowUp"]){currentVehicle.translateX(-vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowDown"]){currentVehicle.translateX(vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowLeft"]||warthogMovements["ArrowRight"]){(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])&&currentVehicle.rotateY((warthogMovements["ArrowLeft"]?vehicleAcc/25:(warthogMovements["ArrowRight"]&&-(vehicleAcc/25))))}}),document.onkeydown=(e)=>{(e.key=="t"&&(isInWarthog=false,canFire=true,camera.rotation.order="YXZ",currentVehicle=null,camera.rotation.set(0,0,0),(document.onkeydown=(e)=>warthogEnterFunction(e,warthog)),scene.add(gun),scene.add(myPlayer),camera.translateX(1),walkAxisYLocked=true));warthogMovements[e.key]=true},document.onkeyup=(e)=>{vehicleAcc=0,warthogMovements[e.key]=false},isInWarthog=true,currentVehicle=warthog,camera.position.copy(currentVehicle.position),camera.rotation.copy(currentVehicle.rotation),camera.rotation.y+=Math.PI/2,camera.position.z+=.4,camera.position.y+=.5,walkAxisYLocked=false,canFire=false,scene.remove(gun),scene.remove(myPlayer))}
+      }
+      (()=>{setInterval(()=>{for(let i=0;i<warthogs.length;i++){let warthog=warthogs[i];map.children[i+1]=(()=>{let r=warthog.clone();r.visible=false;return r})();distanceTo(warthog.position,camera.position)<=3&&currentVehicle!=warthog&&!isInWarthog?(showText("Hold ["+keyControls.interact.toUpperCase()+"] to drive warthog"),document.onkeydown=(e)=>(e.key=="t"&&warthogEnterFunction(e,warthog))):(!isTouchingOrdinance&&hideText())}},100)})();
       characterWasCreated = false;
       function createCharacter(armorColor) {
         if (characterWasCreated) {
@@ -1408,7 +1423,7 @@
               };
             } else if (!collision(ordinance, myPlayer)) {
               isTouchingOrdinance = false;
-              document.onkeydown = null;
+              !isInWarthog&&(document.onkeydown=null);
             }
           }, 500);
         });
@@ -1440,6 +1455,11 @@
         setTimeout(() => { isReloading = false; (currentWeaponPosition=="primary"?primaryRounds=primaryRoundsDefault:secondaryRounds=secondaryRoundsDefault), currentWeapon=="sniper"&&(gun.getObjectByName("Mag_1").visible=true); currentWeapon=="assault"&&(gun.getObjectByName("magazine_m16a2_0").visible=true); }, 1000);
         (currentWeaponPosition=="primary"?primaryMagsLeft--:secondaryMagsLeft--);
         canFire = true;
+      }
+      function blowUpWarthog(warthog) {
+        for(let i=0;i<3;i++){(()=>{let y=warthog;let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));scene.add(e);let g=document.querySelector("#grenade_explosion").cloneNode();(distanceTo(camera.position,y.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1):(distanceTo(otherPlayer.position,y.position)<=4&&gametime.run("eleminate",[gametime.user.position==1?2:1])));let u=(1-(distanceTo(y.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();e.position.copy(y.position),e.updateMatrix(),e.lookAt(camera.position),e.translateY(2);let t=setInterval((()=>{e.translateY(.005),e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity<0||(e.material.opacity+=-.05)}))})()}
+        scene.remove(warthog);
+        warthog.position.y = 100000;
       }
       function fire(rounds = 1, addedDamage = 1) {
         if (!canFire || (currentWeaponPosition=="primary"?primaryMagsLeft:secondaryMagsLeft) < 0 || (currentWeaponPosition=="primary"?primaryRounds:secondaryRounds) <= 0) {
@@ -1480,7 +1500,7 @@
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.6,20),new THREE.MeshBasicMaterial({map:textures["flame"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateX(.2),e.translateZ(-1.5),e.rotateY(1),scene.add(e),e.material.opacity=.355,setTimeout(()=>scene.remove(e),50)})();
           // (()=>{let o=new THREE.DirectionalLight(13418153,1);o.position.copy(gun.position),o.rotation.copy(gun.rotation),o.updateMatrix(),scene.add(o),o.scale.set(.01,.1,.1),setTimeout((()=>scene.remove(o)),150),light.shadowCameraLeft=-3e3,o.shadowCameraRight=3e3,o.shadowCameraTop=3500,o.shadowCameraBottom=-3e3,o.lookAt(camera.position)})();
           let hitSoundPlay = false;
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:(currentWeapon=="rocket"?.12:.04)),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-2);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),(x.name.includes("Container")&&!hitSoundPlay&&(hitSoundPlay=true,(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(e.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play()})()),setTimeout(()=>{hitSoundPlay=false},100)),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),20000)})();
+          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:(currentWeapon=="rocket"?.12:.04)),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-2);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),(()=>{for(let i=0;i<warthogs.length;i++){(x.name.includes("Warthog")||(typeof warthogs[i].getObjectByName(x.name)!="undefined"))&&(warthogs[i].maxshot<=0||(currentWeapon=="rocket")?blowUpWarthog(warthogs[i]):warthogs[i].maxshot+=-1)}})(),((x.name.includes("Container")||x.name.includes("Warthog"))&&!hitSoundPlay&&(hitSoundPlay=true,(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(e.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play()})()),setTimeout(()=>{hitSoundPlay=false},100)),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),20000)})();
           currentPerformance > 50 && Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.025)}));setTimeout((()=>clearInterval(t)),6000)})();
           if (currentWeapon == "rocket") {
             (()=>{let y=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,1),new THREE.MeshPhongMaterial({color:0x555555,shininess:1}));y.castShadow=true,y.receiveShadow=true,y.position.copy(gun.position),y.rotation.copy(gun.rotation),y.updateMatrix(),y.rotateY(.075),y.rotateX(Math.PI/2),y.translateY(-2),y.translateZ(-.65),y.translateX(.2);let f=setInterval(()=>{map.traverse((x)=>{if(collision(y,x)&&x!=gun&&(!x.name.includes("scene")&&!x.name.includes("Scene"))&&x!=y&&x!=camera&&x.isObject3D){console.log(x),scene.remove(y),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));scene.add(e);let g=document.querySelector("#grenade_explosion").cloneNode();(distanceTo(camera.position,y.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1):(distanceTo(otherPlayer.position,y.position)<=4&&gametime.run("eleminate",[gametime.user.position==1?2:1])));let u=(1-(distanceTo(y.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();e.position.copy(y.position),e.updateMatrix(),e.lookAt(camera.position),e.translateY(2);let t=setInterval((()=>{e.translateY(.005),e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity<0||(e.material.opacity+=-.1)}))})(),clearInterval(f)}});y.translateY(-1)});scene.add(y)})();
@@ -1529,13 +1549,13 @@
           } else if (currentWeapon == "pistol") {
             !e.repeat && fire(1, 10);
           } else if (currentWeapon == "sniper") {
-            !e.repeat && fire(1, 100);
+            !e.repeat && fire(1, 50);
           } else if (currentWeapon == "assault" || currentWeapon == "uzi") {
             fullAutoFiring = true;
           } else if (currentWeapon == "shotgun") {
             fire(1, 36);
           }
-          else if (currentWeapon == "rocket") {
+          else if (currentWeapon == "rocket" && !e.repeat) {
             fire(1, 100);
           }
         }
