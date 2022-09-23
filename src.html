@@ -606,6 +606,7 @@
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
       gametime.make("leftGame");
       gametime.make("playerWalk");
+      gametime.make("moveWarthog");
       gametime.make("endPlayerWalk");
       gametime.make("playerRotate");
       gametime.make("hit");
@@ -618,6 +619,22 @@
       gametime.make("connect");
       gametime.make("syncCountdown");
       countdown = false;
+      gametime.on("moveWarthog", function(data) {
+        let player = data.split(",")[0];
+        let warthog = data.split(",")[1];
+        let posx = data.split(",")[2];
+        let posy = data.split(",")[3];
+        let posz = data.split(",")[4];
+        let rotx = data.split(",")[5];
+        let roty = data.split(",")[6];
+        let rotz = data.split(",")[7];
+        if (player == gametime.user.position) {
+          return;
+        }
+        warthogs[warthog].position.set(posx, posy, posz);
+        warthogs[warthog].rotation.set(rotx, roty, rotz);
+        otherPlayer.position.y = 1000000;
+      });
       gametime.on("leftGame", function() {
         swal({
           icon: "error",
@@ -936,8 +953,10 @@
       isInWarthog = false;
       vehicleAcc = 0;
       currentVehicle = null;
+      otherCurrentWarthog = null;
+      isWarthogMoving = false;
       function warthogEnterFunction(e, warthog) {
-        if(e.key=="t"){(isInWarthog=true,warthogMovements={},setInterval(()=>{(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])?(document.querySelector("#warthog-sound").play()):(document.querySelector("#warthog-sound").pause(),document.querySelector("#warthog-sound").currentTime=0);if(collision(currentVehicle,otherPlayer)||distanceTo(currentVehicle.position,otherPlayer.position)<=3){otherPlayer.position.y=1000,gametime.run("eleminate",[gametime.user.position==1?2:1])}if(warthogMovements["ArrowUp"]){currentVehicle.translateX(-vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowDown"]){currentVehicle.translateX(vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowLeft"]||warthogMovements["ArrowRight"]){(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])&&currentVehicle.rotateY((warthogMovements["ArrowLeft"]?vehicleAcc/25:(warthogMovements["ArrowRight"]&&-(vehicleAcc/25))))}}),document.onkeydown=(e)=>{(e.key=="t"&&(isInWarthog=false,canFire=true,camera.rotation.order="YXZ",currentVehicle=null,camera.rotation.set(0,0,0),(document.onkeydown=(e)=>warthogEnterFunction(e,warthog)),scene.add(gun),scene.add(myPlayer),camera.translateX(1),walkAxisYLocked=true));warthogMovements[e.key]=true},document.onkeyup=(e)=>{vehicleAcc=0,warthogMovements[e.key]=false},isInWarthog=true,currentVehicle=warthog,camera.position.copy(currentVehicle.position),camera.rotation.copy(currentVehicle.rotation),camera.rotation.y+=Math.PI/2,camera.position.z+=.4,camera.position.y+=.5,walkAxisYLocked=false,canFire=false,scene.remove(gun),scene.remove(myPlayer))}
+        if(e.key=="t"){(isInWarthog=true,warthogMovements={},setInterval(()=>{(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])?((gametime.run("moveWarthog",[gametime.user.position+","+warthogs.indexOf(currentVehicle)+","+currentVehicle.position.x+","+currentVehicle.position.y+","+currentVehicle.position.z+","+currentVehicle.rotation.x+","+currentVehicle.rotation.y+","+currentVehicle.rotation.z])),document.querySelector("#warthog-sound").play()):(document.querySelector("#warthog-sound").pause(),document.querySelector("#warthog-sound").currentTime=0);if(collision(currentVehicle,otherPlayer)||distanceTo(currentVehicle.position,otherPlayer.position)<=3){otherPlayer.position.y=1000,gametime.run("eleminate",[gametime.user.position==1?2:1])}if(warthogMovements["ArrowUp"]){currentVehicle.translateX(-vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowDown"]){currentVehicle.translateX(vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowLeft"]||warthogMovements["ArrowRight"]){(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])&&currentVehicle.rotateY((warthogMovements["ArrowLeft"]?vehicleAcc/25:(warthogMovements["ArrowRight"]&&-(vehicleAcc/25))))}}),document.onkeydown=(e)=>{(e.key=="t"&&(isInWarthog=false,canFire=true,camera.rotation.order="YXZ",currentVehicle=null,camera.rotation.set(0,0,0),(document.onkeydown=(e)=>warthogEnterFunction(e,warthog)),scene.add(gun),scene.add(myPlayer),camera.translateX(1),walkAxisYLocked=true));warthogMovements[e.key]=true},document.onkeyup=(e)=>{vehicleAcc=0,warthogMovements[e.key]=false},isInWarthog=true,currentVehicle=warthog,camera.position.copy(currentVehicle.position),camera.rotation.copy(currentVehicle.rotation),camera.rotation.y+=Math.PI/2,camera.position.z+=.4,camera.position.y+=.5,walkAxisYLocked=false,canFire=false,scene.remove(gun),scene.remove(myPlayer))}
       }
       (()=>{setInterval(()=>{for(let i=0;i<warthogs.length;i++){let warthog=warthogs[i];map.children[i+1]=(()=>{let r=warthog.clone();r.visible=false;return r})();distanceTo(warthog.position,camera.position)<=3&&currentVehicle!=warthog&&!isInWarthog&&!warthog.obstructed?(showText("Hold ["+keyControls.interact.toUpperCase()+"] to drive warthog"),document.onkeydown=(e)=>(e.key=="t"&&warthogEnterFunction(e,warthog))):(!isTouchingOrdinance&&hideText())}},100)})();
       characterWasCreated = false;
@@ -1388,6 +1407,10 @@
       otherIsWalkingBackward=false;
       otherIsWalkingLeft=false;
       otherIsWalkingRight=false;
+      otherIsMovingForward=false;
+      otherIsMovingBackward=false;
+      otherIsMovingLeft=false;
+      otherIsMovingRight=false;
       setInterval(() => {
         if (otherIsWalkingForward) {
           otherPlayer.translateZ(-.01);
@@ -1400,6 +1423,18 @@
         }
         if (otherIsWalkingRight) {
           otherPlayer.translateX(.01);
+        }
+        if (otherIsMovingForward) {
+          warthogs[otherCurrentWarthog].translateZ(-.1);
+        }
+        if (otherIsMovingBackward) {
+          warthogs[otherCurrentWarthog].translateZ(.1);
+        }
+        if (otherIsMovingLeft) {
+          warthogs[otherCurrentWarthog].translateX(-.1);
+        }
+        if (otherIsMovingRight) {
+          warthogs[otherCurrentWarthog].translateX(.1);
         }
       });
       const zoomInFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomIn"),camera.updateProjectionMatrix()},zoomOutFunction=o=>{const e=getFov();camera.fov=clickZoom(e,"zoomOut"),camera.updateProjectionMatrix()},clickZoom=(o,e)=>o>=20&&"zoomIn"===e?o-5:o<=75&&"zoomOut"===e?o+5:o,getFov=()=>Math.floor(2*Math.atan(camera.getFilmHeight()/2/camera.getFocalLength())*180/Math.PI);document.addEventListener("keydown",(o=>{if(keyControls.zoomIn==o.key&&!o.repeat&&!isZoomed)zoomIn(10);if(keyControls.zoomOut==o.key&&!o.repeat&&isZoomed)zoomOut(10)}));
