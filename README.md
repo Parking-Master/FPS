@@ -68,7 +68,7 @@ The F.O.T.U.S. Armor (Fist Of The Unicorns) is a metafictional joke character or
 
 ###### <i>Note: More characters may be coming soon</i>
 
-### Weapons (Original FPS5 weapons)
+### Weapons (Original FPS weapons)
 <h4 align="center">Concept ACE-35R</h5>
 The Weapon Concept ACE-35R ("Default Rifle") is a basic 3-round-burst and Semi-Automatic rifle that does average damage to all aiming positions. This rifle is most commonly used in close-quarters and medium-range combats.
 <br>
@@ -129,8 +129,34 @@ The Remington 870 is a high-powered 12 guage pump-action shotgun with low accura
 <br>
 - <b>Overall</b>: 4/5
 <img align="center" width="20%" alt="Default" src="/images/guns/shotgun.png"/>
+<h4 align="center">SPNKR Rocket Launcher</h5>
+
+_Note that the models, sounds or textures used in this item may not be original._<br>
+Halo infinite's original SPNKR Rocket Launcher which has appeared in every halo series, this weapon can be used to destroy large (and small) land vehicles. It is semi-automatic and can hold up to 2 rockets at once.
+<br>
+<br>
+- <b>Damage</b>: 100/100
+<br>
+- <b>Accuracy</b>: 50/100
+<br>
+- <b>Overall</b>: 5/5
+<img align="center" width="20%" alt="Default" src="/images/guns/rocket.png"/>
 
 ###### <i>Note: More weapons may be coming soon</i>
+
+### Vehicles (Mixed FPS/Halo+ weapons)
+<h4 align="center">Halo Warthog</h5>
+This is the original halo (3/4+) warthog with a little change in specs and detail.
+<br>
+<br>
+- <b>Horse Power</b>: 720
+<br>
+- <b>Toruqe</b>: 855 lb
+<br>
+- <b>Max speed</b>: 75 MPH
+<img align="center" width="100%" alt="Default" src="/images/vehicles/warthog.png"/>
+
+###### <i>Note: More vehicles may be coming soon</i>
 
 ### In-game photos
 <!-- <img width="1440" alt="Zoomed in pistol" src="https://user-images.githubusercontent.com/88283567/184426556-2ef10a37-c362-44bd-9a1f-2221e3da07e8.png">
@@ -185,5 +211,9 @@ MIT
 - ["Remington 870"](https://sketchfab.com/3d-models/remington-870-police-magnum-12-gauge-shotgun-eea11de7e9d24b6683962b8388c319eb) - <small>_by 8sianDude_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 - ["Veld Fire"](https://hdrihaven.com/hdri/?h=veld_fire) - <small>_by Greg Zaal_<br>Licensed under CC0 ("No Rights Reserved") (https://creativecommons.org/share-your-work/public-domain/cc0/).
+
+- ["Halo Warthog"](https://sketchfab.com/3d-models/halo-warthog-bd3403bc06884260ac31d0e98eed81e4) - <small>_by pinto36_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+- ["SPNKR Rocket Launcher"](https://sketchfab.com/3d-models/rocket-launcher-collection-5883f47a8ab343619c877d7d38eed592) - <small>_by Iso-Didact_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 Did we forget to include something? [Report](https://github.com/Parking-Master/FPS/issues/new)
