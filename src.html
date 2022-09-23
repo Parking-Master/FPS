@@ -809,7 +809,7 @@
       }
       createWarthog([-12, 0, 32], [0, Math.PI+.75, 0]);
       createWarthog([-12, 0, 28], [0, Math.PI+.75, 0]);
-      warthogs=[];for(let i=0;i<warthogsToAdd.length;i++){(new THREE.GLTFLoader).load("models/vehicles/warthog.glb",(e)=>{warthogs.push(e.scene),e.scene.scale.set(2,2,2),e.scene.name="Warthog",e.scene.maxshot=100,map.add(e.scene),e.scene.position.set(warthogsToAdd[i][0],warthogsToAdd[i][1],warthogsToAdd[i][2]),e.scene.rotation.set(warthogsToAdd[i][3],warthogsToAdd[i][4],warthogsToAdd[i][5]),scene.add(e.scene)})}
+      warthogs=[];for(let i=0;i<warthogsToAdd.length;i++){(new THREE.GLTFLoader).load("models/vehicles/warthog.glb",(e)=>{warthogs.push(e.scene),e.scene.obstructed=false,e.scene.scale.set(2,2,2),e.scene.name="Warthog",e.scene.maxshot=100,map.add(e.scene),e.scene.position.set(warthogsToAdd[i][0],warthogsToAdd[i][1],warthogsToAdd[i][2]),e.scene.rotation.set(warthogsToAdd[i][3],warthogsToAdd[i][4],warthogsToAdd[i][5]),scene.add(e.scene)})}
       /* End Gametime.js event variables */
       let raycaster = new THREE.Raycaster();
       raycastTargets = [otherPlayer];
@@ -937,9 +937,9 @@
       vehicleAcc = 0;
       currentVehicle = null;
       function warthogEnterFunction(e, warthog) {
-        if(e.key=="t"){(isInWarthog=true,warthogMovements={},setInterval(()=>{if(warthogMovements["ArrowUp"]){currentVehicle.translateX(-vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowDown"]){currentVehicle.translateX(vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowLeft"]||warthogMovements["ArrowRight"]){(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])&&currentVehicle.rotateY((warthogMovements["ArrowLeft"]?vehicleAcc/25:(warthogMovements["ArrowRight"]&&-(vehicleAcc/25))))}}),document.onkeydown=(e)=>{(e.key=="t"&&(isInWarthog=false,canFire=true,camera.rotation.order="YXZ",currentVehicle=null,camera.rotation.set(0,0,0),(document.onkeydown=(e)=>warthogEnterFunction(e,warthog)),scene.add(gun),scene.add(myPlayer),camera.translateX(1),walkAxisYLocked=true));warthogMovements[e.key]=true},document.onkeyup=(e)=>{vehicleAcc=0,warthogMovements[e.key]=false},isInWarthog=true,currentVehicle=warthog,camera.position.copy(currentVehicle.position),camera.rotation.copy(currentVehicle.rotation),camera.rotation.y+=Math.PI/2,camera.position.z+=.4,camera.position.y+=.5,walkAxisYLocked=false,canFire=false,scene.remove(gun),scene.remove(myPlayer))}
+        if(e.key=="t"){(isInWarthog=true,warthogMovements={},setInterval(()=>{(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])?(document.querySelector("#warthog-sound").play()):(document.querySelector("#warthog-sound").pause(),document.querySelector("#warthog-sound").currentTime=0);if(collision(currentVehicle,otherPlayer)||distanceTo(currentVehicle.position,otherPlayer.position)<=3){otherPlayer.position.y=1000,gametime.run("eleminate",[gametime.user.position==1?2:1])}if(warthogMovements["ArrowUp"]){currentVehicle.translateX(-vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowDown"]){currentVehicle.translateX(vehicleAcc);vehicleAcc>=.1||(vehicleAcc+=.001)}if(warthogMovements["ArrowLeft"]||warthogMovements["ArrowRight"]){(warthogMovements["ArrowUp"]||warthogMovements["ArrowDown"])&&currentVehicle.rotateY((warthogMovements["ArrowLeft"]?vehicleAcc/25:(warthogMovements["ArrowRight"]&&-(vehicleAcc/25))))}}),document.onkeydown=(e)=>{(e.key=="t"&&(isInWarthog=false,canFire=true,camera.rotation.order="YXZ",currentVehicle=null,camera.rotation.set(0,0,0),(document.onkeydown=(e)=>warthogEnterFunction(e,warthog)),scene.add(gun),scene.add(myPlayer),camera.translateX(1),walkAxisYLocked=true));warthogMovements[e.key]=true},document.onkeyup=(e)=>{vehicleAcc=0,warthogMovements[e.key]=false},isInWarthog=true,currentVehicle=warthog,camera.position.copy(currentVehicle.position),camera.rotation.copy(currentVehicle.rotation),camera.rotation.y+=Math.PI/2,camera.position.z+=.4,camera.position.y+=.5,walkAxisYLocked=false,canFire=false,scene.remove(gun),scene.remove(myPlayer))}
       }
-      (()=>{setInterval(()=>{for(let i=0;i<warthogs.length;i++){let warthog=warthogs[i];map.children[i+1]=(()=>{let r=warthog.clone();r.visible=false;return r})();distanceTo(warthog.position,camera.position)<=3&&currentVehicle!=warthog&&!isInWarthog?(showText("Hold ["+keyControls.interact.toUpperCase()+"] to drive warthog"),document.onkeydown=(e)=>(e.key=="t"&&warthogEnterFunction(e,warthog))):(!isTouchingOrdinance&&hideText())}},100)})();
+      (()=>{setInterval(()=>{for(let i=0;i<warthogs.length;i++){let warthog=warthogs[i];map.children[i+1]=(()=>{let r=warthog.clone();r.visible=false;return r})();distanceTo(warthog.position,camera.position)<=3&&currentVehicle!=warthog&&!isInWarthog&&!warthog.obstructed?(showText("Hold ["+keyControls.interact.toUpperCase()+"] to drive warthog"),document.onkeydown=(e)=>(e.key=="t"&&warthogEnterFunction(e,warthog))):(!isTouchingOrdinance&&hideText())}},100)})();
       characterWasCreated = false;
       function createCharacter(armorColor) {
         if (characterWasCreated) {
@@ -1183,6 +1183,38 @@
             clearInterval(searchingEngine);
           }
         });
+      });
+      function crashWarthog(warthog) {
+        (new THREE.GLTFLoader).load("models/vehicles/obstructed/warthog.glb", (e) => {
+          scene.remove(warthog);
+          let y = warthog;
+          warthog = e.scene;
+          warthog.scale.copy(y.scale);
+          warthog.position.copy(y.position);
+          warthog.rotation.copy(y.rotation);
+          warthog.updateMatrix();
+          scene.add(warthog);
+        });
+        for (let i = 0; i < vehicleAcc*10; i++) {
+          let f = setInterval(()=>camera.rotateX(.2),100);
+          let h = setInterval(()=>camera.rotateX(-.2),200);
+          setTimeout(()=>(clearInterval(h),clearInterval(f)),1000);
+          document.querySelector("#grenade_explosion").cloneNode().play();
+          gametime.run("hit", [gametime.user.position]);
+          warthog.obstructed = true;
+        }
+      }
+      setInterval(() => {
+        if (typeof warthogs != "undefined" && warthogs.length > 0) {
+          for (let i = 0; i < warthogs.length; i++) {
+            if (collision(warthogs[i], follower) && !isInWarthog) {
+              stopMoving(true, warthogs[i]);
+            }
+          }
+          if (isInWarthog) {
+            map.traverse((x)=>{collision(currentVehicle,x)&&x!=myPlayer&&x!=gun&&x!=camera&&(!x.name.includes("scene")&&!x.name.includes("Scene"))&&(typeof currentVehicle.getObjectByName(x.name)=="undefined")&&x.name!="Cube"&&((!currentVehicle.obstructed&&crashWarthog(currentVehicle)),stopMoving(true,x))});
+          }
+        }
       });
       didStart = false;
       function toggleFullscreen(e){var n=document.body;e instanceof HTMLElement&&(n=e);var c=document.webkitIsFullScreen||document.mozFullScreen||!1;n.requestFullScreen=n.requestFullScreen||n.webkitRequestFullScreen||n.mozRequestFullScreen||function(){return!1},document.cancelFullScreen=document.cancelFullScreen||document.webkitCancelFullScreen||document.mozCancelFullScreen||function(){return!1},c?document.cancelFullScreen():n.requestFullScreen()}
@@ -1518,7 +1550,7 @@
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
       keyThatStartedWalking = null;
       document.addEventListener("keydown", (e) => {
-        if (!controls.isLocked) { return }
+        if (!controls.isLocked || isInWarthog) { return }
         if (e.key == "ArrowUp") {
           isWalkingForward = true;
         }
