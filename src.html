@@ -359,7 +359,7 @@
       Gamepad.Context={},Gamepad.Trigger={},Gamepad.Panel={},Gamepad.Item={},Gamepad.JoyStick={},Gamepad.JoyStick.R={},Gamepad.JoyStick.L={},Gamepad.D={},Gamepad.Context.AButtonPressed=function(){},Gamepad.onConnect=function(){},Gamepad.Context.BButtonPressed=function(){},Gamepad.Context.XButtonPressed=function(){},Gamepad.Context.YButtonPressed=function(){},Gamepad.Trigger.LeftButtonPressed=function(){},Gamepad.Trigger.RightButtonPressed=function(){},Gamepad.Panel.LeftButtonPressed=function(){},Gamepad.Panel.RightButtonPressed=function(){},Gamepad.Item.NavButtonPressed=function(){},Gamepad.Item.PauseButtonPressed=function(){},Gamepad.JoyStick.L.Pressed=function(){},Gamepad.JoyStick.R.Pressed=function(){},Gamepad.JoyStick.UpMoved=function(){},Gamepad.JoyStick.DownMoved=function(){},Gamepad.JoyStick.RightMoved=function(){},Gamepad.JoyStick.LeftMoved=function(){},Gamepad.JoyStick.UpCanceled=function(){},Gamepad.JoyStick.DownCanceled=function(){},Gamepad.JoyStick.RightCanceled=function(){},Gamepad.JoyStick.LeftCanceled=function(){},Gamepad.D.UpButtonPressed=function(){},Gamepad.D.DownButtonPressed=function(){},Gamepad.D.LeftButtonPressed=function(){},Gamepad.D.RightButtonPressed=function(){},gameControl.on("connect",(function(e){Gamepad.onConnect();for(let t=0;t<Math.min(17,e.buttons);t++)e.on("button"+t,(function(){0==t?Gamepad.Context.AButtonPressed():1==t?Gamepad.Context.BButtonPressed():2==t?Gamepad.Context.XButtonPressed():3==t?Gamepad.Context.YButtonPressed():4==t?Gamepad.Trigger.LeftButtonPressed():5==t?Gamepad.Trigger.RightButtonPressed():6==t?Gamepad.Panel.LeftButtonPressed():7==t?Gamepad.Panel.RightButtonPressed():8==t?Gamepad.Item.NavButtonPressed():9==t?Gamepad.Item.PauseButtonPressed():10==t?Gamepad.JoyStick.L.Pressed():11==t?Gamepad.JoyStick.R.Pressed():12==t?Gamepad.D.UpButtonPressed():13==t?Gamepad.D.DownButtonPressed():14==t?Gamepad.D.LeftButtonPressed():15==t&&Gamepad.D.RightButtonPressed()})).before("button"+t,()=>{}).after("button"+t,()=>{});for(let t=0;t<Math.min(2,e.axes);t++){const n=["up","down","right","left"];for(let a=0;a<n.length;a++)e.on(n[a]+t,(function(){"up"==n[a]?Gamepad.JoyStick.UpMoved():"right"==n[a]?Gamepad.JoyStick.RightMoved():"left"==n[a]?Gamepad.JoyStick.LeftMoved():"down"==n[a]&&Gamepad.JoyStick.DownMoved()})).after(n[a],()=>{n[a]=="up"?Gamepad.JoyStick.UpCanceled():n[a]=="down"?Gamepad.JoyStick.DownCanceled():n[a]=="left"?Gamepad.JoyStick.LeftCanceled():n[a]=="right"?Gamepad.JoyStick.RightCanceled():void(0)})}})).on("beforeCycle",(function(){}));
     </script>
     <div id="container"></div>
-    <div class="ui">
+    <div class="ui" style="opacity:0">
       <div class="scoreboard">
         <span class="player1">A - <span class="score">0</span></span>
         <hr style="margin:0">
@@ -480,8 +480,8 @@
       melee = false;
       gunAnimations = [];
       shotsLeft = 10;
-      primaryMagsLeft = 3;
-      secondaryMagsLeft = 4;
+      primaryMagsLeft = 3 + 1;
+      secondaryMagsLeft = 4 + 1;
       gunLocked = true;
       isZoomed = false;
       walkAxisYLocked = true;
@@ -823,8 +823,8 @@
       function createWarthog(position, rotation) {
         warthogsToAdd.push(position.concat(rotation));
       }
-      createWarthog([-12, 0, 32], [0, Math.PI+.75, 0]);
-      createWarthog([-12, 0, 28], [0, Math.PI+.75, 0]);
+      createWarthog([-12, 0, 34], [0, Math.PI+.75, 0]);
+      createWarthog([-12, 0, 30], [0, Math.PI+.75, 0]);
       warthogs=[];for(let i=0;i<warthogsToAdd.length;i++){(new THREE.GLTFLoader).load("models/vehicles/warthog.glb",(e)=>{warthogs.push(e.scene),e.scene.obstructed=false,e.scene.scale.set(2,2,2),e.scene.name="Warthog",e.scene.maxshot=100,map.add(e.scene),e.scene.position.set(warthogsToAdd[i][0],warthogsToAdd[i][1],warthogsToAdd[i][2]),e.scene.rotation.set(warthogsToAdd[i][3],warthogsToAdd[i][4],warthogsToAdd[i][5]),scene.add(e.scene)})}
       /* End Gametime.js event variables */
       let raycaster = new THREE.Raycaster();
@@ -938,7 +938,7 @@
         window.gun = weapons[loadout[0]].scene;
         window.primaryGun = weapons[loadout[0]].scene;
         gunAnimations = weapons[loadout[0]].animations;
-        scene.add(weapons[loadout[0]].scene);
+        // scene.add(weapons[loadout[0]].scene);
       }),Gun2:(new THREE.GLTFLoader).load("models/weapons/"+loadout[1]+".glb", (t) => {
         secondGunAnimations = weapons[loadout[1]].scene.animations;
         window.secondGun = weapons[loadout[1]].scene;
@@ -1166,9 +1166,21 @@
       }
       function freePlay() {
         scene.remove(otherPlayer);
+        let t = 0;
+        let n = setInterval(() => {
+          if (t >= 1) {
+            (clearInterval(n), document.querySelector(".ui").style.opacity = "1");
+          }
+          t+=.025;
+          document.querySelector(".ui").style.opacity = t;
+        });
+        zoomOutFunction(10);
+        swal.close();
         didStart = true;
         controls.isLocked = true;
-        swal.close();
+        scene.add(gun);
+        primaryRounds--;
+        reload();
       }
       let options = document.createElement("div");
       options.innerHTML = `
@@ -1225,7 +1237,7 @@
       setInterval(() => {
         if (typeof warthogs != "undefined" && warthogs.length > 0) {
           for (let i = 0; i < warthogs.length; i++) {
-            if (collision(warthogs[i], follower) && !isInWarthog) {
+            if (distanceTo(warthogs[i].position, follower.position) <= 2 && !isInWarthog) {
               stopMoving(true, warthogs[i]);
             }
           }
@@ -1256,6 +1268,7 @@
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Adding shadows and textures..."),2000);
         currentPerformance > 50 && (renderer.shadowMap.enabled=!0,scene.traverse((a=>{typeof gun.getObjectByName(a.name)=="undefined"&&a.isObject3D&&(a.castShadow=!0,a.receiveShadow=!0,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),map.traverse((a=>{a.isObject3D&&(a.receiveShadow=!0,a.castShadow=!1,a.material&&a.material.map&&(a.material.map.anisotropy=32))})),light.shadow.bias=-1e-4,light.shadow.mapSize.width=1024*4,light.shadow.mapSize.height=1024*4,light.shadow.radius=3);
         setTimeout(()=>(document.querySelector(".swal-text").textContent="Cleaning up..."),2500);
+        zoomInFunction(10);
         setTimeout(()=>{
           let img = document.createElement("img");
           img.src = "images/layout.png";
@@ -1314,9 +1327,21 @@
                 setTimeout(()=>(document.querySelector(".swal-title").textContent="2"),1000);
                 setTimeout(()=>(document.querySelector(".swal-title").textContent="1"),2000);
                 setTimeout(()=>{
+                  let t = 0;
+                  let n = setInterval(() => {
+                    if (t >= 1) {
+                      (clearInterval(n), document.querySelector(".ui").style.opacity = "1");
+                    }
+                    t+=.025;
+                    document.querySelector(".ui").style.opacity = t;
+                  });
+                  zoomOutFunction(10);
                   swal.close();
                   didStart = true;
                   controls.isLocked = true;
+                  scene.add(gun);
+                  primaryRounds--;
+                  reload();
                 }, 3000);
               }, 1000);
               clearInterval(sync);
@@ -1467,7 +1492,7 @@
         if(currentWeapon=="pistol"){secondaryRounds=12,secondaryRoundsDefault=12}
         if(currentWeapon=="rocket"){secondaryRounds=1,secondaryRoundsDefault=1}
         (currentWeaponPosition=="primary"?primaryMagsLeft=3:secondaryMagsLeft=3);
-      })()),scene.add(gun),(currentWeaponPosition=="primary"?loadout[0]=e:loadout[1]=e);for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));gametime.run("pickupWeapon",[e])}
+      })()),scene.add(gun),(currentWeaponPosition=="primary"?primaryMagsLeft++:secondaryMagsLeft++),reload(),(currentWeaponPosition=="primary"?loadout[0]=e:loadout[1]=e);for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));gametime.run("pickupWeapon",[e])}
       isTouchingOrdinance = false;
       function createWeapon(name, position) {
         (new THREE.GLTFLoader).load("models/weapons/ordinance-stands/" + name + ".glb", (ordinance) => {
