@@ -5,18 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPS - 1v1 Multiplayer Shooter</title>
     <style>
+      html {
+        cursor: url(./cursors/cursor1.png), auto !important;
+        min-height: 100%;
+        width: 100vw !important;
+        height: 100vh !important;
+      }
       html, body {
         font-family: Arial, Helvetica, sans-serif;
-        cursor: url(./cursors/cursor.png), default !important;
+        cursor: url(./cursors/cursor1.png), auto !important;
         background-image: url(https://www.onlygfx.com/wp-content/uploads/2017/02/green-splatter-5.png), url(images/gun.png);
         background-size: 50vw, 40vw;
         background-repeat: no-repeat;
         background-position: 0, 55vw;
         background-color: #444;
         user-select: none !important;
+        margin: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+      }
+      body {
+        width: 100% !important;
+        height: 100% !important;
       }
       * {
-        cursor: url(./cursors/cursor.png), default !important;
+        cursor: url(./cursors/cursor1.png), auto !important;
       }
       .page-title {
         position: relative;
@@ -203,6 +216,9 @@
         color: #444 !important;
         text-shadow: 2px 2px #25750a !important;
       }
+      [data-inactive="true"] a {
+        color: #ff4444 !important;
+      }
     </style>
     <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
@@ -304,12 +320,19 @@
         if (name == "" || !name) { return; }
         let lobby = new Lobby();
         lobby.set("name", name);
-        lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved"), findLobby(name.toString(), () => { document.querySelector(".dialog-content").innerHTML += '<div class="lobby" id="'+btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(name.toString())+("&map="+(els[0]||"Cargo"))+'\')" style="border:2px solid #25750a">'+(name.toString().trim()==""?("(blank space)"):name.toString().trim())+'</a>" : '+(new Date).toString().split(" ").splice(1).reverse().splice(4).reverse().join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>", location.hash = btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"") }));
+        setDialog(`open`, { title: `Specific options`, content: `All players options<br>&nbsp;&nbsp;-&nbsp;<input name="allowCustomArmor" type="checkbox" checked><label for="allowCustomArmor">Allow custom armor</label><br>&nbsp;&nbsp;-&nbsp;<input name="allowMultiMaps" type="checkbox" checked><label for="allowMultiMaps">Allow <a href="help.html#multimaps">multi-maps</a></label><br><br>In-Game options<br>&nbsp;&nbsp;-&nbsp;<label for="customTimeLimit">Time limit:</label><input name="customTimeLimit" type="number" style="width:15px;-moz-appearance:textfield!important" value="10"> minutes<br>&nbsp;&nbsp;-&nbsp;<label for="customScoreLimit">Score limit:</label><input name="customScoreLimit" type="number" style="width:15px;-moz-appearance:textfield!important" value="10"> kills` }, () => {
+          lobby.set("allowCustomArmor", document.getElementsByName("allowCustomArmor")[0].checked);
+          lobby.set("allowMultiMaps", document.getElementsByName("allowMultiMaps")[0].checked);
+          lobby.set("scoreLimit", document.getElementsByName("customScoreLimit")[0].value);
+          lobby.set("timeLimit", document.getElementsByName("customTimeLimit")[0].value);
+          lobby.set("inactve", false);
+          lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved"), findLobby(name.toString(), () => { document.querySelector(".dialog-content").innerHTML += '<div class="lobby" id="'+btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(name.toString())+("&map="+(els[0]||"Cargo"))+'\')" style="border:2px solid #25750a">'+(name.toString().trim()==""?("(blank space)"):name.toString().trim())+'</a>" : '+(new Date).toString().split(" ").splice(1).reverse().splice(4).reverse().join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>", location.hash = btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"") }));
+        });
       }
       function findLobby(l, addlobby = null) {
         Notiflix.Notify.info("Loading lobbies...");
         let islobbyadded=false;
-        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?(document.querySelector("#NotiflixNotifyWrap").children[0].click(),(!!addlobby&&!islobbyadded&&(islobbyadded=true,addlobby())),document.querySelector(".dialog-content").innerHTML+='<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"):(document.querySelector("#NotiflixNotifyWrap").children[0].click(),setDialog("open",{title:"Choose a map",content:'<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {})),e=!0}),(e=>{}))}})();
+        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt")};e?(document.querySelector("#NotiflixNotifyWrap").children[0].click(),(!!addlobby&&!islobbyadded&&(islobbyadded=true,addlobby())),document.querySelector(".dialog-content").innerHTML+='<div class="lobby" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+(n.name.trim()==""?("(blank space)"):n.name.trim())+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"):(document.querySelector("#NotiflixNotifyWrap").children[0].click(),setDialog("open",{title:"Choose a map",content:'<i style="color:#333">Lobbies marked <span style="text-decoration:underline">red</span> are inactive.</i><br><div class="lobby" data-inactive="'+(n.inactive)+'" id="'+btoa(encodeURIComponent(n.name)).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(n.name)+("&map="+(els[0]||"Cargo"))+'\')">'+n.name+'</a>" : '+n.time.toString().split(" ").reverse().splice(4).reverse().splice(1).join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>"}, () => {})),e=!0}),(e=>{}))}})();
       }
       function chooseRandom() {
         location.assign('./play.html?lobby='+["RandomLobby", "MyLobby", "Randomness"][Math.floor(Math.random()*3)]+'&map='+(chooseMap(()=>{}),document.querySelector(".dialog-box.fixed-dialog-box").style.display="none",(()=>{g=[];for(let i=0;i<document.querySelector(".dialog-content").innerHTML.split("<br>").length;i++){i>=5||g.push(document.querySelector(".dialog-content").innerHTML.split("<br>")[i].split("\">")[1].split("<")[0])}document.querySelector(".dialog-box.fixed-dialog-box").style.display="block";document.querySelector(".dialog-action").querySelector("a.btn").children[0].click();return g})()[Math.floor(Math.random()*document.querySelector(".dialog-content").innerHTML.split("<br>").length)]));
