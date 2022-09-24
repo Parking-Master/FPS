@@ -527,7 +527,18 @@
         secondaryRounds = 10;
         primaryRoundsDefault = 36;
         secondaryRoundsDefault = 10;
-        fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
+        if (currentMode == "fiesta") {
+          fixedLoadout[0]=weaponDefs[Math.floor(Math.random()*weaponDefs.length)];
+          fixedLoadout[1]=weaponDefs[Math.floor(Math.random()*weaponDefs.length)];
+        } else if (currentMode == "snipers") {
+          fixedLoadout[0]="sniper";
+          fixedLoadout[1]="sniper";
+        } else if (currentMode == "rocknrail") {
+          fixedLoadout[0]="rocket";
+          fixedLoadout[1]="railgun";
+        } else if (currentMode == "slayer") {
+          fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
+        }
         magsLeft = 3;
         primaryMagsLeft = 3;
         secondaryMagsLeft = 4;
@@ -866,7 +877,7 @@
           map.position.y = -308.5;
         }
         gunIdle = false;
-        setInterval(() => { if (gunIdle || !animated || typeof mixer1 == "undefined" || typeof mixer3 == "undefined") { return } gunIdle = true; let e = (currentWeapon=="rifle"?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunAnimations[0]):(currentWeapon=="pistol"?mixer3.clipAction(secondGunAnimations[0]):mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][0]))); e.play() });
+        setInterval(() => { if (gunIdle || !animated || typeof mixer1 == "undefined" || typeof mixer3 == "undefined" || /rocket|shotgun/gi.test(currentWeapon)) { return } gunIdle = true; let e = (currentWeapon=="rifle"?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunAnimations[0]):(currentWeapon=="pistol"?mixer3.clipAction(secondGunAnimations[0]):mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][0]))); e.play() });
         lockIntersection ? (raycastTargets = [], intersection = true) : (hasDied ? raycastTargets = [] : raycastTargets[0] = otherPlayer);
         looker.position.copy(camera.position),looker.rotation.copy(camera.rotation),looker.updateMatrix(),looker.translateZ(-2);
         intersection!=null?(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #ff4444"):(document.querySelector(".crosshair").style.boxShadow="0px 0px 10px 2px #25750a");
@@ -902,7 +913,21 @@
         gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position]);
         document.querySelector(".radar").style.transform = `rotate(${-(()=>{const a=camera.rotation.y,t=a>0?a:2*Math.PI+a;return THREE.MathUtils.radToDeg(t)})()}deg)`;
       });
-      fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
+      currentMode = new URLSearchParams(location.search).get("mode").toLowerCase();
+      weaponDefs = ["rifle", "pistol", "sniper", "assault", "uzi", "shotgun", "rocket"];
+      fixedLoadout=[];
+      if (currentMode == "fiesta") {
+        fixedLoadout[0]=weaponDefs[Math.floor(Math.random()*weaponDefs.length)];
+        fixedLoadout[1]=weaponDefs[Math.floor(Math.random()*weaponDefs.length)];
+      } else if (currentMode == "snipers") {
+        fixedLoadout[0]="sniper";
+        fixedLoadout[1]="sniper";
+      } else if (currentMode == "rocknrail") {
+        fixedLoadout[0]="rocket";
+        fixedLoadout[1]="railgun";
+      } else if (currentMode == "slayer") {
+        fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
+      }
       loadout = fixedLoadout;
       document.querySelector("#rounds").querySelector("img").src = "images/guns/" + fixedLoadout[0] + ".png";
       currentWeapon = loadout[0];
@@ -915,7 +940,6 @@
         "shotgun": {},
         "rocket": {}
       };
-      weaponDefs = ["rifle", "pistol", "sniper", "assault", "uzi", "shotgun", "rocket"];
       mixers = [];
       gunsAnimations = [];
       loadingProgress=0;
