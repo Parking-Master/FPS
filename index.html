@@ -241,6 +241,7 @@
     <div class="wrapper">
       <script src="https://unpkg.com/@popperjs/core@2"></script>
       <script src="https://unpkg.com/tippy.js@6"></script>
+      <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
       <h1 class="page-title">F-P-S</h1>
       <h2 class="page-text">Multiplayer shooter</h2>
       <br>
@@ -268,6 +269,28 @@
       <a href="users/" style="color:#25750a!important;text-shadow:none!important">See what you look like</a>
     </div>
     <script>
+      currentFocus = null;
+      currentScroll = 0;
+      focusMax = null;
+      setInterval(() => {
+        for (let i = 0; i < document.querySelectorAll("a").length; i++) {
+          Object.values(document.querySelectorAll("a")[i].classList).indexOf("focus")>-1||document.querySelectorAll("a")[i].classList.add("focus");
+        }
+        for (let i = 0; i < document.querySelectorAll("button").length; i++) {
+          Object.values(document.querySelectorAll("button")[i].classList).indexOf("focus")>-1||document.querySelectorAll("button")[i].classList.add("focus");
+        }
+        for (let i = 0; i < document.querySelectorAll(".focus").length; i++) {
+          Object.values(document.querySelectorAll(".focus")[0].classList).indexOf("tabfocus"+i)>-1||document.querySelectorAll(".focus")[i].classList.add("tabfocus"+i);
+          focusMax = document.querySelectorAll(".focus").length - 1;
+        }
+      });
+      setInterval(() => {
+        if (!currentFocus && currentFocus != 0) { return }
+        document.querySelector(".tabfocus"+currentFocus).style.outline = "4px solid #eee";
+        for (let i = 0; i < Object.values(document.querySelectorAll(".focus")).filter(e => e !== document.querySelector(".tabfocus"+currentFocus)).length; i++) {
+          Object.values(document.querySelectorAll(".focus")).filter(e => e !== document.querySelector(".tabfocus"+currentFocus))[i].style.outline = "none";
+        }
+      });
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       window.addEventListener("load", (e) => {
         if (document.readyState == "complete" || document.readyState == "interactive") {
@@ -356,6 +379,14 @@
         }).then(e => e && location.assign("help.html"));
       }
       window.addEventListener("load", () => { document.querySelector("head").innerHTML+="<style>.custom-anchor-tt{position:fixed;z-index:9999;display:none;background:#efefef;left:0;bottom:0;overflow:visible;padding:5px;font-size:18px;border-top-right-radius:5px;border-top:1px solid #999;border-right:1px solid #999;color:#999}a:hover+.custom-anchor-tt{display:block}</style>";for(let e=0;e<document.querySelectorAll("a").length;e++){let o=document.createElement("div");o.className="custom-anchor-tt",o.textContent=(document.querySelectorAll("a")[e].href.split("://")[0]=="http"?document.querySelectorAll("a")[e].href.substr(document.querySelectorAll("a")[e].href.indexOf("://")+3).replace(/(\/)$/g, ""):document.querySelectorAll("a")[e].href.replace(/(\/)$/g, ""));let r=document.querySelectorAll("a")[e].href;document.querySelectorAll("a")[e].addEventListener("click",(()=>location.href=r)),document.querySelectorAll("a")[e].removeAttribute("href"),function(){const e=arguments[0],o=arguments[1];e.parentNode.insertBefore(o,e.nextSibling)}(document.querySelectorAll("a")[e],o)} });
+      gameControl.on("connect", (controller) => {
+        window.controller = controller;
+        controller.on("button6", () => {}).before("button6", () => (currentFocus==null?currentFocus=0:(currentFocus<0?currentFocus=focusMax:currentFocus--)));
+        controller.on("button7", () => {}).before("button7", () => (currentFocus==null?currentFocus=0:(currentFocus+1>focusMax?currentFocus=0:currentFocus++)));
+        controller.on("button0", () => {}).before("button0", () => (currentFocus==null||document.querySelector(".tabfocus"+currentFocus).click()));
+        controller.on("right1", () => {typeof document.querySelector(".dialog-content")!="undefined"&&(document.querySelector(".dialog-content").scroll(0,currentScroll),currentScroll++)});
+        controller.on("left1", () => {typeof document.querySelector(".dialog-content")!="undefined"&&(document.querySelector(".dialog-content").scroll(0,currentScroll),currentScroll--)});
+      });
     </script>
   </body>
 </html>

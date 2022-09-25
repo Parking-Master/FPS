@@ -361,7 +361,7 @@
         "zoomOut": 8
       };
       function saveKey(type, key) {
-        let localKey = (localStorage["prefsKeyControls"] || "f,b,r, ,t,p,y,i,z").split(",");
+        let localKey = (localStorage["prefsKeyControls"] || "f,b,r, ,t,m,y,i,z,p").split(",");
         localKey[keyDefs[type]] = key;
         console.log(localKey);
         localStorage.setItem("prefsKeyControls", localKey.join(","));
@@ -376,10 +376,12 @@
         <label for="switchWeapon">Switch Weapon: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('switchWeapon',this.value)" class="keyinput" name="switchWeapon" value="y"><br>
         <label for="zoomIn">Zoom In: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('zoomIn',this.value)" class="keyinput" name="zoomIn" value="i"><br>
         <label for="zoomOut">Zoom Out: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('zoomOut',this.value)" class="keyinput" name="zoomOut" value="z"><br>
-        <label for="throwGrenade">Throw Grenade: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('throwGrenade',this.value)" class="keyinput" name="throwGrenade" value="p"><br>
+        <label for="throwGrenade">Throw Grenade: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('throwGrenade',this.value)" class="keyinput" name="throwGrenade" value="m"><br>
         <label for="interact">Interact: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('interact',this.value)" class="keyinput" name="interact" value="t"><br>
         <h3>Navigational Keys</h3>
         <label for="jump">Jump: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('jump',this.value)" class="keyinput" name="jump" value=" "><br>
+        <h3>Menu Keys</h3>
+        <label for="pause">Pause: </label><input onkeyup="this.value=(this.value==' '?' ':this.value[0]||''),event.key=='Enter'&&saveKey('pause',this.value)" class="keyinput" name="pause" value="p"><br>
         `;
         swal({
           title: "Customize keys",

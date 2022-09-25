@@ -285,6 +285,37 @@
         border: 2px solid currentColor;
         border-radius: 2px;
       }
+      .pause-menu {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: #333;
+        background: rgba(15,15,15,.5);
+        z-index: 9999;
+      }
+      .pause-tab {
+        position: relative;
+        top: 200px;
+        left: 0;
+        margin: 0;
+        margin-bottom: 30px;
+        background: #444;
+        display: inline-block;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        padding: 5px;
+        width: 250px;
+        color: #333;
+        text-shadow: 0 2px #25750a;
+        text-align: center;
+        box-shadow: 0 3px 5px #25750a;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -303,6 +334,12 @@
       <div class="loader-1"></div>
       <br>
       <h2 style="font-size:20px;text-align:center;position:absolute;margin-top:100px;color:#25750a">LOADING<br><div class="progress-bar"><div id="progress"></div></div></h2>
+    </div>
+    <div class="pause-menu" style="display:none">
+      <h1 style="color:#25750a;font-weight:bold;font-family:monospace;position:absolute;left:20px;top:20px;font-size:75px;margin:0">PAUSED</h1>
+      <div class="pause-tab" onclick="unpause()">Continue</div><br>
+      <div class="pause-tab" onclick="confirm('Are you sure? All player will be disconnected.')&&cancelSearch()">Leave game</div><br>
+      <div class="pause-tab" onclick="openSettings()">Settings</div><br>
     </div>
     <!-- <audio id="explosion" src="sounds/explosion.mp3" volume="1" current-time=".1"></audio> -->
     <audio id="grenade_explosion" src="sounds/grenade_explosion.mp3" volume="1" current-time=".1"></audio>
@@ -386,7 +423,7 @@
     </script> -->
     <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS@master/gametime-socket.js"></script> -->
     <script>
-      defaultKeys = "f,b,r, ,t,p,y,i,z";
+      defaultKeys = "f,b,r, ,t,m,y,i,z,p";
       keyControls = {
         "shoot": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[0],
         "punch": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[1],
@@ -396,7 +433,8 @@
         "throwGrenade": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[5],
         "switchWeapon": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[6],
         "zoomIn": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[7],
-        "zoomOut": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[8]
+        "zoomOut": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[8],
+        "pause": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[9]
       };
       function showText(e) {
         document.querySelector("#weapontext").textContent = e;
@@ -1632,6 +1670,17 @@
       let hasSwitchedFirst = true;
       function onWindowResize(){camera.aspect=window.innerWidth/window.innerHeight,camera.updateProjectionMatrix(),renderer.setSize(window.innerWidth,window.innerHeight)/*,document.querySelector("canvas").style.marginLeft=-((document.querySelector("canvas").style.width.split("px")[0]-0)/2)+"px",document.querySelector("canvas").style.left="50%",document.querySelector("canvas").style.position="relative"*/}window.addEventListener("resize",onWindowResize,!1);
       keyThatStartedWalking = null;
+      isPaused = false;
+      function pause() {
+        isPaused = true;
+        controls.isLocked = false;
+        document.querySelector(".pause-menu").style.display = "block";
+      }
+      function unpause() {
+        isPaused = false;
+        controls.isLocked = true;
+        document.querySelector(".pause-menu").style.display = "none";
+      }
       document.addEventListener("keydown", (e) => {
         if (!controls.isLocked || isInWarthog) { return }
         if (e.key == "ArrowUp") {
@@ -1717,6 +1766,8 @@
         }
         if (e.key == keyControls.throwGrenade && !e.repeat) {
           throwGrenade();
+        } if (e.key == keyControls.pause && !e.repeat) {
+          isPaused? unpause() : pause();
         }
       });
       document.addEventListener("keyup", (e) => {
@@ -1755,7 +1806,7 @@
       (() => { let loader=new THREE.TextureLoader;loader.load("images/clouds"+(currentMap=="CARGO"?"2":"1")+".png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.material.map.generateMipmaps=!1,sky.material.map.minFilter=THREE.LinearMipMapLinearFilter,sky.material.map.needsUpdate=!0,sky.rotation.y=-.2,scene.add(d),d.position.set(0,0,0)})); })();
       gameControl.on("connect", (controller) => {
         window.controller = controller;
-        lookSensitivity=.003;lookAcc=0;lookMax=.1;(()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowLeft"})),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight"})),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowDown"}))})).before("right0",(()=>{})).after("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}))})),controller.on("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowUp"}))})).before("left0",(()=>{})).after("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}))})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"f"}))}).after("button16",()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"f"}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}))})(),controller.on('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('up0',()=>{lookAcc=0}),controller.on('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('down0',()=>{lookAcc=0}),controller.on('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('left1',()=>{lookAcc=0}),controller.on('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('right1',()=>{lookAcc=0}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:" "}))}).after('button0',()=>{}),controller.on('button1',()=>{}).before('button1',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"b"}))}).after('button1',()=>{}),controller.on('button14',()=>{}).before('button14',()=>{isZoomed?document.dispatchEvent(new KeyboardEvent("keydown",{key:"z"})):document.dispatchEvent(new KeyboardEvent("keydown",{key:"i"}))}).after('button14',()=>{}),controller.on('button7',()=>{}).before('button7',()=>{isTouchingOrdinance?document.dispatchEvent(new KeyboardEvent("keydown",{key:"t"})):(!isReloading&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"r"})))}).after('button7',()=>{}),controller.on('button15',()=>{}).before('button15',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"p"}))}).after('button15',()=>{});
+        lookSensitivity=.003;lookAcc=0;lookMax=.1;(()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowLeft"})),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight"})),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowDown"}))})).before("right0",(()=>{})).after("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}))})),controller.on("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowUp"}))})).before("left0",(()=>{})).after("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}))})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"f"}))}).after("button16",()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"f"}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}))})(),controller.on('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('up0',()=>{lookAcc=0}),controller.on('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('down0',()=>{lookAcc=0}),controller.on('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('left1',()=>{lookAcc=0}),controller.on('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('right1',()=>{lookAcc=0}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:" "}))}).after('button0',()=>{}),controller.on('button1',()=>{}).before('button1',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"b"}))}).after('button1',()=>{}),controller.on('button14',()=>{}).before('button14',()=>{isZoomed?document.dispatchEvent(new KeyboardEvent("keydown",{key:"z"})):document.dispatchEvent(new KeyboardEvent("keydown",{key:"i"}))}).after('button14',()=>{}),controller.on('button7',()=>{}).before('button7',()=>{isTouchingOrdinance?document.dispatchEvent(new KeyboardEvent("keydown",{key:"t"})):(!isReloading&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"r"})))}).after('button7',()=>{}),controller.on('button15',()=>{}).before('button15',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"m"}))}).after('button15',()=>{}),controller.on('button11',()=>{}).before('button11',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"p"}))}).after('button11',()=>{});
       });
       createWeapon(currentMap=="CARGO"?"sniper":"sniper",{x:0,y:0,z:20});
       // createWeapon("assault",{x:-18,y:0,z:16.3});
