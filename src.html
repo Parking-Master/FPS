@@ -1107,6 +1107,7 @@
       }
       function bot() {
         let deathCooldown = false;
+        let h=setInterval(()=>{for(let i=0;i<warthogs.length;i++){if(distanceTo(warthogs[i].position,otherPlayer.position)<=2){otherPlayer.position.copy(warthogs[i].position),otherCurrentWarthog=i.toString(),warthogs[i].lookAt(camera.position),warthogs[i].rotateY(Math.PI/2-.25),warthogs[i].translateX(-.05),distanceTo(warthogs[i].position,myPlayer.position)<=2&&gametime.run("eleminate",[gametime.user.position]),map.traverse(x=>{collision(warthogs[i],x)&&x!=myPlayer&&x!=gun&&x!=camera&&(!x.name.includes("scene")&&!x.name.includes("Scene"))&&(typeof warthogs[i].getObjectByName(x.name)=="undefined")&&x.name!="Cube"&&!warthogs[i].obstructed&&(document.querySelector("#grenade_explosion").cloneNode().play(),crashWarthog(warthogs[i]),clearInterval(h))})}}});
         start();
         otherPlayer.position.set(0, -.9, 37);
         otherPlayer.rotation.set(0, 0, 0);
