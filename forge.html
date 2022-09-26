@@ -53,6 +53,7 @@
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://threejs.org/examples/js/exporters/GLTFExporter.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/js/libs/fflate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <div class="sidebar">
@@ -68,21 +69,28 @@
       <input name="preferredRotation" id="preferredRotation" value="0, 0, 0" onkeydown="this.onkeyup()" onkeyup="currentItem&&(currentItem.preferredRotation.x=this.value.split(',')[0]-0,currentItem.preferredRotation.y=this.value.split(',')[1]-0,currentItem.preferredRotation.z=this.value.split(',')[2]-0)">
       <br>
       <i>Drop: [ESC]</i>
+      <br>
+      <button onclick="save()">Save</button>
     </div>
     <script>
-      const scene = new THREE.Scene();
+      const scene=new THREE.Scene();
+      env = new THREE.Group();
       const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement),renderer.setPixelRatio(1);
       function isTouchDevice(){return!!window.matchMedia("(pointer: coarse)").matches}
       isTouchDevice()?(()=>{const{Euler:e,EventDispatcher:t,Vector3:n}=THREE;var o;o=!1;var i=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent),c=document.body.clientWidth/2,r=(document.body.clientHeight,window.innerHeight),s=function(t,s){o=!!i,void 0===s&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),s=document.body),this.domElement=s,this.isLocked=!1;var m,u,d,a=this,h={type:"change"},v={type:"lock"},l={type:"unlock"},E=new e(0,0,0,"YXZ"),p=Math.PI/2,k=Math.PI/3.8,L=Math.PI/9,f=new n,y=0,M=0;function x(){}function P(e){u=e.touches[0].clientY,m=e.touches[0].clientX,y=m-c,M=u-(r-100),E.setFromQuaternion(t.quaternion),E.y=.005*y,E.x=.005*M,E.x=Math.max(-p,Math.min(L,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h),console.log(M)}function w(e){}function g(e){if(!1!==a.isLocked){var n=e.movementX||e.mozMovementX||e.webkitMovementX||0,o=e.movementY||e.mozMovementY||e.webkitMovementY||0;E.setFromQuaternion(t.quaternion),E.y-=.002*n,E.x-=.002*o,E.x=Math.max(-p,Math.min(p,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h)}}function b(){document.pointerLockElement===a.domElement?(a.dispatchEvent(v),a.isLocked=!0):(a.dispatchEvent(l),a.isLocked=!1)}function F(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){document.addEventListener("mousemove",g,!1),document.addEventListener("touchstart",x,!1),document.addEventListener("touchmove",P,!1),document.addEventListener("pointerlockchange",b,!1),document.addEventListener("pointerlockerror",F,!1)},this.disconnect=function(){document.removeEventListener("mousemove",g,!1),document.removeEventListener("touchend",w,!1),document.removeEventListener("touchmove",onTouchmove,!1),document.removeEventListener("pointerlockchange",b,!1),document.removeEventListener("pointerlockerror",F,!1)},this.dispose=function(){this.disconnect()},this.getObject=function(){return t},this.getDirection=(d=new n(0,0,-1),function(e){return e.copy(d).applyQuaternion(t.quaternion)}),this.moveForward=function(e){f.setFromMatrixColumn(t.matrix,0),f.crossVectors(t.up,f),t.position.addScaledVector(f,e)},this.moveRight=function(e){f.setFromMatrixColumn(t.matrix,0),t.position.addScaledVector(f,e)},this.lock=1==o?function(){a.isLocked=!0,this.connect()}:function(){this.domElement.requestPointerLock()},this.unlock=function(){document.exitPointerLock()},this.connect()};(s.prototype=Object.create(t.prototype)).constructor=s,window.PointerLockControls=s})():(()=>{const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}window.PointerLockControls=PointerLockControls})();
       scene.add(camera);
       map = new THREE.Mesh();
-      light=new THREE.PointLight(0xf7f7ea,2),light.position.set(-10,20,-10),scene.add(light);
+      light=new THREE.PointLight(0xf7f7ea,2),light.position.set(-10,20,-10),env.add(light);
       sky=new THREE.Mesh(new THREE.SphereGeometry(100,100,100),new THREE.MeshBasicMaterial({color:0xffffff,map:(new THREE.TextureLoader).load("images/clouds3.png"),side:THREE.DoubleSide}));
-      scene.add(sky);
+      env.add(sky);
       isWalkingForward = false;
       isWalkingBackward = false;
       isWalkingLeft = false;
       isWalkingRight = false;
+      scene.add(env);
+      function save() {
+        const arrayBufferToFile=(t,e)=>{const a=new Blob([t],{type:"application/octet-stream"});return new File([a],e,{type:"application/octet-stream"})};(new THREE.GLTFExporter).parse(env,(e)=>location.assign(URL.createObjectURL(arrayBufferToFile(e,"scene.glb"))));
+      }
       setInterval(() => {
         if (isWalkingForward) {
           camera.translateZ(-.1);
@@ -211,7 +219,7 @@
           object.material.color.r = new THREE.Color(color).r;
           object.material.color.g = new THREE.Color(color).g;
           object.material.color.b = new THREE.Color(color).b;
-          scene.add(object);
+          env.add(object);
           object.preferredRotation = {};
           object.preferredRotation.x = 0;
           object.preferredRotation.y = 0;
@@ -219,6 +227,118 @@
           currentItem = object;
         });
       }
+      document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        scene.traverse((x) => {
+          let raycaster = new THREE.Raycaster();
+          let mouse = new THREE.Vector2();
+          mouse.x=(e.clientX/renderer.domElement.clientWidth)*2-1;
+          mouse.y=-(e.clientY/renderer.domElement.clientHeight)*2+1;
+          raycaster.setFromCamera(mouse,camera);
+          let intersects = raycaster.intersectObjects([x]);
+          let intersection=null;
+          intersects[0]&&(intersection=intersects[0]);
+          if (intersection) {
+            let object = intersection.object;
+            let map, color = "#ffffff", geometry, finalGeometry;
+            window.dataURL = function(files) {
+              let file = files[0];
+              let reader = new FileReader();
+              reader.addEventListener("load", () => {
+                fetch(reader.result).then(function(response){return(response.blob())}).then(function(blob){
+                  map = new THREE.TextureLoader().load(URL.createObjectURL(blob));
+                  console.log(map);
+                });
+              }, false);
+              if (file) {
+                reader.readAsDataURL(file);
+              }
+            }
+            window.changeColor = function(value) {
+              color = value;
+            }
+            window.changeGeometry = function(value) {
+              console.log(value);
+              geometry = value == "Cube" ? THREE.BoxGeometry : value == "Sphere" ? THREE.SphereGeometry : value == "Cylinder" && THREE.CylinderGeometry;
+            }
+            window.removeObject = function() {
+              scene.remove(object);
+            }
+            window.addObject = function() {
+              env.add(object);
+            }
+            window.duplicateObject = function() {
+              let r = object.clone();
+              env.add(r);
+              currentItem = r;
+              swal.close();
+            }
+            window.changeSize = function(value) {
+              value = value.split(",");
+              console.log(value[0]-0,value[1]-0,value[2]-0)
+              finalGeometry = new geometry(value[0]-0,value[1]-0,value[2]-0);
+            }
+            if (intersection.object == sky) {
+              let e = document.createElement("div");
+              e.innerHTML = `
+              <h1>Material</h1>
+              <label for="color">Color:</label>
+              <input name="color" value="#FFFFFF" type="color" onchange="changeColor(this.value)">
+              <br>
+              <label for="file">Background:</label>
+              <input name="file" type="file" accept=".jpg,.jpeg,.png" onchange="dataURL(this.files)">
+              `;
+              swal({
+                title: "Sky Properties",
+                content: e
+              });
+              changeGeometry("Sphere");
+              changeSize("100, 100, 100");
+            } else {
+              let e = document.createElement("div");
+              e.innerHTML = `
+              <h1>Material</h1>
+              <label for="color">Color:</label>
+              <input name="color" value="${("#"+object.material.color.getHexString()).toUpperCase()}" type="color" onchange="changeColor(this.value)">
+              <br>
+              <label for="file">Texture:</label>
+              <input name="file" type="file" accept=".jpg,.jpeg,.png" onchange="dataURL(this.files)">
+              <br>
+              <h1>Size</h1>
+              <label for="size">Scale:</label>
+              <input readonly name="size" value="${object.geometry.parameters.width}, ${object.geometry.parameters.height}, ${object.geometry.parameters.depth}" type="text">
+              <br>
+              <br>
+              <button onclick="removeObject()">Remove Object</button>
+              <br>
+              <button onclick="addObject()">Add Object</button>
+              <br>
+              <button onclick="duplicateObject()">Duplicate Object</button>
+              `;
+              swal({
+                title: "Object Properties",
+                content: e,
+                buttons: ["Pickup", "Save"]
+              }).then((e) => {
+                if (e) {
+                  if (map) {
+                    object.material.map = map;
+                  }
+                  object.material.color.r = new THREE.Color(color).r;
+                  object.material.color.g = new THREE.Color(color).g;
+                  object.material.color.b = new THREE.Color(color).b;
+                  return;
+                }
+                currentItem = object;
+              });
+              changeSize("1, 1, 1");
+            }
+          }
+        });
+      });
+      setInterval(() => {
+        swal.getState().isOpen ? controls.isLocked = false : controls.isLocked = true;
+      });
     </script>
   </body>
 </html>
