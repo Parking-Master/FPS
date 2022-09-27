@@ -14,7 +14,7 @@
         background: #eeeeee;
       }
       * {
-        cursor: url(./cursors/cursor1.png), auto !important;
+        cursor: url(./cursors/cursor2.png), auto !important;
       }
       .sidebar {
         position: absolute;
@@ -93,6 +93,8 @@
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <div class="sidebar">
       <button onclick="add()">Add</button>
+      <br>
+      <button onclick="confirm('Are you sure?')&&env.traverse(x=>x!=sky&&x.name!='skyobj'&&env.remove(x))">Reset</button>
       <hr>
       <div id="objectRotation">
         <span id="x">0</span>, <span id="y">0</span>, <span id="z">0</span>
@@ -118,13 +120,14 @@
     <script>
       const scene=new THREE.Scene();
       env = new THREE.Group();
-      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement),renderer.setPixelRatio(1);
+      const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3),renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(window.innerWidth,window.innerHeight),document.body.appendChild(renderer.domElement),renderer.setPixelRatio(1.5);
+      renderer.setClearColor("#eee");
       function isTouchDevice(){return!!window.matchMedia("(pointer: coarse)").matches}
       isTouchDevice()?(()=>{const{Euler:e,EventDispatcher:t,Vector3:n}=THREE;var o;o=!1;var i=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent),c=document.body.clientWidth/2,r=(document.body.clientHeight,window.innerHeight),s=function(t,s){o=!!i,void 0===s&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),s=document.body),this.domElement=s,this.isLocked=!1;var m,u,d,a=this,h={type:"change"},v={type:"lock"},l={type:"unlock"},E=new e(0,0,0,"YXZ"),p=Math.PI/2,k=Math.PI/3.8,L=Math.PI/9,f=new n,y=0,M=0;function x(){}function P(e){u=e.touches[0].clientY,m=e.touches[0].clientX,y=m-c,M=u-(r-100),E.setFromQuaternion(t.quaternion),E.y=.005*y,E.x=.005*M,E.x=Math.max(-p,Math.min(L,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h),console.log(M)}function w(e){}function g(e){if(!1!==a.isLocked){var n=e.movementX||e.mozMovementX||e.webkitMovementX||0,o=e.movementY||e.mozMovementY||e.webkitMovementY||0;E.setFromQuaternion(t.quaternion),E.y-=.002*n,E.x-=.002*o,E.x=Math.max(-p,Math.min(p,E.x)),E.y=Math.max(-k,Math.min(k,E.y)),t.quaternion.setFromEuler(E),a.dispatchEvent(h)}}function b(){document.pointerLockElement===a.domElement?(a.dispatchEvent(v),a.isLocked=!0):(a.dispatchEvent(l),a.isLocked=!1)}function F(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){document.addEventListener("mousemove",g,!1),document.addEventListener("touchstart",x,!1),document.addEventListener("touchmove",P,!1),document.addEventListener("pointerlockchange",b,!1),document.addEventListener("pointerlockerror",F,!1)},this.disconnect=function(){document.removeEventListener("mousemove",g,!1),document.removeEventListener("touchend",w,!1),document.removeEventListener("touchmove",onTouchmove,!1),document.removeEventListener("pointerlockchange",b,!1),document.removeEventListener("pointerlockerror",F,!1)},this.dispose=function(){this.disconnect()},this.getObject=function(){return t},this.getDirection=(d=new n(0,0,-1),function(e){return e.copy(d).applyQuaternion(t.quaternion)}),this.moveForward=function(e){f.setFromMatrixColumn(t.matrix,0),f.crossVectors(t.up,f),t.position.addScaledVector(f,e)},this.moveRight=function(e){f.setFromMatrixColumn(t.matrix,0),t.position.addScaledVector(f,e)},this.lock=1==o?function(){a.isLocked=!0,this.connect()}:function(){this.domElement.requestPointerLock()},this.unlock=function(){document.exitPointerLock()},this.connect()};(s.prototype=Object.create(t.prototype)).constructor=s,window.PointerLockControls=s})():(()=>{const _euler=new THREE.Euler(0,0,0,"YXZ"),_vector=new THREE.Vector3,_changeEvent={type:"change"},_lockEvent={type:"lock"},_unlockEvent={type:"unlock"},_PI_2=Math.PI/2;class PointerLockControls extends THREE.EventDispatcher{constructor(e,t){super(),void 0===t&&(console.warn('THREE.PointerLockControls: The second parameter "domElement" is now mandatory.'),t=document.body),this.domElement=t,this.isLocked=!1,this.minPolarAngle=0,this.maxPolarAngle=Math.PI,this.pointerSpeed=1;const o=this;function n(t){if(!1===o.isLocked)return;const n=t.movementX||t.mozMovementX||t.webkitMovementX||0,r=t.movementY||t.mozMovementY||t.webkitMovementY||0;_euler.setFromQuaternion(e.quaternion),_euler.y-=.002*n*o.pointerSpeed,_euler.x-=.002*r*o.pointerSpeed,_euler.x=Math.max(_PI_2-o.maxPolarAngle,Math.min(_PI_2-o.minPolarAngle,_euler.x)),e.quaternion.setFromEuler(_euler),o.dispatchEvent(_changeEvent)}function r(){o.domElement.ownerDocument.pointerLockElement===o.domElement?(o.dispatchEvent(_lockEvent),o.isLocked=!0):(o.dispatchEvent(_unlockEvent),o.isLocked=!1)}function c(){console.error("THREE.PointerLockControls: Unable to use Pointer Lock API")}this.connect=function(){o.domElement.ownerDocument.addEventListener("mousemove",n),o.domElement.ownerDocument.addEventListener("pointerlockchange",r),o.domElement.ownerDocument.addEventListener("pointerlockerror",c)},this.disconnect=function(){o.domElement.ownerDocument.removeEventListener("mousemove",n),o.domElement.ownerDocument.removeEventListener("pointerlockchange",r),o.domElement.ownerDocument.removeEventListener("pointerlockerror",c)},this.dispose=function(){this.disconnect()},this.getObject=function(){return e},this.getDirection=function(){const t=new THREE.Vector3(0,0,-1);return function(o){return o.copy(t).applyQuaternion(e.quaternion)}}(),this.moveForward=function(t){_vector.setFromMatrixColumn(e.matrix,0),_vector.crossVectors(e.up,_vector),e.position.addScaledVector(_vector,t)},this.moveRight=function(t){_vector.setFromMatrixColumn(e.matrix,0),e.position.addScaledVector(_vector,t)},this.lock=function(){this.domElement.requestPointerLock()},this.unlock=function(){o.domElement.ownerDocument.exitPointerLock()},this.connect()}}window.PointerLockControls=PointerLockControls})();
       scene.add(camera);
       map = new THREE.Mesh();
       light=new THREE.DirectionalLight(0xf7f7ea,2),light.position.set(-10,20,-10),env.add(light),light.position.set(180,130,-144),light.rotation.set(Math.PI/2,0,0);
-      setInterval(()=>{renderer.shadowMap.enabled=!0,env.traverse((a=>{a.isObject3D&&(a.castShadow=!0,a.receiveShadow=!0,a.material&&a.material.map&&(a.material.map.anisotropy=16))})),light.shadow.bias=-1e-4,light.shadow.mapSize.width=1024*4,light.shadow.mapSize.height=1024*4,light.shadow.radius=3},1000);
+      setInterval(()=>{renderer.shadowMap.enabled=!0,env.traverse((a=>{a.isObject3D&&(a.castShadow=!0,((a.name=="skyobj"||a==light)&&(a.receiveShadow=!0)),a.material&&a.material.map&&(a.material.map.anisotropy=16))})),light.shadow.bias=-1e-4,light.shadow.mapSize.width=1024*4,light.shadow.mapSize.height=1024*4,light.shadow.radius=3},1000);
       sky=new THREE.Mesh(new THREE.SphereGeometry(100,100,100),new THREE.MeshBasicMaterial({color:0xffffff,map:(new THREE.TextureLoader).load("images/clouds3.png"),side:THREE.DoubleSide}));
       sky.name="skyobj";
       env.add(sky);
@@ -213,14 +216,13 @@
       });
       currentItem = null;
       function animate() {
-        renderer.render(scene, camera);
         if (currentItem) {
           // currentItem.position.copy(camera.position);
           // currentItem.rotation.copy(camera.rotation);
           // currentItem.updateMatrix();
-          // currentItem.rotateX(Math.PI/2+currentItem.preferredRotation.x);
-          // currentItem.rotateY(currentItem.preferredRotation.y);
-          // currentItem.rotateZ(currentItem.preferredRotation.z);
+          currentItem.rotation.x=(currentItem.preferredRotation.x);
+          currentItem.rotation.y=(currentItem.preferredRotation.y);
+          currentItem.rotation.z=(currentItem.preferredRotation.z);
           document.querySelector("#objectRotation").querySelector("#x").textContent=currentItem.rotation.x;
           document.querySelector("#objectRotation").querySelector("#y").textContent=currentItem.rotation.y;
           document.querySelector("#objectRotation").querySelector("#z").textContent=currentItem.rotation.z;
@@ -229,7 +231,9 @@
           document.querySelector("#objectPosition").querySelector("#z").textContent=currentItem.position.z;
           controls.target.copy(currentItem.position);
         }
+        // sky.position.copy(camera.position);
         requestAnimationFrame(animate);
+        renderer.render(scene, camera);
       }
       typeof controls != "undefined" && controls.update();
       animate();
@@ -380,6 +384,9 @@
               <br>
               <label for="file">Background:</label>
               <label for="file" data-filehider onclick="document.querySelector('input[type=\\'file\\']').click()">Upload</label><input hidden name="file" type="file" accept=".jpg,.jpeg,.png" onchange="dataURL(this.files)">
+              <br>
+              <br>
+              <button onclick="env.remove(sky)">Remove</button>
               `;
               swal({
                 title:  "Sky Properties",
