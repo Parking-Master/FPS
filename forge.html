@@ -18,8 +18,8 @@
       }
       .sidebar {
         position: absolute;
+        text-align: center;
         width: 300px;
-        height: 400px;
         padding: 0;
         margin: 0;
         background: #fff;
@@ -28,6 +28,35 @@
         bottom: 200px;
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
+      }
+      iframe {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        z-index: 99999;
+      }
+      button, input {
+        color: #333;
+        border: 2px solid #333;
+        background: #fff;
+        padding: 5px;
+        margin: 5px;
+      }
+      canvas {
+        outline: 20px solid #fff;
+        outline-offset: -20px;
+      }
+      .swal-button {
+        color: #333 !important;
+        border: 2px solid #333 !important;
+        background: #fff !important;
+        padding: 5px !important;
+        margin: 5px !important;
+        border-radius: none !important;
+        box-shadow: none !important;
       }
     </style>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -54,10 +83,12 @@
     <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://threejs.org/examples/js/exporters/GLTFExporter.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/js/libs/fflate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
     <div class="sidebar">
       <button onclick="add()">Add</button>
+      <hr>
       <div id="objectRotation">
         <span id="x">0</span>, <span id="y">0</span>, <span id="z">0</span>
       </div>
@@ -65,12 +96,19 @@
       <div id="objectPosition">
         <span id="x">0</span>, <span id="y">0</span>, <span id="z">0</span>
       </div>
-      <label for="preferredRotation">Preferred Rotation</label><br>
+      <label for="preferredRotation">Object Rotation</label><br>
       <input name="preferredRotation" id="preferredRotation" value="0, 0, 0" onkeydown="this.onkeyup()" onkeyup="currentItem&&(currentItem.preferredRotation.x=this.value.split(',')[0]-0,currentItem.preferredRotation.y=this.value.split(',')[1]-0,currentItem.preferredRotation.z=this.value.split(',')[2]-0)">
-      <br>
+      <hr>
       <i>Drop: [ESC]</i>
       <br>
+      <i>Pickup: [Click]</i>
+      <br>
+      <br>
+      <i>Ground level is -0.7</i>
+      <hr>
       <button onclick="save()">Save</button>
+      <br>
+      <button onclick="test()">Test</button>
     </div>
     <script>
       const scene=new THREE.Scene();
@@ -82,14 +120,32 @@
       map = new THREE.Mesh();
       light=new THREE.PointLight(0xf7f7ea,2),light.position.set(-10,20,-10),env.add(light);
       sky=new THREE.Mesh(new THREE.SphereGeometry(100,100,100),new THREE.MeshBasicMaterial({color:0xffffff,map:(new THREE.TextureLoader).load("images/clouds3.png"),side:THREE.DoubleSide}));
+      sky.name="skyobj";
       env.add(sky);
       isWalkingForward = false;
       isWalkingBackward = false;
       isWalkingLeft = false;
       isWalkingRight = false;
       scene.add(env);
+      function test() {
+        (new THREE.GLTFExporter).parse(env,(function(e){const n=JSON.stringify(e),t=new Blob([n],{type:"application/json"});let o=URL.createObjectURL(t);
+        let button = document.createElement("button");
+        let frame = document.createElement("iframe");
+        button.onclick = () => {
+          renderer.domElement.style.display = "block";
+          button.remove();
+          frame.remove();
+        }
+        button.style = "padding:5px;background:#fff;color:#333;position:absolute;left:20px;top:20px;border:2px solid #333;z-index:999999";
+        button.textContent = "Close";
+        frame.src = ("src.html?character=mark-vi&mode=Slayer&blob=true&lobby="+(Math.random()*Math.random()).toString()+"&map="+o);
+        document.body.appendChild(button);
+        document.body.appendChild(frame);
+        renderer.domElement.style.display = "none";
+        }),{binary:!0});
+      }
       function save() {
-        const arrayBufferToFile=(t,e)=>{const a=new Blob([t],{type:"application/octet-stream"});return new File([a],e,{type:"application/octet-stream"})};(new THREE.GLTFExporter).parse(env,(e)=>location.assign(URL.createObjectURL(arrayBufferToFile(e,"scene.glb"))));
+        (new THREE.GLTFExporter).parse(env,(function(e){const n=JSON.stringify(e),t=new Blob([n],{type:"application/json"});let o=URL.createObjectURL(t),c=document.createElement("a");c.download="scene.glb",c.href=o,c.click()}),{binary:!0})
       }
       setInterval(() => {
         if (isWalkingForward) {
@@ -107,6 +163,21 @@
       });
       document.addEventListener("keydown", (e) => {
         e.key == "Escape" && (currentItem = null);
+        if (currentItem) {
+          if (e.key == "ArrowUp") {
+            currentItem.translateY(.1);
+          }
+          if (e.key == "ArrowDown") {
+            currentItem.translateY(-.1);
+          }
+          if (e.key == "ArrowLeft") {
+            (e.altKey)?currentItem.translateZ(-.1):currentItem.translateX(-.1);
+          }
+          if (e.key == "ArrowRight") {
+            (e.altKey)?currentItem.translateZ(.1):currentItem.translateX(.1);
+          }
+          return;
+        }
         if (e.key == "ArrowUp") {
           isWalkingForward = true;
         }
@@ -138,26 +209,27 @@
       function animate() {
         renderer.render(scene, camera);
         if (currentItem) {
-          currentItem.position.copy(camera.position);
-          currentItem.rotation.copy(camera.rotation);
-          currentItem.updateMatrix();
-          currentItem.translateZ(-2);
-          currentItem.rotateX(Math.PI/2+currentItem.preferredRotation.x);
-          currentItem.rotateY(currentItem.preferredRotation.y);
-          currentItem.rotateZ(currentItem.preferredRotation.z);
+          // currentItem.position.copy(camera.position);
+          // currentItem.rotation.copy(camera.rotation);
+          // currentItem.updateMatrix();
+          // currentItem.rotateX(Math.PI/2+currentItem.preferredRotation.x);
+          // currentItem.rotateY(currentItem.preferredRotation.y);
+          // currentItem.rotateZ(currentItem.preferredRotation.z);
           document.querySelector("#objectRotation").querySelector("#x").textContent=currentItem.rotation.x;
           document.querySelector("#objectRotation").querySelector("#y").textContent=currentItem.rotation.y;
           document.querySelector("#objectRotation").querySelector("#z").textContent=currentItem.rotation.z;
           document.querySelector("#objectPosition").querySelector("#x").textContent=currentItem.position.x;
           document.querySelector("#objectPosition").querySelector("#y").textContent=currentItem.position.y;
           document.querySelector("#objectPosition").querySelector("#z").textContent=currentItem.position.z;
+          controls.target.copy(currentItem.position);
         }
         requestAnimationFrame(animate);
       }
+      typeof controls != "undefined" && controls.update();
       animate();
-      controls=new PointerLockControls(camera, renderer.domElement);
-      controls.isLocked=true;
-      controls.pointerSpeed=2;
+      controls=new THREE.OrbitControls(camera,renderer.domElement);
+      camera.translateZ(10);
+      controls.isLocked=false;
       function add() {
         let object = new THREE.Mesh();
         let map, color = "#ffffff", geometry, finalGeometry;
@@ -210,8 +282,11 @@
         `;
         swal({
           content: e,
-          button: "Add Object"
-        }).then(() => {
+          buttons: ["Cancel", "Add Object"]
+        }).then((e) => {
+          if (!e) {
+            return swal.close();
+          }
           if (map) {
             object.material.map = map;
           }
@@ -227,8 +302,19 @@
           currentItem = object;
         });
       }
-      document.addEventListener("contextmenu", (e) => {
+      document.addEventListener("mousedown", (e) => {
+        document.onmousemove = (e) => {
+          isOrbiting = true;
+        }
+      });
+      document.addEventListener("mouseup", (e) => {
         e.preventDefault();
+        document.onmousemove = null;
+        let wasOrbiting = isOrbiting;
+        isOrbiting = false;
+        if (e.target != renderer.domElement || wasOrbiting) {
+          return;
+        }
         scene.traverse((x) => {
           let raycaster = new THREE.Raycaster();
           let mouse = new THREE.Vector2();
@@ -327,7 +413,7 @@
                   object.material.color.r = new THREE.Color(color).r;
                   object.material.color.g = new THREE.Color(color).g;
                   object.material.color.b = new THREE.Color(color).b;
-                  return;
+                  return camera.translateZ(10);
                 }
                 currentItem = object;
               });
@@ -335,9 +421,6 @@
             }
           }
         });
-      });
-      setInterval(() => {
-        swal.getState().isOpen ? controls.isLocked = false : controls.isLocked = true;
       });
     </script>
   </body>

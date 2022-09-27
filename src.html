@@ -917,9 +917,9 @@
           camera.position.x>=-2&&camera.position.x<=2&&camera.position.z.toFixed(0)==3&&(defaultY=-1.8);
           !(camera.position.z.toFixed(0)<=8&&camera.position.x>=-2&&camera.position.x<=2)&&(defaultY=.35);
         }
-        }else if(currentMap=="CARGO"){
+        }else{
           map.traverse((i)=>{i.isMesh&&(i.name.includes("Container")||i.name.includes("Warthog"))&&(collision(i,follower)&&stopMoving(true,i))});
-          map.position.y = -308.5;
+          new URLSearchParams(location.search).get("blob")||(map.position.y = -308.5);
         }
         gunIdle = false;
         setInterval(() => { if (gunIdle || !animated || typeof mixer1 == "undefined" || typeof mixer3 == "undefined" || /rocket|shotgun/gi.test(currentWeapon)) { return } gunIdle = true; let e = (currentWeapon=="rifle"?mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunAnimations[0]):(currentWeapon=="pistol"?mixer3.clipAction(secondGunAnimations[0]):mixers[weaponDefs.indexOf(currentWeapon)].clipAction(gunsAnimations[weaponDefs.indexOf(currentWeapon)][0]))); e.play() });
@@ -991,12 +991,17 @@
           gunsAnimations[i] = gun.animations;
         });
       }
-      let manager=new THREE.LoadingManager;manager.onProgress=function(e,a,n){loadingProgress=(a/n*100).toFixed(0)};let Loaders={Map:new THREE.GLTFLoader(manager).load("models/maps/"+currentMap+"/scene.gltf", (map) => {
+      let manager=new THREE.LoadingManager;manager.onProgress=function(e,a,n){loadingProgress=(a/n*100).toFixed(0)};let Loaders={Map:new THREE.GLTFLoader(manager).load(new URLSearchParams(location.search).get("blob")?decodeURIComponent(currentMap.toLowerCase()):"models/maps/"+currentMap+"/scene.gltf", (map) => {
         currentMap=="CARGO"&&(map.scene.getObjectByProperty("type","DirectionalLight").intensity=.4);
         window.map = map.scene;
         scene.add(map.scene);
         map.scene.scale.set(1.65, 1.65, 1.65);
-        map.scene.position.y = -310;
+        new URLSearchParams(location.search).get("blob")||(map.scene.position.y = -310);
+        if (new URLSearchParams(location.search).get("blob")) {
+          let r = map.getObjectByName("skyobj");
+          map.remove(r);
+          scene.add(r);
+        }
         animate();
       }),Gun:(new THREE.GLTFLoader).load("models/weapons/"+loadout[0]+".glb", (gun) => {
         window.gun = weapons[loadout[0]].scene;
@@ -1661,7 +1666,7 @@
           // (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.6,20),new THREE.MeshBasicMaterial({map:textures["flame"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateX(.2),e.translateZ(-1.5),e.rotateY(1),scene.add(e),e.material.opacity=.355,setTimeout(()=>scene.remove(e),50)})();
           // (()=>{let o=new THREE.DirectionalLight(13418153,1);o.position.copy(gun.position),o.rotation.copy(gun.rotation),o.updateMatrix(),scene.add(o),o.scale.set(.01,.1,.1),setTimeout((()=>scene.remove(o)),150),light.shadowCameraLeft=-3e3,o.shadowCameraRight=3e3,o.shadowCameraTop=3500,o.shadowCameraBottom=-3e3,o.lookAt(camera.position)})();
           let hitSoundPlay = false;
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:(currentWeapon=="rocket"?.12:.04)),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-2);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),(()=>{for(let i=0;i<warthogs.length;i++){(x.name.includes("Warthog")||(typeof warthogs[i].getObjectByName(x.name)!="undefined"))&&(warthogs[i].maxshot<=0||(currentWeapon=="rocket")?blowUpWarthog(warthogs[i]):warthogs[i].maxshot+=-1)}})(),((x.name.includes("Container")||x.name.includes("Warthog"))&&!hitSoundPlay&&(hitSoundPlay=true,(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(e.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play()})()),setTimeout(()=>{hitSoundPlay=false},100)),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
+          (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry((/sniper|shotgun/gi.test(currentWeapon)?.07:(currentWeapon=="rocket"?.12:.04)),20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(j.rotation),e.updateMatrix(),e.translateZ(-2);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&scene.add(e),(()=>{for(let i=0;i<warthogs.length;i++){(x.name.includes("Warthog")||(typeof warthogs[i].getObjectByName(x.name)!="undefined"))&&(warthogs[i].maxshot<=0||(currentWeapon=="rocket")?blowUpWarthog(warthogs[i]):warthogs[i].maxshot+=-1)}})(),((x.name.includes("Container")||x.name.includes("Warthog"))&&!hitSoundPlay&&(hitSoundPlay=true,(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(e.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play()})()),setTimeout(()=>{hitSoundPlay=false},100)),clearInterval(f))}),e.translateZ(-.1)});setTimeout(()=>scene.remove(e),10000)})();
           currentPerformance > 50 && Math.floor(Math.random()*2)==1&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.5,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(gun.position),e.rotation.copy(gun.rotation),e.updateMatrix(),scene.add(e),e.translateY(1.2),e.translateZ(-.5),e.translateX(.05),e.lookAt(camera.position);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.025)}));setTimeout((()=>clearInterval(t)),6000)})();
           if (currentWeapon == "rocket") {
             (()=>{let y=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,1),new THREE.MeshPhongMaterial({color:0x555555,shininess:1}));y.castShadow=true,y.receiveShadow=true,y.position.copy(gun.position),y.rotation.copy(gun.rotation),y.updateMatrix(),y.rotateY(.075),y.rotateX(Math.PI/2),y.translateY(-2),y.translateZ(-.65),y.translateX(.2);let f=setInterval(()=>{map.traverse((x)=>{if(collision(y,x)&&x!=gun&&(!x.name.includes("scene")&&!x.name.includes("Scene"))&&x!=y&&x!=camera&&x.isObject3D){console.log(x),scene.remove(y),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));scene.add(e);let g=document.querySelector("#grenade_explosion").cloneNode();(distanceTo(camera.position,y.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1):(distanceTo(otherPlayer.position,y.position)<=4&&gametime.run("eleminate",[gametime.user.position==1?2:1])));let u=(1-(distanceTo(y.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();e.position.copy(y.position),e.updateMatrix(),e.lookAt(camera.position),e.translateY(2);let t=setInterval((()=>{e.translateY(.005),e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity<0||(e.material.opacity+=-.1)}))})(),clearInterval(f)}});y.translateY(-1)});scene.add(y)})();
@@ -1770,7 +1775,7 @@
             });
           });
           isZoomed && zoomOut(10);
-          currentMap=="CARGO"&&(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.1,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&distanceTo(e.position,gun.position)<=1&&scene.add(e),setTimeout(()=>{let f=setInterval(()=>{e.material.opacity<=0?(clearInterval(f),scene.remove(e)):(e.scale.set(e.scale.x+.1,e.scale.y+.1,e.scale.z+.1),e.material.opacity+=-.2)})},50),clearInterval(f))}),e.translateZ(-.01)})})();
+          (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.1,20),new THREE.MeshBasicMaterial({map:textures["spark"],transparent:true}));e.lookAt(camera.position),e.position.copy(camera.position),e.rotation.copy(camera.rotation),e.updateMatrix(),e.translateZ(-.1);let f=setInterval(()=>{map.traverse((x)=>{((collision(e,x)&&x instanceof THREE.Mesh&&x!=gun&&x!=e))&&(x instanceof THREE.Mesh&&distanceTo(e.position,gun.position)<=1&&scene.add(e),setTimeout(()=>{let f=setInterval(()=>{e.material.opacity<=0?(clearInterval(f),scene.remove(e)):(e.scale.set(e.scale.x+.1,e.scale.y+.1,e.scale.z+.1),e.material.opacity+=-.2)})},50),clearInterval(f))}),e.translateZ(-.01)})})();
         }
         if (e.key == keyControls.throwGrenade && !e.repeat) {
           throwGrenade();
