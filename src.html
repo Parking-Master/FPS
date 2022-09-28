@@ -918,7 +918,8 @@
           !(camera.position.z.toFixed(0)<=8&&camera.position.x>=-2&&camera.position.x<=2)&&(defaultY=.35);
         }
         }else{
-          map.traverse((i)=>{i.isMesh&&(i.name.includes("Container")||i.name.includes("Warthog"))&&(collision(i,follower)&&stopMoving(false,i))});
+          map.traverse((i)=>{i.isMesh&&(i.name.includes("Container")||i.name.includes("Warthog"))&&(collision(i,follower)&&stopMoving(true,i))});
+          collision(otherPlayerFollower,follower)&&stopMoving(true,otherPlayerFollower);
           new URLSearchParams(location.search).get("blob")||(map.position.y = -308.5);
         }
         gunIdle = false;
@@ -935,7 +936,7 @@
         if (typeof mixer1 != "undefined") mixer1.update(delta+.02);
         if (typeof mixer2 != "undefined") mixer2.update(delta+.02);
         if (typeof mixer4 != "undefined") mixer3.update(delta);
-        mixers.length>0&&(()=>{for(let i=0;i<mixers.length;i++){typeof mixers[i]!="undefined"&&mixers[i].update((isReloading&&currentWeapon=="rocket"?delta-.01:delta))}})();
+        mixers.length>0&&(()=>{for(let i=0;i<mixers.length;i++){typeof mixers[i]!="undefined"&&mixers[i].update((isReloading&&currentWeapon=="rocket"?delta-.01:(currentWeapon=="shotgun"?delta+.01:delta)))}})();
         follower.position.copy(camera.position);
         document.querySelector("#rounds").querySelector("#counter").textContent = (currentWeaponPosition=="primary"?primaryRounds:secondaryRounds);
         document.querySelector("#rounds").querySelector("#magcount").textContent = ((currentWeaponPosition=="primary"?primaryMagsLeft:secondaryMagsLeft) < 0 ? 0 : (currentWeaponPosition=="primary"?primaryMagsLeft:secondaryMagsLeft));
@@ -1461,40 +1462,46 @@
         }
       }
       function stopMoving(e = false, i) {
-        if (e) {
-          isWalkingForward = false;
-          isWalkingBackward = false;
-          isWalkingLeft = false;
-          isWalkingRight = false;
-        }
         let f = new THREE.Mesh();
-        let d = new THREE.Mesh();
         f.position.copy(camera.position);
         f.rotation.copy(camera.rotation);
         f.updateMatrix();
         f.translateX(-.1);
+        let d = new THREE.Mesh();
         d.position.copy(camera.position);
         d.rotation.copy(camera.rotation);
         d.updateMatrix();
         d.translateZ(-.1);
-        let left = distanceTo(i.position, f.position);
-        let right = distanceTo(i.position, camera.position);
-        let front = distanceTo(i.position, d.position);
-        let rear = distanceTo(i.position, camera.position);
+        let left = distanceTo(f.position, i.position);
+        let right = distanceTo(camera.position, i.position);
+        let up = distanceTo(d.position, i.position);
+        let down = distanceTo(camera.position, i.position);
         if (left > right) {
-          camera.translateX(.1);
+          camera.translateX(.01);
         } else if (right > left) {
-          camera.translateX(-.1);
+          camera.translateX(-.01);
         }
-        if (front > rear) {
-          camera.translateZ(.1);
-        } else if (rear > front) {
-          camera.translateZ(-.1);
+        if (up > down) {
+          camera.translateZ(.01);
+        } else if (down > up) {
+          camera.translateZ(-.01);
         }
-        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}));
-        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}));
-        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"}));
-        document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"}));
+        // if (isWalkingForward) {
+        //   camera.translateZ(.01);
+        // }
+        // if (isWalkingBackward) {
+        //   camera.translateZ(-.01);
+        // }
+        // if (isWalkingRight) {
+        //   camera.translateX(-.01);
+        // }
+        // if (isWalkingLeft) {
+        //   camera.translateX(.01);
+        // }
+        isWalkingForward = false;
+        isWalkingBackward = false;
+        isWalkingLeft = false;
+        isWalkingRight = false;
       }
       setInterval(() => {
         if (isWalkingForward) {
