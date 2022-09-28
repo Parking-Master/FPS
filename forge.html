@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FPS5 Multiplayer</title>
+    <title>FPS5 Forge</title>
     <style>
       html, body {
         font-family: Arial, Helvetica, sans-serif;
@@ -153,8 +153,8 @@
         renderer.domElement.style.display = "none";
         }),{binary:!0});
       }
-      function save() {
-        (new THREE.GLTFExporter).parse(env,(function(e){const n=JSON.stringify(e),t=new Blob([n],{type:"application/json"});let o=URL.createObjectURL(t),c=document.createElement("a");c.download="scene.glb",c.href=o,c.click()}),{binary:!0})
+      function save(storage) {
+        (new THREE.GLTFExporter).parse(env,(function(e){const n=JSON.stringify(e),t=new Blob([n],{type:"application/json"});let o=URL.createObjectURL(t),c=document.createElement("a");c.download="scene.glb",c.href=o,storage?localStorage["autosaveForgeBuild"]=btoa(encodeURIComponent(o)):c.click()}),{binary:!0})
       }
       setInterval(() => {
         if (isWalkingForward) {
@@ -443,6 +443,7 @@
           }
         });
       });
+      // setInterval(() => { localStorage["autosaveForgeBuild"]=JSON.stringify(env) }, 5000);
     </script>
   </body>
 </html>

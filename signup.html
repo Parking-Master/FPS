@@ -104,7 +104,7 @@
             swal("Success! You will need to log in now.", () => location.assign("login.html"));
           }
         } catch (error) {
-          error.code == 202 && swal("Error: A user already exists with that username.");
+          error.code == 202 && swal("Error: A user already exists with that username.", () => {});
           console.log(error);
         }
       }
