@@ -98,18 +98,20 @@
     checkbox.innerHTML = `
     <label for="ignore">Do not show this again</label>
     <input type="checkbox" checked onclick="this.checked?localStorage.setItem('prefsIgnorePerformanceWarning','true'):localStorage.setItem('prefsIgnorePerformanceWarning','false')" name="ignore">
-    `
-    swal({
-      icon: "error",
-      title: "Before you continue",
-      text: "This game is known to impact PC performance and memory.\nThis can damage your CPU/GPU over time. You can manage how much performance and memory is used in Preferences.",
-      content: checkbox,
-      buttons: ["Change", "Continue"]
-    }).then((e)=>{
-      if (e) {
-        return option(false);
-      }
-      option(true);
-    })}})();function option(h){if(!h){return location.replace((location.href.replace('play','src').replace("#ignore","")+'&character='+(localStorage["character"]||"mark-vi")))}location.replace("/preferences.html?r="+btoa(encodeURIComponent(location.href))+"#memory")}</script>
+    `;
+    option(false);
+    // swal({
+    //   icon: "error",
+    //   title: "Before you continue",
+    //   text: "This game is known to impact PC performance and memory.\nThis can damage your CPU/GPU over time. You can manage how much performance and memory is used in Preferences.",
+    //   content: checkbox,
+    //   buttons: ["Change", "Continue"]
+    // }).then((e)=>{
+    //   if (e) {
+    //     return option(false);
+    //   }
+    //   option(true);
+    // })
+    }})();function option(h){if(!h){return location.replace((location.href.replace('play','src').replace("#ignore","")+'&character='+(localStorage["character"]||"mark-vi")))}location.replace("/preferences.html?r="+btoa(encodeURIComponent(location.href))+"#memory")}</script>
   </body>
 </html>
