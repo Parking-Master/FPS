@@ -317,6 +317,7 @@
         box-shadow: 0 3px 5px #25750a;
       }
     </style>
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/js/username-generator.min.js"></script> -->
@@ -423,6 +424,7 @@
     </script> -->
     <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/FPS@master/gametime-socket.js"></script> -->
     <script>
+      Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       defaultKeys = "f,b,r, ,t,m,y,i,z,p";
       keyControls = {
         "shoot": (localStorage["prefsKeyControls"] || defaultKeys).split(",")[0],
@@ -694,9 +696,10 @@
           button: "Return"
         }).then(() => { gametime.disconnect(), location.assign("/") });
       });
-      window.addEventListener("beforeunload", () => {
-        gametime.run("leftGame");
-      });
+      window.onbeforeunload=function(e){
+        e.preventDefault();
+        return (gametime.run("leftGame"),(async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt"),active:t.get("active")};e?(()=>{n.name==new URLSearchParams(location.search).get("lobby")&&(t.set("active",false),t.save())})():(()=>{n.name==new URLSearchParams(location.search).get("lobby")&&(t.set("active",false),t.save())})(),e=!0}),(e=>{}))}})());
+      };
       gametime.on("pickupWeapon", function(e) {
         ordinances[e].position.y=10000;
         scene.remove(ordinances[e]);
@@ -1289,6 +1292,7 @@
             clearInterval(searchingEngine);
           }
         });
+        (async()=>{let e=!1;const t=Parse.Object.extend("Lobby"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Lobby");new Parse.Query(n).get(s[t].id).then((t=>{const n={name:t.get("name"),time:t.get("createdAt"),active:t.get("active")};e?(()=>{n.name==new URLSearchParams(location.search).get("lobby")&&(t.set("active",true),t.save())})():(()=>{n.name==new URLSearchParams(location.search).get("lobby")&&(t.set("active",true),t.save())})(),e=!0}),(e=>{}))}})();
       });
       function crashWarthog(warthog) {
         (new THREE.GLTFLoader).load("models/vehicles/obstructed/warthog.glb", (e) => {
