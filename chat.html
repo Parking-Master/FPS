@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS World Chat</title>
+    <style>
+      html, body {
+        font-family: Arial, Helvetica, sans-serif;
+        cursor: url(./cursors/cursor.png), default !important;
+        /* background-image: url(https://www.onlygfx.com/wp-content/uploads/2017/02/green-splatter-5.png), url(images/gun.png); */
+        background-size: 50vw, 40vw;
+        background-repeat: no-repeat;
+        background-position: 0, 55vw;
+        background-color: #444;
+        user-select: none !important;
+        overflow-x: hidden !important
+      }
+      * {
+        cursor: url(./cursors/cursor.png), default !important;
+      }
+      .page-title {
+        position: relative;
+        text-align: center;
+        color: #333;
+        font-size: 60px;
+        font-weight: bold;
+        text-shadow: 2px 2px #25750a;
+      }
+      .page-text {
+        position: relative;
+        text-align: center;
+        color: #333;
+        font-size: 25px;
+        font-weight: 100;
+      }
+      button.button {
+        position: relative;
+        width: 150px;
+        text-align: center;
+        color: #333;
+        text-shadow: 0px 2px #25750a;
+        border: 2px solid #25750a;
+        background: #444;
+        padding: 10px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        left: 50%;
+        margin-left: -75px;
+        cursor: default;
+      }
+      button.button:hover {
+        transform: scale(1.1);
+      }
+      .dialog-box .dialog-action,.dialog-box .dialog-content{right:0;border-top:1px solid #333;position:absolute;left:0}.dialog-box{background-color:#444;border:1px solid #333;-webkit-box-shadow:0 1px 5px rgba(0,0,0,.2);-mz-box-shadow:0 1px 5px rgba(0,0,0,.2);box-shadow:0 1px 5px rgba(0,0,0,.2);position:absolute;width:200px;height:100px;margin-top:-51px;margin-left:-101px;z-index:9999;color:#666;visibility:hidden;opacity:0}.dialog-box .dialog-title{margin:0;padding:0 .8em;font:inherit;color:inherit;font-weight:700;height:2em;line-height:2em;overflow:hidden;background-color:#333;cursor:move}.dialog-box .dialog-content{padding:1em;top:2em;bottom:3em;overflow:auto}.dialog-box .dialog-content iframe{display:block;border:none;background:0 0;margin:0;padding:0;overflow:auto;width:100%;height:100%}.dialog-box .dialog-content::-webkit-scrollbar{width:8px;height:8px;background-color:#444;border-left:1px solid #333}.dialog-box .dialog-content::-webkit-scrollbar-thumb{background-color:#666;border:none}.dialog-box .dialog-content::-webkit-scrollbar-thumb:hover{background-color:#555}.dialog-box .dialog-content::-webkit-scrollbar-thumb:active{background-color:#444}.dialog-box .dialog-action{bottom:0;height:2em;padding:.5em;background-color:#333;text-align:right}.dialog-box .dialog-action .btn{text-decoration:none;border:1px solid #444;outline:0;color:inherit;font-weight:700;background-color:#444;-webkit-border-radius:.2em;-moz-border-radius:.2em;border-radius:.2em;padding:.4em 1em;margin-left:.2em;line-height:2em;cursor:pointer}.dialog-box .dialog-close,.dialog-box .dialog-minmax{border:none;outline:0;background:0 0;font:inherit;font-family:Arial,Sans-Serif;font-style:normal;font-weight:700;font-size:150%;line-height:1.4em;color:#aaa;text-decoration:none;position:absolute;top:0;right:.3em;text-align:center;cursor:pointer}.dialog-box .dialog-minmax{right:1.5em}.dialog-box .dialog-action .btn:focus,.dialog-box .dialog-close:focus,.dialog-box .dialog-minmax:focus{border-width:0;outline:0}.dialog-box .dialog-close:hover,.dialog-box .dialog-minmax:hover{color:#444}.dialog-box .dialog-close:focus,.dialog-box .dialog-minmax:focus{color:#25750a}.dialog-box .dialog-close:active,.dialog-box .dialog-minmax:active{color:#444}.dialog-box .dialog-action .btn:hover{border-color:#333}.dialog-box .dialog-action .btn:focus{border-color:#333;border-width:1px}.dialog-box .dialog-action .btn:active{border-color:#333;background-color:#555}.dialog-box+.dialog-box-overlay{background-color:#000;opacity:.2;position:fixed!important;top:0;right:0;bottom:0;left:0;z-index:9997;display:none}.dialog-box.fixed-dialog-box{position:fixed!important}.dialog-box.minimize{width:2em!important;height:2em!important;overflow:hidden!important;margin-top:0!important;margin-left:0!important;top:-1px!important;left:1em!important}.dialog-box.minimize .dialog-title{color:transparent;text-shadow:none;text-indent:-9999px}.dialog-box.minimize .dialog-minmax{right:0;left:0}.dialog-box.minimize .dialog-action,.dialog-box.minimize .dialog-close,.dialog-box.minimize .dialog-content{display:none;visibility:hidden}
+      a {
+        color: #25750a !important;
+        text-decoration: underline;
+      }
+      .custom-anchor-tt {
+        display: none !important;
+      }
+      button[data-disabled] {
+        opacity: .5;
+        cursor: not-allowed !important;
+        transform: scale(1) !important;
+        pointer-events: none !important;
+      }
+      .tippy-box[data-theme~="default"] {
+        background: #444;
+        box-shadow: 0 0 5px 2px #25750a;
+        color: #25750a;
+        display: block !important;
+      }
+      .tippy-box[data-theme~="default"]:not([data-tippy-content]) {
+        display: none;
+      }
+      .tippy-box[data-theme~="default"][data-placement^="top"] > .tippy-arrow::before {
+        border-top-color: #444;
+      }
+      input {
+        background: #333 !important;
+        border: none;
+        color: #fff;
+      }
+      .swal-modal {
+        background: #444;
+        box-shadow: 0px 0px 10px 5px #ff4444;
+      }
+      .swal-modal * {
+        color: #ff4444;
+      }
+      .swal-button {
+        background: #ff4444 !important;
+        color: #333 !important;
+        box-shadow: none !important;
+        outline: none !important;
+      }
+      .wrapper {
+        position: relative;
+        text-align: center;
+        left: 0% !important;
+        color: #25750a;
+      }
+      .msg {
+        background: #333;
+        border: 2px solid #444;
+        margin: 0;
+        height: 50px;
+        display: inline-flex;
+        width: 100%;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+      }
+      #inputbox {
+        color: #25750a;
+        width: 100%;
+        background: #333;
+        border: 2px solid #25750a;
+        padding: 10px;
+        outline: none;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: fixed;
+      }
+    </style>
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/notiflix/Notiflix@latest/dist/notiflix-aio-3.2.5.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  </head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZQ6TMGVXJ"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-2ZQ6TMGVXJ");
+  </script>
+  <body>
+    <h1 class="page-title">World Chat</h1>
+    <p style="text-align:center;color:#25750a">Send, recieve and view messages from other players.</p>
+    <div class="wrapper"></div>
+    <input id="inputbox" placeholder="Type your message here..." onkeyup="event.key=='Enter'&&this.value&&send(this.value)">
+    <script>
+      setInterval(()=>{for(let i=0;i<document.querySelectorAll(".msg").length;i++){document.querySelectorAll(".msg")[i].textContent?document.querySelectorAll(".msg")[i].id="msg"+String(i):document.querySelectorAll(".msg")[i].remove()}});
+      Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
+      (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{const n={msg:t.get("msg")};e?(()=>{for(let i=0;i<decodeURIComponent((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg)).split(",")[i].replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>"}})():(()=>{for(let i=0;i<decodeURIComponent((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg)).split(",")[i].replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100)}})(),e=!0}),(e=>{}))}})();
+      function send(msg) {
+        (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{t.set("msg",t.get("msg")+(encodeURIComponent(","+msg))),t.save(),document.querySelector(".wrapper").innerHTML+="<div id='msg"+String(document.querySelectorAll(".msg").length-1)+"' class='msg'>"+msg.replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100)}))}})();
+      }
+    </script>
+  </body>
+</html>
