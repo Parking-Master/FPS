@@ -41,6 +41,13 @@ Other than that, FPS5 uses pure JavaScript for everything else.
 Maps, Characters, & Weapons are all listed here.
 
 ### Maps (Original Halo 4 & FPS5 maps)
+<h4 align="center">Cargo Port</h5>
+"<i>A Cargo Storage Unit map that can fit up to 8 players. 2-8 player map</i>"
+<img align="center" width="100%" alt="Cargo Port" src="images/maps/cargo.png">
+<h4 align="center">Ghost City</h5>
+"<i>An Abandoned Ghost City map that can fit up to 4 players. 2-4 player map</i>"
+<img align="center" width="100%" alt="Ghost City" src="images/maps/ghost.png">
+#### Coming soon
 <h4 align="center">Haven</h5>
 "<i>Resting high above Requiem’s surface, harmonic-resonance platforms appear to facilitate the monitoring and management of the shield world’s solar preservation system. These elaborate machines enable artificial planets to support their immense populations of indigenous life.</i>"
 <img align="center" width="100%" alt="Haven" src="images/maps/haven.png">
@@ -212,8 +219,12 @@ MIT
 
 - ["Veld Fire"](https://hdrihaven.com/hdri/?h=veld_fire) - <small>_by Greg Zaal_<br>Licensed under CC0 ("No Rights Reserved") (https://creativecommons.org/share-your-work/public-domain/cc0/).
 
+- ["Ghost City"](https://sketchfab.com/3d-models/fps-map-ghost-city-22cc8a89046a42b4b22438b9f7207176) - <small>_by Rzyas_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
 - ["Halo Warthog"](https://sketchfab.com/3d-models/halo-warthog-bd3403bc06884260ac31d0e98eed81e4) - <small>_by pinto36_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 - ["SPNKR Rocket Launcher"](https://sketchfab.com/3d-models/rocket-launcher-collection-5883f47a8ab343619c877d7d38eed592) - <small>_by Iso-Didact_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+- ["Railgun"](https://sketchfab.com/3d-models/halo-rail-gun-replica-bf8dc60867fe4f24bf0be4483a00a960) - <small>_by CaesarSypha_<br>Licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 Did we forget to include something? [Report](https://github.com/Parking-Master/FPS/issues/new)
