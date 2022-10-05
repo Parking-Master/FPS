@@ -368,6 +368,7 @@
     <audio id="punch" src="sounds/punch.mp3"></audio>
     <audio id="slayer" src="sounds/slayer.mp3"></audio>
     <audio id="click" src="sounds/click.mp3"></audio>
+    <audio id="surge" src="sounds/surge.mp3"></audio>
     <script src="https://threejs.org/build/three.min.js"></script>
     <!-- <script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script> -->
     <script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
@@ -583,9 +584,17 @@
         } else if (currentMode == "snipers") {
           fixedLoadout[0]="sniper";
           fixedLoadout[1]="sniper";
+          primaryRounds = 6;
+          secondaryRounds = 6;
+          primaryRoundsDefault = 6;
+          secondaryRoundsDefault = 6;
         } else if (currentMode == "rocknrail") {
           fixedLoadout[0]="rocket";
           fixedLoadout[1]="railgun";
+          primaryRounds = 1;
+          secondaryRounds = 1;
+          primaryRoundsDefault = 1;
+          secondaryRoundsDefault = 1;
         } else if (currentMode == "slayer") {
           fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
         }
@@ -605,8 +614,9 @@
         scene.add(myPlayer);
         document.querySelector(".ui").style.visibility = "visible";
         for (let i = 0; i < 2; i++) {
-          document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));
+          document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.switchWeapon}));
         }
+        canFire = true;
       }
       function error(code) {
         if (code == 404) { alert("Error: This lobby does not exist. You will return to the menu"); location.replace("/") }
@@ -720,6 +730,9 @@
         let epos = {x:data.split(",")[1]-0,y:data.split(",")[2]-0,z:data.split(",")[3]-0};
         if (player == gametime.user.position) {
           return;
+        }
+        if (wpn == "rocket" || wpn == "railgun") {
+          (()=>{let gun=otherPlayer;let y=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,1),new THREE.MeshPhongMaterial({color:0x555555,shininess:1}));y.castShadow=true,y.receiveShadow=true,y.position.copy(gun.position),y.rotation.copy(gun.rotation),y.updateMatrix(),y.rotateY(.075),y.rotateX(Math.PI/2),y.translateY(-2),y.translateZ(-.65),y.translateX(.2);let f=setInterval(()=>{map.traverse((x)=>{if(collision(y,x)&&x!=gun&&(currentMap=="GHOST"?(!x.name.includes("scene")&&!x.name.includes("Scene")&&!x.name.includes("root")&&!x.name.includes("Root")&&!/Sketchfab_model|BLD_L_gedungA_part1_1|BLD_L_gedungA_part2_2|Object_6|Object_8|Object_62|BAKE_29/gi.test(x.name)):true)&&(!x.name.includes("scene")&&!x.name.includes("Scene"))&&x!=y&&x!=camera&&x.isObject3D){console.log(x),scene.remove(y),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));scene.add(e);let g=document.querySelector("#grenade_explosion").cloneNode();(distanceTo(camera.position,y.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1):(distanceTo(otherPlayer.position,y.position)<=4&&gametime.run("eleminate",[gametime.user.position==1?2:1])));let u=(1-(distanceTo(y.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();e.position.copy(y.position),e.updateMatrix(),e.lookAt(camera.position),e.translateY(2);let t=setInterval((()=>{e.translateY(.005),e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity<0||(e.material.opacity+=-.1)}))})(),clearInterval(f)}});y.translateY(-1)});wpn=="rocket"&&scene.add(y)})();
         }
         document.body.appendChild(gunsounds[wpn].cloneNode()).play();
         (()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(.05,20),new THREE.MeshBasicMaterial({map:textures["hole"],transparent:true}));e.position.set(epos.x,epos.y,epos.z),e.updateMatrix(),e.lookAt(camera.position),scene.add(e),setTimeout(()=>scene.remove(e),100)})();
@@ -974,9 +987,17 @@
       } else if (currentMode == "snipers") {
         fixedLoadout[0]="sniper";
         fixedLoadout[1]="sniper";
+        primaryRounds = 6;
+        secondaryRounds = 6;
+        primaryRoundsDefault = 6;
+        secondaryRoundsDefault = 6;
       } else if (currentMode == "rocknrail") {
         fixedLoadout[0]="rocket";
         fixedLoadout[1]="railgun";
+        primaryRounds = 1;
+        secondaryRounds = 1;
+        primaryRoundsDefault = 1;
+        secondaryRoundsDefault = 1;
       } else if (currentMode == "slayer") {
         fixedLoadout = (localStorage["prefsLoadout"] || "rifle,pistol").split(",");
       }
@@ -1607,7 +1628,7 @@
         if(currentWeapon=="rocket"){secondaryRounds=1,secondaryRoundsDefault=1}
         if(currentWeapon=="railgun"){secondaryRounds=1,secondaryRoundsDefault=1}
         (currentWeaponPosition=="primary"?primaryMagsLeft=3:secondaryMagsLeft=3);
-      })()),scene.add(gun),(currentWeaponPosition=="primary"?primaryMagsLeft++:secondaryMagsLeft++),reload(),(currentWeaponPosition=="primary"?loadout[0]=e:loadout[1]=e);for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}));gametime.run("pickupWeapon",[e])}
+      })()),scene.add(gun),(currentWeaponPosition=="primary"?primaryMagsLeft++:secondaryMagsLeft++),reload(),(currentWeaponPosition=="primary"?loadout[0]=e:loadout[1]=e);for(let e=0;e<2;e++)document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.switchWeapon}));gametime.run("pickupWeapon",[e])}
       isTouchingOrdinance = false;
       function createWeapon(name, position) {
         (new THREE.GLTFLoader).load("models/weapons/ordinance-stands/" + name + ".glb", (ordinance) => {
@@ -1779,9 +1800,13 @@
               canFire=false;
               crosshairColor="#25750a";
               !isReloading&&reload();
-              setTimeout(()=>{canFire=true},1000);
+              setTimeout(()=>{canFire=true},2000);
+              document.dispatchEvent(new KeyboardEvent("keyup",{key:keyControls.shoot}));
             } else {
+              document.querySelector("#surge").play();
               crosshairColor="#0000ff";
+              gunShake=setInterval(()=>{gunLocked=false;let r=Math.floor(Math.random()*3);(r==0&&(gun.position.x+=.01)),(r==1&&(gun.position.y+=.01)),(r==2&&(gun.position.z+=.01));setTimeout(()=>{(r==0&&(gun.position.x+=-.01)),(r==1&&(gun.position.y+=-.01)),(r==2&&(gun.position.z+=-.01)),gunLocked=true},50)},100);
+              setTimeout(()=>{gunLocked=true,clearInterval(gunShake)},1000);
             }
           }
         }
@@ -1832,8 +1857,13 @@
           isPaused? unpause() : pause();
         }
       });
+      gunShake = 1;
       document.addEventListener("keyup", (e) => {
         crosshairColor="#25750a";
+        document.querySelector("#surge").pause();
+        document.querySelector("#surge").currentTime = 0;
+        clearInterval(gunShake);
+        gunLocked = true;
         if (e.key == "ArrowUp") {
           isWalkingForward = false;
         }
@@ -1869,7 +1899,7 @@
       (() => { let loader=new THREE.TextureLoader;loader.load("images/clouds"+(currentMap=="CARGO"?"2":"1")+".png",(function(e){var a=new THREE.SphereGeometry(500,60,40),o=new THREE.MeshBasicMaterial({map:e,side:THREE.DoubleSide});a.scale(-1,1,1);d=new THREE.Mesh(a,o);sky=d;sky.material.map.generateMipmaps=!1,sky.material.map.minFilter=THREE.LinearMipMapLinearFilter,sky.material.map.needsUpdate=!0,sky.rotation.y=-.2,scene.add(d),d.position.set(0,0,0)})); })();
       gameControl.on("connect", (controller) => {
         window.controller = controller;
-        lookSensitivity=.003;lookAcc=0;lookMax=.1;(()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowLeft"})),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight"})),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowDown"}))})).before("right0",(()=>{})).after("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}))})),controller.on("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowUp"}))})).before("left0",(()=>{})).after("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}))})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"f"}))}).after("button16",()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"f"}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"y"}))}))})(),controller.on('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('up0',()=>{lookAcc=0}),controller.on('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('down0',()=>{lookAcc=0}),controller.on('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('left1',()=>{lookAcc=0}),controller.on('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('right1',()=>{lookAcc=0}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:" "}))}).after('button0',()=>{}),controller.on('button1',()=>{}).before('button1',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"b"}))}).after('button1',()=>{}),controller.on('button14',()=>{}).before('button14',()=>{isZoomed?document.dispatchEvent(new KeyboardEvent("keydown",{key:"z"})):document.dispatchEvent(new KeyboardEvent("keydown",{key:"i"}))}).after('button14',()=>{}),controller.on('button7',()=>{}).before('button7',()=>{isTouchingOrdinance?document.dispatchEvent(new KeyboardEvent("keydown",{key:"t"})):(!isReloading&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"r"})))}).after('button7',()=>{}),controller.on('button15',()=>{}).before('button15',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"m"}))}).after('button15',()=>{}),controller.on('button11',()=>{}).before('button11',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"p"}))}).after('button11',()=>{});
+        lookSensitivity=.003;lookAcc=0;lookMax=.1;(()=>{let d=false;dl=!1,setInterval((()=>{let e;-1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowLeft"})),dl=!0,e=setInterval((()=>{if(-1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),dl=!1,clearInterval(e)})))})),dl=!1,setInterval((()=>{let e;1==navigator.getGamepads()[0].axes[0]&&(dl&&document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight"})),dl=!0,e=setInterval((()=>{if(1!=navigator.getGamepads()[0].axes[0])return document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowLeft"})),document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowRight"})),dl=!1,clearInterval(e)})))})),controller.on("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowDown"}))})).before("right0",(()=>{})).after("right0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowDown"}))})),controller.on("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowUp"}))})).before("left0",(()=>{})).after("left0",(()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:"ArrowUp"}))})),controller.on("button16",(()=>{})).before("button16",()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.shoot}))}).after("button16",()=>{document.dispatchEvent(new KeyboardEvent("keyup",{key:keyControls.shoot}))}),controller.on("l1",(()=>{})).before("l1",(()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.switchWeapon}))}))})(),controller.on('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('up0',()=>{camera.rotation.y+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('up0',()=>{lookAcc=0}),controller.on('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('down0',()=>{camera.rotation.y+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('down0',()=>{lookAcc=0}),controller.on('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('left1',()=>{camera.rotation.x+=lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('left1',()=>{lookAcc=0}),controller.on('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).before('right1',()=>{camera.rotation.x+=-lookAcc;lookAcc>=lookMax||(lookAcc+=(lookSensitivity)),gametime.run("playerRotate", [camera.rotation.x+","+camera.rotation.y+","+camera.rotation.z+","+gametime.user.position])}).after('right1',()=>{lookAcc=0}),controller.on('button0',()=>{}).before('button0',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.jump}))}).after('button0',()=>{}),controller.on('button1',()=>{}).before('button1',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.punch}))}).after('button1',()=>{}),controller.on('button14',()=>{}).before('button14',()=>{isZoomed?document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.zoomOut})):document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.zoomIn}))}).after('button14',()=>{}),controller.on('button7',()=>{}).before('button7',()=>{isTouchingOrdinance?document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.interact})):(!isReloading&&document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.reload})))}).after('button7',()=>{}),controller.on('button15',()=>{}).before('button15',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.throwGrenade}))}).after('button15',()=>{}),controller.on('button11',()=>{}).before('button11',()=>{document.dispatchEvent(new KeyboardEvent("keydown",{key:keyControls.pause}))}).after('button11',()=>{});
       });
       if(currentMap=="CARGO"){
       createWeapon("sniper",{x:0,y:0,z:20});

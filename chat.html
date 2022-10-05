@@ -7,7 +7,7 @@
     <style>
       html, body {
         font-family: Arial, Helvetica, sans-serif;
-        cursor: url(./cursors/cursor.png), default !important;
+        cursor: url(./cursors/cursor1.png), default !important;
         /* background-image: url(https://www.onlygfx.com/wp-content/uploads/2017/02/green-splatter-5.png), url(images/gun.png); */
         background-size: 50vw, 40vw;
         background-repeat: no-repeat;
@@ -17,7 +17,7 @@
         overflow-x: hidden !important
       }
       * {
-        cursor: url(./cursors/cursor.png), default !important;
+        cursor: url(./cursors/cursor1.png), default !important;
       }
       .page-title {
         position: relative;
@@ -114,6 +114,8 @@
         justify-content: center;
       }
       #inputbox {
+        font-weight: 600;
+        font-family: monospace;
         color: #25750a;
         width: 100%;
         background: #333;
@@ -132,6 +134,7 @@
   </head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZQ6TMGVXJ"></script>
+  <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
   <script>
     window.dataLayer=window.dataLayer||[];
     function gtag(){dataLayer.push(arguments);}
@@ -144,11 +147,27 @@
     <div class="wrapper"></div>
     <input id="inputbox" placeholder="Type your message here..." onkeyup="event.key=='Enter'&&this.value&&send(this.value)">
     <script>
+      Notiflix.Notify.init({clickToClose:true,showOnlyTheLastOne:false,timeout:1000,info:{shadow:true,background:"#333",textColor:"#25750a",notiflixIconColor:"#25750a"},warning:{shadow:true,background:"#333",textColor:"#eebf31",notiflixIconColor:"#eebf31"}});
+      gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
+      gametime.set("channel", "world");
+      gametime.make("msg");
+      gametime.on("msg", function(msg) {
+        let user = (msg.split(",")[1]);
+        msg = decodeURIComponent(msg.split(",")[0]);
+        if (user == gametime.user.position) {
+          return;
+        }
+        console.log(msg, user, gametime.user.position);
+        document.querySelector(".wrapper").innerHTML+="<div id='msg"+String(document.querySelectorAll(".msg").length-1)+"' class='msg'>"+((Date().toString().split(" ").splice(1).reverse().splice(6).reverse().join(" ")+(",")+" "+Date().toString().split(" ").splice(3).reverse().splice(5).reverse().join(" ")+" at "+Date().toString().split(" ").splice(4).reverse().splice(4).reverse().join(" ")+": ")+msg).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100);
+      });
+      msgCooldown = 0;
       setInterval(()=>{for(let i=0;i<document.querySelectorAll(".msg").length;i++){document.querySelectorAll(".msg")[i].textContent?document.querySelectorAll(".msg")[i].id="msg"+String(i):document.querySelectorAll(".msg")[i].remove()}});
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
-      (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{const n={msg:t.get("msg")};e?(()=>{for(let i=0;i<decodeURIComponent((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg)).split(",")[i].replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>"}})():(()=>{for(let i=0;i<decodeURIComponent((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg)).split(",")[i].replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100)}})(),e=!0}),(e=>{}))}})();
+      (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{const n={msg:t.get("msg")};e?(()=>{for(let i=0;i<((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg).split(",")[i]).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>"}})():(()=>{for(let i=0;i<((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg).split(",")[i]).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100)}})(),e=!0}),(e=>{}))}})();
+      function twice(callback) { callback(); callback() }
       function send(msg) {
-        (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{t.set("msg",t.get("msg")+(encodeURIComponent(","+msg))),t.save(),document.querySelector(".wrapper").innerHTML+="<div id='msg"+String(document.querySelectorAll(".msg").length-1)+"' class='msg'>"+msg.replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100)}))}})();
+        if (msgCooldown > 0) return Notiflix.Notify.warning("Please wait at least 10 seconds to send another message...");
+        (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{t.set("msg",t.get("msg")+(","+encodeURIComponent((Date().toString().split(" ").splice(1).reverse().splice(6).reverse().join(" ")+(",")+" "+Date().toString().split(" ").splice(3).reverse().splice(5).reverse().join(" ")+" at "+Date().toString().split(" ").splice(4).reverse().splice(4).reverse().join(" ")+": ")+msg))),t.save(),document.querySelector(".wrapper").innerHTML+="<div id='msg"+String(document.querySelectorAll(".msg").length-1)+"' class='msg'>"+((Date().toString().split(" ").splice(1).reverse().splice(6).reverse().join(" ")+(",")+" "+Date().toString().split(" ").splice(3).reverse().splice(5).reverse().join(" ")+" at "+Date().toString().split(" ").splice(4).reverse().splice(4).reverse().join(" ")+": ")+msg).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",twice(()=>gametime.run("msg",[encodeURIComponent(msg)+","+gametime.user.position])),setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100),msgCooldown=10,setTimeout(()=>{msgCooldown=0},10000)}))}})();
       }
     </script>
   </body>
