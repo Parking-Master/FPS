@@ -94,6 +94,10 @@
     <script>
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       async function createParseUser() {
+        if (localStorage["perm-user"]) return swal({
+          title: "Error",
+          text: "Looks like you already have an account. We only allow 1 account per device."
+        }).then(() => location.replace("/"));
         let user = new Parse.User();
         user.set("username", document.getElementById("username").value);
         user.set("email", document.getElementById("email").value);
@@ -101,10 +105,11 @@
         try {
           user = await user.save();
           if (user !== null) {
-            swal("Success! You will need to log in now.", () => location.assign("login.html"));
+            swal("Success! You will need to log in now.").then(() => location.assign("login.html"));
+            localStorage.setItem("perm-user", user.get("username"));
           }
         } catch (error) {
-          error.code == 202 && swal("Error: A user already exists with that username.", () => {});
+          error.code == 202 && swal("Error: A user already exists with that username.").then(() => {});
           console.log(error);
         }
       }

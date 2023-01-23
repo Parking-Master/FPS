@@ -148,7 +148,7 @@
     <input id="inputbox" placeholder="Type your message here..." onkeyup="event.key=='Enter'&&this.value&&send(this.value)">
     <script>
       Notiflix.Notify.init({clickToClose:true,showOnlyTheLastOne:false,timeout:1000,info:{shadow:true,background:"#333",textColor:"#25750a",notiflixIconColor:"#25750a"},warning:{shadow:true,background:"#333",textColor:"#eebf31",notiflixIconColor:"#eebf31"}});
-      gametime.set("key", "pub-c-c44c8fc4-612e-4fc3-b875-4398f01da63c", "sub-c-b6832794-3c08-11ec-b2c1-a25c7fcd9558");
+      gametime.set("key", "pub-c-1178142f-8fb0-4bbe-8e1d-f49d8719e108", "sub-c-7f8a0517-ea33-4e60-8b45-d2987de993cf");
       gametime.set("channel", "world");
       gametime.make("msg");
       gametime.on("msg", function(msg) {
@@ -161,12 +161,26 @@
         document.querySelector(".wrapper").innerHTML+="<div id='msg"+String(document.querySelectorAll(".msg").length-1)+"' class='msg'>"+((Date().toString().split(" ").splice(1).reverse().splice(6).reverse().join(" ")+(",")+" "+Date().toString().split(" ").splice(3).reverse().splice(5).reverse().join(" ")+" at "+Date().toString().split(" ").splice(4).reverse().splice(4).reverse().join(" ")+": ")+msg).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100);
       });
       msgCooldown = 0;
+      words = [];
+      fetch("words.json").then((e) => e.json()).then((e) => words = (e.words));
       setInterval(()=>{for(let i=0;i<document.querySelectorAll(".msg").length;i++){document.querySelectorAll(".msg")[i].textContent?document.querySelectorAll(".msg")[i].id="msg"+String(i):document.querySelectorAll(".msg")[i].remove()}});
       Parse.initialize("qEK42aDtmQiBXmIoRdojDAYrKXGj5w4h2QnNRpYz","J4IK0gqf8rQS8G8Hg5LDbz0oEASJtRlUS2LPiRVg"),Parse.serverURL="https://parseapi.back4app.com/";
       (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{const n={msg:t.get("msg")};e?(()=>{for(let i=0;i<((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg).split(",")[i]).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>"}})():(()=>{for(let i=0;i<((n.msg)).split(",").length;i++){document.querySelector(".wrapper").innerHTML+="<div class='msg'>"+decodeURIComponent((n.msg).split(",")[i]).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100)}})(),e=!0}),(e=>{}))}})();
       function twice(callback) { callback(); callback() }
       function send(msg) {
         if (msgCooldown > 0) return Notiflix.Notify.warning("Please wait at least 10 seconds to send another message...");
+        let oldmsg = msg;
+        let i = msg;
+        words.forEach((x) => {
+          x = x.toLowerCase();
+          let newi = i.replace(new RegExp((x.replace(/[\(\)\*\@\!\$\-]/gi, "\\$1")).toString().toLowerCase(), "g"), (t => {
+            let g = "";
+            t.forEach(() => g += "*");
+            return g;
+          })(x.toString().toLowerCase().split("")));
+          i = newi;
+        });
+        if (i.toLowerCase() != oldmsg) return Notiflix.Notify.info("For everyones safety, we block inaproppriate messages. We're trying to make the chat a safer place.\n\nError: Could not submit message.");
         (async()=>{let e=!1;const t=Parse.Object.extend("Chat"),n=new Parse.Query(t),s=await n.find();for(let t=0;t<s.length;t++){const n=Parse.Object.extend("Chat");new Parse.Query(n).get(s[t].id).then((t=>{t.set("msg",t.get("msg")+(","+encodeURIComponent((Date().toString().split(" ").splice(1).reverse().splice(6).reverse().join(" ")+(",")+" "+Date().toString().split(" ").splice(3).reverse().splice(5).reverse().join(" ")+" at "+Date().toString().split(" ").splice(4).reverse().splice(4).reverse().join(" ")+": ")+msg))),t.save(),document.querySelector(".wrapper").innerHTML+="<div id='msg"+String(document.querySelectorAll(".msg").length-1)+"' class='msg'>"+((Date().toString().split(" ").splice(1).reverse().splice(6).reverse().join(" ")+(",")+" "+Date().toString().split(" ").splice(3).reverse().splice(5).reverse().join(" ")+" at "+Date().toString().split(" ").splice(4).reverse().splice(4).reverse().join(" ")+": ")+msg).replace(/\</gi,"&lt;").replace(/\>/gi,"&gt;")+"</div><br>",twice(()=>gametime.run("msg",[encodeURIComponent(msg)+","+gametime.user.position])),setTimeout(()=>document.querySelector("#msg"+String(document.querySelectorAll(".msg").length-1)).scrollIntoView(),100),msgCooldown=10,setTimeout(()=>{msgCooldown=0},10000)}))}})();
       }
     </script>

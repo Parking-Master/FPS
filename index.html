@@ -249,11 +249,11 @@
       <br>
       <button class="button" onclick="findLobby()">FIND LOBBY</button>
       <br>
-      <button class="button" onclick='setDialog(`open`, { title: `Enter lobby name`, content: `Enter a name (2-10 characters):<input onkeyup="window.createlobbytext=this.value" /><br><a href="help.html#create-a-lobby">Need help?</a>` }, () => createLobby(createlobbytext))'>CREATE LOBBY</button>
+      <button class="button" onclick='showWarning(() => setDialog(`open`, { title: `Enter lobby name`, content: `Enter a name (2-10 characters):<input onkeyup="window.createlobbytext=this.value" /><br><a href="help.html#create-a-lobby">Need help?</a>` }, () => createLobby(createlobbytext)))'><span style="color: red !important; text-shadow: none !important">!</span> CREATE LOBBY</button>
       <br>
       <!-- <button class="button" onclick="chooseMap(startLocalGame)">SPLITSCREEN</button>
       <br> -->
-      <button class="button" onclick="location.assign('chat.html')">CHAT</button>
+      <button class="button" onclick="showWarning(() => location.assign('chat.html'))"><span style="color: red !important; text-shadow: none !important">!</span> CHAT</button>
       <br>
       <button class="button" onclick="help()">HELP</button>
       <br>
@@ -271,6 +271,7 @@
       <a href="users/" style="color:#25750a!important;text-shadow:none!important">See what you look like</a>
     </div>
     <script>
+      if (!localStorage["lobbies"]) localStorage.setItem("lobbies", 0);
       currentFocus = null;
       currentScroll = 0;
       focusMax = null;
@@ -346,6 +347,14 @@
         el.style.outline = "2px solid #999";
         for(let i=0;i<(()=>{let g=Object.values(el.parentNode.children);g.splice(Object.values(el.parentNode.children).indexOf(el),1);return(g)})().length;i++){(()=>{let g=Object.values(el.parentNode.children);g.splice(Object.values(el.parentNode.children).indexOf(el),1);return(g)})()[i].style.outline="none"}
       }
+      function parseDate(str) {
+        var mdy = str.split('/');
+        return new Date(mdy[2], mdy[0]-1, mdy[1]);
+      }
+      
+      function datediff(first, second) {
+        return Math.round((second-first)/(1000*60*60*24));
+      }
       function selectMode(mode, el) {
         selectedMode = mode;
         el.style.outline = "2px solid #999";
@@ -355,12 +364,35 @@
       allowCustomArmor = true;
       allowMultiMaps = false;
       function createLobby(name) {
+        if (localStorage["limitDay"]) {
+          let dayfrom = localStorage["limitDay"];
+          let dayto = (new Date()).toLocaleDateString("en-US");
+          if (datediff(parseDate(dayfrom), parseDate(dayto)) >= 7) {
+            localStorage.setItem("lobbies", 0);
+            localStorage.removeItem("limitDay");
+          }
+        }
+        if ((localStorage["lobbies"] - 0) >= 3) return swal({
+          title: "Error",
+          text: "Your weekly lobby limit has exceeded. You have created 3 or more lobbies this week. Please wait until next week to create more lobbies."
+        }), !localStorage["limitDay"] && (localStorage["limitDay"] = (new Date()).toLocaleDateString("en-US"));
+        localStorage.setItem("lobbies", (localStorage["lobbies"] - 0) + 1);
         if (name == "" || !name) { return; }
         let lobby = new Lobby();
         lobby.set("name", name);
         setDialog(`open`, { title: `Specific options`, content: `All players options<br>&nbsp;&nbsp;-&nbsp;<input name="allowCustomArmor" type="checkbox" onclick="allowCustomArmor=this.checked" checked><label for="allowCustomArmor">Allow custom armor</label><br>&nbsp;&nbsp;-&nbsp;<input name="allowMultiMaps" type="checkbox" onclick="allowMultiMaps=this.checked"><label for="allowMultiMaps">Allow <a href="help.html#multimaps">multi-maps</a></label><br><br>In-Game options<br>&nbsp;&nbsp;-&nbsp;<label for="customTimeLimit">Time limit:</label><input name="customTimeLimit" type="number" style="width:15px;-moz-appearance:textfield!important" value="10" onkeyup="timeLimit=this.value.toString()"> minutes<br>&nbsp;&nbsp;-&nbsp;<label for="customScoreLimit">Score limit:</label><input name="customScoreLimit" type="number" style="width:15px;-moz-appearance:textfield!important" value="10" onkeyup="scoreLimit=this.value.toString()"> kills` }, () => {
           lobby.set("active", false);
           lobby.save().then(() => console.log("Lobby \"" + name.toString() + "\" saved with options:",{"allowCustomArmor":document.getElementsByName("allowCustomArmor")[0].checked,"allowMultiMaps":document.getElementsByName("allowMultiMaps")[document.getElementsByName.length-1].checked}), findLobby(name.toString(), () => { document.querySelector(".dialog-content").innerHTML += '<div class="lobby" id="'+btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"")+'">"<a onclick="location.assign(\'./play.html?lobby='+encodeURIComponent(name.toString())+("&map="+(selectedMap||"Cargo"))+("&mode="+(selectedMode||"Slayer"))+'\')" style="border:2px solid #25750a">'+(name.toString().trim()==""?("(blank space)"):name.toString().trim())+'</a>" : '+(new Date).toString().split(" ").splice(1).reverse().splice(4).reverse().join(" ").split(":").reverse().splice(1).reverse().join(":")+"</div>", location.hash = btoa(encodeURIComponent(name.toString())).replace(/\=/gi,"") }));
+        });
+      }
+      function showWarning(callback) {
+        swal({
+          title: "Spam notice",
+          text: "Hi, we see you're enjoying this game. Since anylitics have been booming, we have blocked several spammers that were trying to break the game. We want the game to be a safer place, so we ask you do not spam or misuse the site in ANY way. In case you ignore this message, we have set up spam filters anyway. Users are now limited to only 3 lobbies per week. Thank you for your co-operation.",
+          buttons: ["I disagree", "I agree"]
+        }).then(e => {
+          if (!e) return;
+          callback();
         });
       }
       function findLobby(l, addlobby = null) {
