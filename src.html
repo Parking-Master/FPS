@@ -318,7 +318,7 @@
       }
     </style>
     <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0/gametime.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js@latest/js/username-generator.min.js"></script> -->
   </head>
@@ -374,7 +374,7 @@
     <script src="https://fps3.serveo.net/js/GLTFLoader.min.js"></script>
     <script src="https://fps3.serveo.net/js/fflate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/alvaromontoro/gamecontroller.js@latest/dist/gamecontroller.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0@latest/gametime.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Parking-Master/Gametime.js-2.0/gametime.js"></script>
     <audio id="gunsound-pistol" src="sounds/guns/colt_m1911.mp3"></audio>
     <audio id="gunsound-rifle" src="sounds/guns/default_rifle.mp3"></audio>
     <audio id="gunsound-uzi" src="sounds/guns/uzi.mp3"></audio>
@@ -672,7 +672,7 @@
       secondaryRoundsDefault = secondaryRounds;
       function throwGrenade(){let b=0;"undefined"==typeof grenade||grenadesLeft<=0||!canThrowGrenade||(canThrowGrenade=!1,grenadesLeft--,grenade.position.copy(camera.position),grenade.rotation.copy(camera.rotation),grenade.scale.set(.2,.2,.2),(()=>{let e,a=grenade.clone();scene.add(a),a.updateMatrix(),a.translateZ(-.5);let t=setInterval((()=>{map.traverse((n=>{collision(a,n)&&n instanceof THREE.Mesh&&n!=gun&&n!=a&&(currentMap=="GHOST"?(!n.name.includes("scene")&&!n.name.includes("Scene")&&!n.name.includes("root")&&!n.name.includes("Root")&&!/Sketchfab_model|BLD_L_gedungA_part1_1|BLD_L_gedungA_part2_2|Object_6|Object_8|Object_62|BAKE_29/gi.test(n.name)):true)&&n instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&((n.name.includes("Container")||n.name.includes("Warthog"))&&console.log(n),e=n,(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&(currentMap=="GHOST"?(!e.name.includes("scene")&&!e.name.includes("Scene")&&!e.name.includes("root")&&!e.name.includes("Root")&&!/Sketchfab_model|BLD_L_gedungA_part1_1|BLD_L_gedungA_part2_2|Object_6|Object_8|Object_62|BAKE_29/gi.test(e.name)):true)&&e instanceof THREE.Mesh&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&(console.log(e),(()=>{let e=.1,t=setInterval((()=>{map.traverse((e=>{collision(a,e)&&e instanceof THREE.Mesh&&(currentMap=="GHOST"?(!e.name.includes("scene")&&!e.name.includes("Scene")&&!e.name.includes("root")&&!e.name.includes("Root")&&!/Sketchfab_model|BLD_L_gedungA_part1_1|BLD_L_gedungA_part2_2|Object_6|Object_8|Object_62|BAKE_29/gi.test(e.name)):true)&&e!=gun&&e!=a&&e instanceof THREE.Mesh&&(()=>{let g=document.querySelector("#ricochet"+(Math.floor(Math.random()*3)+1)).cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5));((u<=0&&(u=0)),(u>=1&&(u=1)));g.volume=u;g.play();return true})()&&clearInterval(t)})),e+=-.001,a.translateY(e)}))})(),clearInterval(t))})),e+=-.001,a.translateY(e)}))})(),setTimeout((()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(2,30),new THREE.MeshBasicMaterial({color:16777215,map:(new THREE.TextureLoader).load("images/textures/explosion.png"),transparent:!0}));let g=document.querySelector("#grenade_explosion").cloneNode();let u=(1-(distanceTo(a.position,camera.position)/5))+.2;((u<=0&&(u=.2)),(u>=1&&(u=1)));g.volume=u;g.play();scene.remove(a),e.position.copy(a.position),e.rotation.copy(a.rotation),a.updateMatrix(),e.translateY(2),(()=>{let e=new THREE.Mesh(new THREE.CircleGeometry(4,30),new THREE.MeshBasicMaterial({map:textures["smoke"],transparent:!0}));e.position.copy(a.position),e.rotation.copy(a.rotation),e.updateMatrix(),e.lookAt(camera.position),e.translateY(1);let t=setInterval((()=>{e.translateY(.0025),e.material.opacity<0||(e.material.opacity+=-.0025)}));setTimeout((()=>clearInterval(t)),10000)})(),e.lookAt(camera.position),scene.add(e);let t=setInterval((()=>{distanceTo(camera.position,e.position)<=4?(gametime.run("eleminate",[gametime.user.position]),document.querySelector("#hiteffect").style.opacity=1,setTimeout(()=>{document.querySelector("#hiteffect").style.opacity=0},1000)):(distanceTo(otherPlayer.position,e.position)<=4&&gametime.run("eleminate",[1==gametime.user.position?2:1])),e.material.opacity<=0?(clearInterval(t),scene.remove(e)):(e.scale.set(e.scale.x+.3,e.scale.y+.3,e.scale.z+.3),e.material.opacity+=-.05)}))}),2e3),clearInterval(t))})),b+=.001,a.translateZ(-.1),a.position.y+=(-b)}))})(),setTimeout((()=>{canThrowGrenade=!0}),750))}grenadesLeft=setGrenades,canThrowGrenade=!0;(new THREE.GLTFLoader).load("models/weapons/grenades/frag.glb",(e)=>{grenade=e.scene});
       /* Gametime.js event variables */
-      gametime.set("key", "pub-c-1178142f-8fb0-4bbe-8e1d-f49d8719e108", "sub-c-7f8a0517-ea33-4e60-8b45-d2987de993cf");
+      gametime.set("key", "pub-c-61965947-3f17-4d68-97f4-7ff836c75b3e", "sub-c-5ebee0f0-c27d-48c1-bd20-4d167102bcc7");
       gametime.set("channel", new URLSearchParams(location.search).get("lobby")||(error(404)));
       gametime.make("leftGame");
       gametime.make("playerWalk");
@@ -847,9 +847,9 @@
       gametime.on("selectCharacter", function(data) {
         let character = data.split(",")[0];
         let player = data.split(",")[1];
-        if (player == gametime.user.position) {
-          return;
-        }
+        // if (player == gametime.user.position) {
+        //   return;
+        // }
         otherSelectedCharacter = character;
         createCharacter(data.split(",")[2]);
       });
@@ -1934,7 +1934,7 @@
           });
           document.querySelector(".swal-overlay").style.zIndex = "999999";
         }
-      }, 30000);
+      }, 50000);
     </script>
   </body>
 </html>
