@@ -847,9 +847,9 @@
       gametime.on("selectCharacter", function(data) {
         let character = data.split(",")[0];
         let player = data.split(",")[1];
-        // if (player == gametime.user.position) {
-        //   return;
-        // }
+        if (player == gametime.user.position) {
+          return;
+        }
         otherSelectedCharacter = character;
         createCharacter(data.split(",")[2]);
       });
@@ -893,6 +893,9 @@
       gametime.onconnect = function() {
         gametime.run("connect");
         gametime.run("selectCharacter", [(new URLSearchParams(location.search).get("character")||"mark-vi")+","+gametime.user.position+","+(localStorage["prefsArmorColor"]||"#fff")]);
+
+        // Temporary fix (page won't load without this)
+        createCharacter(localStorage["prefsArmorColor"] || "#fff");
       };
       warthogsToAdd = [];
       function createWarthog(position, rotation) {
