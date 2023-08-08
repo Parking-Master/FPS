@@ -28,14 +28,14 @@
 
 ### What to do
 #### To start a game
-1. Head over to www.fps5.ml
+1. Head over to www.fps5.uk.to
 2. Click "CHOOSE MAP" (A default map will be chosen if this is skipped)
 3. Click "Next"
 4. Choose a lobby that someone has already made (or skip to [To create a lobby]() to make your own).
 5. Wait for player(s) to join. The game will start automatically.
 
 #### To create a lobby
-1. Head over to www.fps5.ml
+1. Head over to www.fps5.uk.to
 2. Click "CREATE LOBBY"
 3. Enter your lobby name.
 4. Click "Next" (or hit enter)
@@ -44,7 +44,7 @@
 7. Wait for player(s) to join. The game will start automatically.
 
 ### How to customize Preferences, Performance and In-Game-Items
-1. Head over to www.fps5.ml
+1. Head over to www.fps5.uk.to
 2. Click "OPTIONS"
 3. To customize Preferences, change your character/website appearance.
 4. To customize Performance, Click "Performance" in the lower left corner.

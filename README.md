@@ -21,7 +21,7 @@ FPS5 was built with pure JavaScript, and also supports multiplayer. _[See more a
 
 ### How can I play?
 
-FPS5 is available publicly at [www.fps5.ml](https://www.fps5.ml)
+FPS5 is available publicly at [www.fps5.uk.to](https://www.fps5.uk.to)
 <br>
 _Note: This game may be a little buggy because it was just released._ If you encounter
 <br>
