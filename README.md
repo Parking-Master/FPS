@@ -1,4 +1,4 @@
-# F-P-S<img width="2.5%" style="margin-left:-20px" src="https://user-images.githubusercontent.com/88283567/189241057-7e416f3e-46a9-494e-9b79-a5455e2bf518.png" style="filter:grayscale(100%)">
+# F-P-S<img width="2.5%" src="https://user-images.githubusercontent.com/88283567/189241057-7e416f3e-46a9-494e-9b79-a5455e2bf518.png" style="filter:grayscale(100%)">
 A modern multiplayer FPS game in your browser.
 
 ## FPS5 Documentation
@@ -47,6 +47,7 @@ Maps, Characters, & Weapons are all listed here.
 <h4 align="center">Ghost City</h5>
 "<i>An Abandoned Ghost City map that can fit up to 4 players. 2-4 player map</i>"
 <img align="center" width="100%" alt="Ghost City" src="images/maps/ghost.png">
+
 #### Coming soon
 <h4 align="center">Haven</h5>
 "<i>Resting high above Requiem’s surface, harmonic-resonance platforms appear to facilitate the monitoring and management of the shield world’s solar preservation system. These elaborate machines enable artificial planets to support their immense populations of indigenous life.</i>"
