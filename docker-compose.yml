@@ -1,0 +1,9 @@
+services:
+  game:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 3jsfps-game
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
