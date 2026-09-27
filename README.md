@@ -21,7 +21,7 @@ FPS5 was built with pure JavaScript, and also supports multiplayer. _[See more a
 
 ### How can I play?
 
-FPS5 is available publicly at [fps.mytunnel.org](https://fps.mytunnel.org)
+FPS5 is available publicly at [fps.webredirect.org](https://fps.webredirect.org)
 <br>
 _Note: This game may be a little buggy because it was just released._ If you encounter
 <br>
